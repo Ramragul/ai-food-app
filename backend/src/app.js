@@ -3,6 +3,9 @@ import cors from "cors";
 import mealRoutes from "./routes/meal.routes.js";
 import ingredientRoutes from "./routes/ingredient.routes.js";
 import orderRoutes from "./routes/order.routes.js";
+import trackMeal from "./routes/trackMeal.routes.js"
+import nutritionRoutes from  "./routes/nutrition.routes.js"
+import profileRoutes from "./routes/profile.routes.js";
 import { redis } from "./utils/redisClient.js"; // adjust path if needed
 
 
@@ -15,6 +18,12 @@ app.use(express.json());
 app.use("/api/meals", mealRoutes);
 app.use("/api/ingredients", ingredientRoutes);
 app.use("/api/orders", orderRoutes);
+// app.use("/api/track",trackMeal);
+app.use("/api/nutrition",nutritionRoutes);
+
+
+app.use("/api/users", profileRoutes);
+
 
 
 app.get("/", (req, res) => {

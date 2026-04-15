@@ -362,9 +362,9 @@ const saveRecipesToDB = async (meals, structuredGoal) => {
   for (const rec of meals) {
     const item = rec.items?.[0];
 
-    console.log("👉 FULL REC:", JSON.stringify(rec, null, 2));
-    console.log("👉 ITEM:", item);
-    console.log("👉 INGREDIENTS:", item?.ingredients);
+    // console.log("👉 FULL REC:", JSON.stringify(rec, null, 2));
+    // console.log("👉 ITEM:", item);
+    // console.log("👉 INGREDIENTS:", item?.ingredients);
 
     if (!item) continue;
 
@@ -401,10 +401,10 @@ const saveRecipesToDB = async (meals, structuredGoal) => {
           item.prepTime,
           item.difficulty,
 
-          item.nutrition?.calories || 0,
-          item.nutrition?.protein || 0,
-          item.nutrition?.carbs || 0,
-          item.nutrition?.fat || 0,
+          rec.totalNutrition?.calories || 0,
+          rec.totalNutrition?.protein || 0,
+          rec.totalNutrition?.carbs || 0,
+          rec.totalNutrition?.fat || 0,
 
           rec.imageUrl,
 
@@ -508,6 +508,8 @@ export const generateMealService = async ({
       });
 
       allMeals = aiResponse?.recommendations || [];
+
+      console.log("AI Response :" +JSON.stringify(allMeals))
 
       if (!Array.isArray(allMeals)) {
         throw new Error("AI response is not an array");

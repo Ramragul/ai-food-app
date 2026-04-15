@@ -6,6 +6,7 @@ import orderRoutes from "./routes/order.routes.js";
 import trackMeal from "./routes/trackMeal.routes.js"
 import nutritionRoutes from  "./routes/nutrition.routes.js"
 import profileRoutes from "./routes/profile.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 import { redis } from "./utils/redisClient.js"; // adjust path if needed
 
 
@@ -23,6 +24,7 @@ app.use("/api/nutrition",nutritionRoutes);
 
 
 app.use("/api/users", profileRoutes);
+app.use("/api/auth", authRoutes);
 
 
 

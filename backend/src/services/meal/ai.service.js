@@ -2111,10 +2111,20 @@ Return ONLY JSON.
           "steps": [],
           "prepTime": "",
           "difficulty": "",
-          "nutrition": {}
+          "nutrition": {
+            "protein": "",
+            "calories": "",
+            "fat": "",
+              "carbs": ""
+          }
         }
       ],
-      "totalNutrition": {}
+      "totalNutrition": {
+        "protein": "",
+        "calories": "",
+        "fat": "",
+        "carbs": ""
+      }
     }
   ]
 }

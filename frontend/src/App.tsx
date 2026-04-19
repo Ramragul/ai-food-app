@@ -19,13 +19,16 @@
 import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes/AppRoutes";
 import { AuthProvider } from "./context/AuthContext";
+import { AppModeProvider } from "./context/AppModeContext";
 
 function App() {
   return (
     <AuthProvider>
+      <AppModeProvider>
       <BrowserRouter>
         <AppRoutes />
       </BrowserRouter>
+      </AppModeProvider>
     </AuthProvider>
   );
 }

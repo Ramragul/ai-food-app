@@ -52,7 +52,8 @@ export const loginService = async (mobile, password) => {
     user: {
       id: user.id,
       name: user.name,
-      nickname: user.nickname
+      nickname: user.nickname,
+      gender: user.gender
     }
   };
 };

@@ -1,0 +1,66 @@
+<svg width="220" height="260" viewBox="0 0 220 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Ice Blue Gradient -->
+    <linearGradient id="iceBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7FDBFF"/>
+      <stop offset="100%" stop-color="#CFF6FF"/>
+    </linearGradient>
+
+    <!-- Heart Gradient -->
+    <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3DBBFF"/>
+      <stop offset="100%" stop-color="#8BE9FF"/>
+    </linearGradient>
+
+    <!-- Dark Elegant -->
+    <linearGradient id="darkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 🔵 Closed Ice Blue Ring -->
+  <circle cx="110" cy="100" r="85"
+          stroke="url(#iceBlue)"
+          stroke-width="4"
+          fill="none"/>
+
+  <!-- 🔥 Elegant N -->
+  <path d="M70 135 V70 L110 120 V70"
+        fill="none"
+        stroke="url(#darkGrad)"
+        stroke-width="12"
+        stroke-linecap="round"/>
+
+  <!-- 💙 Heart -->
+  <path d="M130 105 
+           C130 90, 155 90, 155 105 
+           C155 120, 130 135, 130 150 
+           C130 135, 105 120, 105 105 
+           C105 90, 130 90, 130 105 Z"
+        fill="url(#heartGrad)"/>
+
+  <!-- 🤍 Pulse -->
+  <polyline points="115,120 125,120 130,110 135,130 140,120 150,120"
+            fill="none"
+            stroke="white"
+            stroke-width="2.5"
+            stroke-linecap="round"/>
+
+  <!-- ✨ MAGIC PARTICLES -->
+  <rect x="160" y="85" width="5" height="5" rx="1" fill="#7FDBFF"/>
+  <rect x="168" y="78" width="4" height="4" rx="1" fill="#AEEBFF"/>
+  <rect x="174" y="86" width="6" height="6" rx="1.5" fill="#5AD1FF"/>
+  <rect x="182" y="80" width="3" height="3" rx="1" fill="#CFF6FF"/>
+  <rect x="170" y="92" width="4" height="4" rx="1" fill="#8BE9FF"/>
+
+  <!-- 🔤 NEKA (premium serif feel) -->
+  <text x="110" y="230"
+        text-anchor="middle"
+        font-size="42"
+        font-family="Georgia, 'Times New Roman', serif"
+        fill="url(#darkGrad)"
+        letter-spacing="4">
+    NEKA
+  </text>
+</svg>

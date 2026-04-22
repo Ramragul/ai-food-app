@@ -311,6 +311,199 @@
 
 // Version 3 : Enhancement to v2
 
+// import {
+//   Box,
+//   Text,
+//   VStack,
+//   Heading,
+//   Button,
+//   Flex,
+//   Badge,
+//   Table,
+//   Thead,
+//   Tbody,
+//   Tr,
+//   Th,
+//   Td,
+//   Image
+// } from "@chakra-ui/react";
+// import { useLocation, useNavigate } from "react-router-dom";
+// import type { Recommendation } from "../types/meal";
+// import { useEffect } from "react";
+
+// const RecipeDetail = () => {
+//   const { state } = useLocation();
+//   const data = state as Recommendation;
+
+//   const mainItem = data.items[0];
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     window.scrollTo(0, 0);
+//   }, []);
+
+//   return (
+//     <Box minH="100vh" bg="#f7fbff" pb={6}>
+
+//       {/* 🔥 HERO IMAGE */}
+//       <Box position="relative">
+//         <Image
+//           src={data.imageUrl}
+//           h="220px"
+//           w="100%"
+//           objectFit="cover"
+//         />
+
+//         {/* 🔙 BACK BUTTON ON IMAGE */}
+//         <Box
+//           position="absolute"
+//           top="10px"
+//           left="10px"
+//           px={3}
+//           py={1}
+//           bg="whiteAlpha.800"
+//           borderRadius="full"
+//           cursor="pointer"
+//           onClick={() => navigate(-1)}
+//         >
+//           ←
+//         </Box>
+//       </Box>
+
+//       <Box p={4}>
+
+//         <VStack align="start" spacing={5}>
+
+//           {/* 🍽 TITLE */}
+//           <Box>
+//             <Heading size="lg">{mainItem.name}</Heading>
+//             <Text color="gray.600">{mainItem.description}</Text>
+//           </Box>
+
+//           {/* 💪 NUTRITION */}
+//           <Flex gap={3}>
+//             <Badge colorScheme="blue" p={2} borderRadius="md">
+//               💪 {data.totalNutrition.protein}
+//             </Badge>
+//             <Badge colorScheme="red" p={2} borderRadius="md">
+//               🔥 {data.totalNutrition.calories}
+//             </Badge>
+//           </Flex>
+
+//           {/* 📊 INGREDIENTS TABLE */}
+//           <Box w="100%" bg="white" p={4} borderRadius="xl" boxShadow="sm">
+//             <Heading size="md" mb={3}>Ingredients</Heading>
+
+//             <Table variant="simple">
+//               <Thead>
+//                 <Tr>
+//                   <Th>Item</Th>
+//                   <Th>Qty</Th>
+//                 </Tr>
+//               </Thead>
+//               <Tbody>
+//                 {mainItem.ingredients.map((ing, i) => {
+//                   const item =
+//                     typeof ing === "string"
+//                       ? { name: ing, quantity: "-" }
+//                       : {
+//                           name: ing.name,
+//                           quantity: `${ing.quantity} ${ing.unit}`
+//                         };
+
+//                   return (
+//                     <Tr key={i}>
+//                       <Td>{item.name}</Td>
+//                       <Td>{item.quantity}</Td>
+//                     </Tr>
+//                   );
+//                 })}
+//               </Tbody>
+//             </Table>
+//           </Box>
+
+//           {/* 🪄 STEPS */}
+//           <Box w="100%" bg="white" p={4} borderRadius="xl" boxShadow="sm">
+//             <Heading size="md" mb={3}>Steps</Heading>
+
+//             <VStack align="start" spacing={4}>
+//               {mainItem.steps.map((step, i) => (
+//                 <Flex key={i} align="start">
+
+//                   {/* 🔥 PERFECT CIRCLE */}
+//                   <Flex
+//                     minW="32px"
+//                     h="32px"
+//                     borderRadius="50%"
+//                     bg="brand.400"
+//                     color="white"
+//                     align="center"
+//                     justify="center"
+//                     fontSize="sm"
+//                     fontWeight="bold"
+//                     mr={3}
+//                   >
+//                     {i + 1}
+//                   </Flex>
+
+//                   <Text color="gray.700">{step}</Text>
+//                 </Flex>
+//               ))}
+//             </VStack>
+//           </Box>
+
+//           {/* ⏱ EXTRA */}
+//           <Flex gap={3}>
+//             <Badge colorScheme="green">⏱ {mainItem.prepTime}</Badge>
+//             <Badge colorScheme="purple">🔥 {mainItem.difficulty}</Badge>
+//           </Flex>
+
+//           {/* 🍳 CTA */}
+//           <Button
+//             w="100%"
+//             size="lg"
+//             bg="brand.500"
+//             color="white"
+//             borderRadius="full"
+//             _hover={{ bg: "brand.600", transform: "scale(1.02)" }}
+//             onClick={async () => {
+//               try {
+//                 const res = await fetch("http://localhost:3004/api/orders", {
+//                   method: "POST",
+//                   headers: {
+//                     "Content-Type": "application/json",
+//                   },
+//                   body: JSON.stringify({
+//                     userId: 1,
+//                     recipe: mainItem,
+//                   }),
+//                 });
+
+//                 if (!res.ok) throw new Error("Failed");
+
+//                 const order = await res.json();
+
+//                 navigate("/order-success", { state: order });
+
+//               } catch (err) {
+//                 alert("Something went wrong macha 😅");
+//               }
+//             }}
+//           >
+//             👨‍🍳 Cook Now
+//           </Button>
+
+//         </VStack>
+//       </Box>
+//     </Box>
+//   );
+// };
+
+// export default RecipeDetail;
+
+
+// Version 4 : clone of v3
+
 import {
   Box,
   Text,
@@ -319,16 +512,11 @@ import {
   Button,
   Flex,
   Badge,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
   Image
 } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { Recommendation } from "../types/meal";
+import { useEffect } from "react";
 
 const RecipeDetail = () => {
   const { state } = useLocation();
@@ -336,6 +524,10 @@ const RecipeDetail = () => {
 
   const mainItem = data.items[0];
   const navigate = useNavigate();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <Box minH="100vh" bg="#f7fbff" pb={6}>
@@ -349,7 +541,6 @@ const RecipeDetail = () => {
           objectFit="cover"
         />
 
-        {/* 🔙 BACK BUTTON ON IMAGE */}
         <Box
           position="absolute"
           top="10px"
@@ -366,7 +557,6 @@ const RecipeDetail = () => {
       </Box>
 
       <Box p={4}>
-
         <VStack align="start" spacing={5}>
 
           {/* 🍽 TITLE */}
@@ -385,37 +575,102 @@ const RecipeDetail = () => {
             </Badge>
           </Flex>
 
-          {/* 📊 INGREDIENTS TABLE */}
-          <Box w="100%" bg="white" p={4} borderRadius="xl" boxShadow="sm">
+          {/* 💎 INGREDIENTS (PREMIUM UI) */}
+          {/* <Box w="100%" bg="white" p={4} borderRadius="xl" boxShadow="sm">
             <Heading size="md" mb={3}>Ingredients</Heading>
 
-            <Table variant="simple">
-              <Thead>
-                <Tr>
-                  <Th>Item</Th>
-                  <Th>Qty</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {mainItem.ingredients.map((ing, i) => {
-                  const item =
-                    typeof ing === "string"
-                      ? { name: ing, quantity: "-" }
-                      : {
-                          name: ing.name,
-                          quantity: `${ing.quantity} ${ing.unit}`
-                        };
+            <VStack spacing={3} align="stretch">
+              {mainItem.ingredients.map((ing, i) => {
+                const item =
+                  typeof ing === "string"
+                    ? { name: ing, quantity: "-" }
+                    : {
+                        name: ing.name,
+                        quantity: `${ing.quantity} ${ing.unit}`
+                      };
 
-                  return (
-                    <Tr key={i}>
-                      <Td>{item.name}</Td>
-                      <Td>{item.quantity}</Td>
-                    </Tr>
-                  );
-                })}
-              </Tbody>
-            </Table>
-          </Box>
+                return (
+                  <Flex
+                    key={i}
+                    justify="space-between"
+                    align="center"
+                    p={3}
+                    borderRadius="lg"
+                    bg="gray.50"
+                    borderLeft="4px solid"
+                    borderColor="brand.400"
+                    _hover={{
+                      bg: "gray.100",
+                      transform: "translateX(2px)"
+                    }}
+                    transition="all 0.2s"
+                  >
+                    <Text fontWeight="medium">{item.name}</Text>
+                    <Text fontSize="sm" color="gray.600">
+                      {item.quantity}
+                    </Text>
+                  </Flex>
+                );
+              })}
+            </VStack>
+          </Box> */}
+
+<Box w="100%" bg="white" p={4} borderRadius="xl" boxShadow="sm">
+  <Heading size="md" mb={3}>Ingredients</Heading>
+
+  <VStack spacing={3} align="stretch">
+    {mainItem.ingredients.map((ing, i) => {
+      const item =
+        typeof ing === "string"
+          ? { name: ing, quantity: "-" }
+          : {
+              name: ing.name,
+              quantity: `${ing.quantity} ${ing.unit}`
+            };
+
+      return (
+        <Flex
+          key={i}
+          justify="space-between"
+          align="center"
+          px={3}
+          py={3}
+          borderRadius="lg"
+          bg="white"
+          border="1px solid"
+          borderColor="gray.100"
+          boxShadow="0 2px 8px rgba(0,0,0,0.04)"
+          _hover={{
+            boxShadow: "0 6px 16px rgba(0,0,0,0.08)",
+            transform: "translateY(-1px)"
+          }}
+          transition="all 0.2s"
+          position="relative"
+        >
+          {/* 🔥 subtle brand accent */}
+          <Box
+            position="absolute"
+            left="0"
+            top="0"
+            bottom="0"
+            w="3px"
+            bg="brand.400"
+            borderTopLeftRadius="lg"
+            borderBottomLeftRadius="lg"
+          />
+
+          <Text fontWeight="medium" ml={2}>
+            {item.name}
+          </Text>
+
+          <Text fontSize="sm" color="gray.500" fontWeight="semibold">
+            {item.quantity}
+          </Text>
+        </Flex>
+      );
+    })}
+  </VStack>
+</Box>
 
           {/* 🪄 STEPS */}
           <Box w="100%" bg="white" p={4} borderRadius="xl" boxShadow="sm">
@@ -424,8 +679,6 @@ const RecipeDetail = () => {
             <VStack align="start" spacing={4}>
               {mainItem.steps.map((step, i) => (
                 <Flex key={i} align="start">
-
-                  {/* 🔥 PERFECT CIRCLE */}
                   <Flex
                     minW="32px"
                     h="32px"
@@ -477,7 +730,6 @@ const RecipeDetail = () => {
                 if (!res.ok) throw new Error("Failed");
 
                 const order = await res.json();
-
                 navigate("/order-success", { state: order });
 
               } catch (err) {

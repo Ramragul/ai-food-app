@@ -701,6 +701,7 @@ import {
   Box,
   Input,
   Button,
+  Icon,
   VStack,
   Text,
   Flex,
@@ -712,6 +713,9 @@ import { useState } from "react";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+
+import { FiHeart } from "react-icons/fi";
+import { FaHeart } from "react-icons/fa";
 
 const AuthPage = () => {
   const { login } = useAuth();
@@ -816,9 +820,27 @@ const AuthPage = () => {
         >
           <VStack spacing={5} color="white">
 
-            <Text fontSize="2xl" fontWeight="bold" textAlign="center">
+            {/* <Text fontSize="2xl" fontWeight="bold" textAlign="center">
               Let’s get started 💙
-            </Text>
+            </Text> */}
+
+          {/* <Text fontSize="2xl" fontWeight="bold" textAlign="center">
+            Let’s get started{" "}
+            <Icon as={FiHeart} color="#B9E2FD" fill="#B9E2FD" />
+          </Text> */}
+
+          <Text
+            fontSize="2xl"
+            fontWeight="bold"
+            textAlign="center"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            gap="6px"
+          >
+            Let’s get started
+            <Icon as={FaHeart} color="#B9E2FD" boxSize="18px" />
+          </Text>
 
             <Text fontSize="sm" color="gray.200" textAlign="center">
               Your fitness partner for better living

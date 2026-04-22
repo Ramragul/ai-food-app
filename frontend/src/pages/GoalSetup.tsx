@@ -1,324 +1,7 @@
-// Version 1 : working version
-
-// import {
-//     Box,
-//     Input,
-//     Select,
-//     Button,
-//     Text,
-//     VStack,
-//     HStack
-//   } from "@chakra-ui/react";
-//   import { useState } from "react";
-//   import axios from "axios";
-  
-//   const GoalSetup = () => {
-//     const [form, setForm] = useState({
-//       height: "",
-//       weight: "",
-//       gender: "male",
-//       goal: "weight_loss",
-//       activity: "moderate",
-//       targetWeight: "",
-//       duration: ""
-//     });
-  
-//     const handleChange = (e: any) => {
-//       setForm({ ...form, [e.target.name]: e.target.value });
-//     };
-  
-//     const handleSubmit = async () => {
-//       if (!form.height || !form.weight || !form.gender) {
-//         alert("Please fill required fields");
-//         return;
-//       }
-  
-//       await axios.post("http://localhost:3004/api/users/profile", {
-//         userId: 1,
-//         height_cm: Number(form.height),
-//         weight_kg: Number(form.weight),
-//         gender: form.gender,
-//         goal_type: form.goal,
-//         activity_level: form.activity,
-//         target_weight: Number(form.targetWeight) || null,
-//         duration_days: Number(form.duration) || null
-//       });
-  
-//       alert("Profile Saved 💙");
-//     };
-  
-//     return (
-//       <Box
-//         minH="100vh"
-//         bg="linear-gradient(180deg,#f8fbff,#eef5fb)"
-//         p={6}
-//       >
-//         <Box
-//           maxW="420px"
-//           mx="auto"
-//           bg="white"
-//           p={6}
-//           borderRadius="2xl"
-//           boxShadow="0 10px 40px rgba(99,189,244,0.15)"
-//         >
-//           <Text fontSize="2xl" fontWeight="bold" mb={5}>
-//             Set Your Goal 🎯
-//           </Text>
-  
-//           <VStack spacing={4}>
-  
-//             {/* HEIGHT & WEIGHT */}
-//             <HStack w="100%">
-//               <Input
-//                 placeholder="Height (cm)"
-//                 name="height"
-//                 onChange={handleChange}
-//               />
-//               <Input
-//                 placeholder="Weight (kg)"
-//                 name="weight"
-//                 onChange={handleChange}
-//               />
-//             </HStack>
-  
-//             {/* GENDER */}
-//             <Select name="gender" onChange={handleChange}>
-//               <option value="male">Male</option>
-//               <option value="female">Female</option>
-//             </Select>
-  
-//             {/* GOAL */}
-//             <Select name="goal" onChange={handleChange}>
-//               <option value="weight_loss">Weight Loss</option>
-//               <option value="weight_gain">Weight Gain</option>
-//               <option value="maintenance">Maintenance</option>
-//             </Select>
-  
-//             {/* ACTIVITY */}
-//             <Select name="activity" onChange={handleChange}>
-//               <option value="sedentary">Low Activity</option>
-//               <option value="moderate">Moderate</option>
-//               <option value="active">High</option>
-//             </Select>
-  
-//             {/* CONDITIONAL FIELDS */}
-//             {(form.goal === "weight_loss" || form.goal === "weight_gain") && (
-//               <>
-//                 <Input
-//                   placeholder="Target Weight"
-//                   name="targetWeight"
-//                   onChange={handleChange}
-//                 />
-//                 <Input
-//                   placeholder="Duration (days)"
-//                   name="duration"
-//                   onChange={handleChange}
-//                 />
-//               </>
-//             )}
-  
-//             {/* BUTTON */}
-//             <Button
-//               w="100%"
-//               bg="brand.500"
-//               color="white"
-//               _hover={{ bg: "brand.600" }}
-//               onClick={handleSubmit}
-//             >
-//               Save Goal
-//             </Button>
-//           </VStack>
-//         </Box>
-//       </Box>
-//     );
-//   };
-  
-//   export default GoalSetup;
-
-
-// Version 2 : Design and Functionality enhancements to v1
-
-// import {
-//   Box,
-//   Input,
-//   Select,
-//   Button,
-//   Text,
-//   VStack,
-//   HStack,
-//   Badge,
-//   Divider
-// } from "@chakra-ui/react";
-// import { useEffect, useState } from "react";
-// import axios from "axios";
-
-// const GoalSetup = () => {
-//   const [form, setForm] = useState<any>({
-//     height: "",
-//     weight: "",
-//     gender: "male",
-//     goal: "weight_loss",
-//     activity: "moderate",
-//     targetWeight: "",
-//     duration: ""
-//   });
-
-//   const [goals, setGoals] = useState<any[]>([]);
-
-//   const userId = 3;
-
-//   const fetchGoals = async () => {
-//     const res = await axios.get(
-//       `http://localhost:3004/api/users/profile/${userId}`
-//     );
-//     setGoals(res.data);
-//   };
-
-//   useEffect(() => {
-//     fetchGoals();
-//   }, []);
-
-//   const handleChange = (e: any) => {
-//     setForm({ ...form, [e.target.name]: e.target.value });
-//   };
-
-//   const handleSubmit = async () => {
-//     await axios.post("http://localhost:3004/api/users/profile", {
-//       userId,
-//       height_cm: Number(form.height),
-//       weight_kg: Number(form.weight),
-//       gender: form.gender,
-//       goal_type: form.goal,
-//       activity_level: form.activity,
-//       target_weight: Number(form.targetWeight) || null,
-//       duration_days: Number(form.duration) || null
-//     });
-
-//     fetchGoals();
-//     alert("New Goal Set 🚀");
-//   };
-
-//   const activeGoal = goals.find(g => g.is_active);
-
-//   return (
-//     <Box p={6} bg="#f6fbff" minH="100vh">
-
-//       <VStack maxW="500px" mx="auto" spacing={6}>
-
-//         {/* 🔥 HEADER */}
-//         <Text fontSize="2xl" fontWeight="bold">
-//           Your Fitness Journey 💙
-//         </Text>
-
-//         {/* ❌ NO GOAL */}
-//         {!activeGoal && (
-//           <Box bg="white" p={5} borderRadius="xl" w="100%" textAlign="center">
-//             <Text fontWeight="bold">No Goal Set 😴</Text>
-//             <Text color="gray.500">
-//               Let’s set your first goal and transform yourself 🚀
-//             </Text>
-//           </Box>
-//         )}
-
-//         {/* ✅ ACTIVE GOAL */}
-//         {activeGoal && (
-//           <Box bg="white" p={5} borderRadius="xl" w="100%">
-//             <HStack justify="space-between">
-//               <Text fontWeight="bold">Active Goal 🎯</Text>
-//               <Badge colorScheme="green">ACTIVE</Badge>
-//             </HStack>
-
-//             <Text mt={2}>
-//               Calories: {activeGoal.target_calories}
-//             </Text>
-//             <Text>Protein: {activeGoal.protein_target}</Text>
-//             <Text>Carbs: {activeGoal.carbs_target}</Text>
-//             <Text>Fats: {activeGoal.fats_target}</Text>
-//           </Box>
-//         )}
-
-//         {/* 🕘 HISTORY */}
-//         {goals.length > 1 && (
-//           <Box w="100%">
-//             <Text fontWeight="bold">Past Goals 📜</Text>
-
-//             {goals
-//               .filter(g => !g.is_active)
-//               .map((g, i) => (
-//                 <Box
-//                   key={i}
-//                   mt={3}
-//                   bg="white"
-//                   p={4}
-//                   borderRadius="lg"
-//                   opacity={0.6}
-//                 >
-//                   <Text>{g.goal_type}</Text>
-//                   <Text fontSize="sm">
-//                     {g.target_calories} kcal
-//                   </Text>
-//                 </Box>
-//               ))}
-//           </Box>
-//         )}
-
-//         <Divider />
-
-//         {/* 🆕 NEW GOAL FORM */}
-//         <Box bg="white" p={5} borderRadius="xl" w="100%">
-
-//           <Text fontWeight="bold" mb={3}>
-//             Set New Goal 🚀
-//           </Text>
-
-//           <VStack spacing={3}>
-
-//             <HStack w="100%">
-//               <Input placeholder="Height" name="height" onChange={handleChange}/>
-//               <Input placeholder="Weight" name="weight" onChange={handleChange}/>
-//             </HStack>
-
-//             <Select name="gender" onChange={handleChange}>
-//               <option value="male">Male</option>
-//               <option value="female">Female</option>
-//             </Select>
-
-//             <Select name="goal" onChange={handleChange}>
-//               <option value="weight_loss">Weight Loss</option>
-//               <option value="weight_gain">Weight Gain</option>
-//               <option value="maintenance">Maintenance</option>
-//             </Select>
-
-//             <Select name="activity" onChange={handleChange}>
-//               <option value="sedentary">Low</option>
-//               <option value="moderate">Moderate</option>
-//               <option value="active">High</option>
-//             </Select>
-
-//             {(form.goal !== "maintenance") && (
-//               <>
-//                 <Input placeholder="Target Weight" name="targetWeight" onChange={handleChange}/>
-//                 <Input placeholder="Duration (days)" name="duration" onChange={handleChange}/>
-//               </>
-//             )}
-
-//             <Button w="100%" bg="brand.500" color="white" onClick={handleSubmit}>
-//               Save New Goal
-//             </Button>
-
-//           </VStack>
-//         </Box>
-
-//       </VStack>
-//     </Box>
-//   );
-// };
-
-// export default GoalSetup;
 
 
 
-// Version 3 : Enhancement to version 2
+// Version 1 :  Working version
 
 // import {
 //   Box,
@@ -330,13 +13,20 @@
 //   HStack,
 //   Badge,
 //   Collapse,
-//   useDisclosure,
-//   Flex
+//   useDisclosure
 // } from "@chakra-ui/react";
 // import { useEffect, useState } from "react";
-// import axios from "axios";
+// import api from "../utils/api";
+// import { useAuth } from "../context/AuthContext";
 
 // const GoalSetup = () => {
+//   const { user } = useAuth();
+
+//   const userId = user.id
+//   console.log("USER VALUES" +JSON.stringify(user))
+
+//   console.log("userId: " +userId)
+
 //   const [form, setForm] = useState<any>({
 //     height: "",
 //     weight: "",
@@ -347,72 +37,75 @@
 //     duration: ""
 //   });
 
-//   const [goals, setGoals] = useState<any[]>([]);
+//   const [goal, setGoal] = useState<any>(null);
+
 //   const { isOpen: showForm, onToggle: toggleForm } = useDisclosure();
 //   const { isOpen: showHistory, onToggle: toggleHistory } = useDisclosure();
 
-//   const userId = 1;
-
-//   const fetchGoals = async () => {
-//     const res = await axios.get(
-//       `http://localhost:3004/api/users/profile/${userId}`
-//     );
-//     setGoals(res.data);
+//   const fetchGoal = async () => {
+//     try {
+//       const res = await api.get("/profile/active/me");
+//       setGoal(res.data);
+//     } catch (err) {
+//       console.error(err);
+//     }
 //   };
 
 //   useEffect(() => {
-//     fetchGoals();
-//   }, []);
+//     if (!user) return;
+//     fetchGoal();
+//   }, [user]);
 
 //   const handleChange = (e: any) => {
 //     setForm({ ...form, [e.target.name]: e.target.value });
 //   };
 
 //   const handleSubmit = async () => {
-//     await axios.post("http://localhost:3004/api/users/profile", {
-//       userId,
+//     await api.post("/profile", {
 //       height_cm: Number(form.height),
 //       weight_kg: Number(form.weight),
 //       gender: form.gender,
 //       goal_type: form.goal,
 //       activity_level: form.activity,
 //       target_weight: Number(form.targetWeight) || null,
-//       duration_days: Number(form.duration) || null
+//       duration_days: Number(form.duration) || null,
+//       userId: user.id || null
 //     });
 
-//     fetchGoals();
+//     fetchGoal();
 //     toggleForm();
 //   };
 
-//   const activeGoal = goals.find(g => g.is_active);
+//   const formatGoal = (g: any) => {
+//     if (!g) return "";
+//     if (!g.target_weight) return "Maintain current weight";
+
+//     return `${g.goal_type.replace("_", " ")} from ${g.weight_kg} → ${g.target_weight} kg`;
+//   };
 
 //   return (
-//     <Box
-//       minH="100vh"
-//       bg="linear-gradient(180deg,#eaf6ff,#ffffff)"
-//       p={4}
-//     >
+//     <Box minH="100vh" bg="linear-gradient(180deg,#eaf6ff,#ffffff)" p={4}>
 //       <VStack maxW="420px" mx="auto" spacing={6}>
 
-//         {/* 🔥 HEADER */}
-//         <Text fontSize="2xl" fontWeight="bold" textAlign="center">
+//         {/* HEADER */}
+//         <Text fontSize="2xl" fontWeight="bold">
 //           Your Fitness Journey 💙
 //         </Text>
 
-//         {/* 💎 ACTIVE GOAL CARD */}
+//         {/* HERO CARD */}
 //         <Box
 //           w="100%"
 //           p={5}
 //           borderRadius="2xl"
-//           bg="rgba(255,255,255,0.6)"
-//           backdropFilter="blur(20px)"
-//           boxShadow="0 10px 40px rgba(99,189,244,0.2)"
+//           bg="rgba(255,255,255,0.7)"
+//           backdropFilter="blur(30px)"
+//           boxShadow="0 20px 60px rgba(0,0,0,0.1)"
 //         >
-//           {!activeGoal ? (
-//             <VStack spacing={2}>
+//           {!goal ? (
+//             <VStack>
 //               <Text fontWeight="bold">No Goal Set 😴</Text>
-//               <Text fontSize="sm" color="gray.600">
-//                 Start your transformation today 🚀
+//               <Text fontSize="sm" color="gray.500">
+//                 Let’s define your fitness journey 🚀
 //               </Text>
 //             </VStack>
 //           ) : (
@@ -422,91 +115,126 @@
 //                 <Badge colorScheme="green">ACTIVE</Badge>
 //               </HStack>
 
-//               <Text mt={2} fontSize="sm" color="gray.600">
-//                 {activeGoal.goal_type.replace("_", " ").toUpperCase()}
+//               <Text mt={3} fontSize="sm" color="gray.600">
+//                 {formatGoal(goal)}
 //               </Text>
 
-//               <HStack mt={3} spacing={3} wrap="wrap">
-//                 <Badge>🔥 {activeGoal.target_calories} kcal</Badge>
-//                 <Badge>💪 {activeGoal.protein_target}g</Badge>
-//                 <Badge>🍞 {activeGoal.carbs_target}g</Badge>
-//                 <Badge>🥑 {activeGoal.fats_target}g</Badge>
-//               </HStack>
-
-//               {activeGoal.target_weight && (
-//                 <Text mt={3} fontSize="sm">
-//                   Target: {activeGoal.weight_kg} → {activeGoal.target_weight} kg
+//               {goal.duration_days && (
+//                 <Text fontSize="xs" color="gray.500">
+//                   Target duration: {goal.duration_days} days
 //                 </Text>
 //               )}
 
-//               {activeGoal.duration_days && (
-//                 <Text fontSize="sm" color="gray.500">
-//                   Duration: {activeGoal.duration_days} days
+//               <Box mt={4}>
+//                 <Text fontSize="sm" fontWeight="bold">
+//                   Daily Target Intake 🍽️
 //                 </Text>
-//               )}
+
+//                 <HStack mt={2} wrap="wrap">
+//                   <Badge bg="blue.100">🔥 {goal.target_calories} kcal</Badge>
+//                   <Badge bg="blue.100">💪 {goal.protein_target}g</Badge>
+//                   <Badge bg="blue.100">🍞 {goal.carbs_target}g</Badge>
+//                   <Badge bg="blue.100">🥑 {goal.fats_target}g</Badge>
+//                 </HStack>
+//               </Box>
 //             </>
 //           )}
 //         </Box>
 
-//         {/* ➕ SET NEW GOAL BUTTON */}
+//         {/* CTA */}
 //         <Button
 //           w="100%"
 //           borderRadius="full"
-//           bg="brand.500"
+//           bgGradient="linear(to-r, blue.400, cyan.400)"
 //           color="white"
-//           _hover={{ bg: "brand.600", transform: "scale(1.02)" }}
+//           _hover={{ transform: "scale(1.03)" }}
 //           onClick={toggleForm}
 //         >
 //           {showForm ? "Close ✖" : "Set New Goal 🚀"}
 //         </Button>
 
-//         {/* 🆕 FORM */}
-//         <Collapse in={showForm} animateOpacity>
+//         {/* FORM */}
+//         <Collapse in={showForm}>
 //           <Box
 //             w="100%"
 //             p={5}
 //             borderRadius="2xl"
-//             bg="rgba(255,255,255,0.6)"
-//             backdropFilter="blur(20px)"
-//             boxShadow="md"
+//             bg="white"
+//             boxShadow="lg"
 //           >
-//             <VStack spacing={3}>
+//             <VStack spacing={4}>
 
 //               <HStack w="100%">
-//                 <Input placeholder="Height (cm)" name="height" onChange={handleChange}/>
-//                 <Input placeholder="Weight (kg)" name="weight" onChange={handleChange}/>
+//                 <Input
+//                   placeholder="Height (cm)"
+//                   name="height"
+//                   onChange={handleChange}
+//                   focusBorderColor="blue.400"
+//                 />
+//                 <Input
+//                   placeholder="Weight (kg)"
+//                   name="weight"
+//                   onChange={handleChange}
+//                   focusBorderColor="blue.400"
+//                 />
 //               </HStack>
 
-//               <Select name="gender" onChange={handleChange}>
-//                 <option value="male">Male</option>
-//                 <option value="female">Female</option>
+//               {/* PREMIUM SELECT */}
+//               <Select
+//                 name="gender"
+//                 onChange={handleChange}
+//                 borderRadius="full"
+//                 bg="gray.50"
+//                 _focus={{ bg: "white" }}
+//                 value={user.gender}
+//               >
+//                 <option value="male">👨 Male</option>
+//                 <option value="female">👩 Female</option>
 //               </Select>
 
-//               <Select name="goal" onChange={handleChange}>
-//                 <option value="weight_loss">Weight Loss</option>
-//                 <option value="weight_gain">Weight Gain</option>
-//                 <option value="maintenance">Maintenance</option>
+//               <Select
+//                 name="goal"
+//                 onChange={handleChange}
+//                 borderRadius="full"
+//                 bg="gray.50"
+//               >
+//                 <option value="weight_loss">🔥 Weight Loss</option>
+//                 <option value="weight_gain">💪 Weight Gain</option>
+//                 <option value="maintenance">⚖️ Maintenance</option>
 //               </Select>
 
-//               <Select name="activity" onChange={handleChange}>
-//                 <option value="sedentary">Low Activity</option>
-//                 <option value="moderate">Moderate</option>
-//                 <option value="active">High</option>
+//               <Select
+//                 name="activity"
+//                 onChange={handleChange}
+//                 borderRadius="full"
+//                 bg="gray.50"
+//               >
+//                 <option value="sedentary">🪑 Low Activity</option>
+//                 <option value="moderate">🚶 Moderate</option>
+//                 <option value="active">🏃 Active</option>
 //               </Select>
 
-//               {(form.goal !== "maintenance") && (
+//               {form.goal !== "maintenance" && (
 //                 <>
-//                   <Input placeholder="Target Weight" name="targetWeight" onChange={handleChange}/>
-//                   <Input placeholder="Duration (days)" name="duration" onChange={handleChange}/>
+//                   <Input
+//                     placeholder="Target Weight"
+//                     name="targetWeight"
+//                     onChange={handleChange}
+//                   />
+//                   <Input
+//                     placeholder="Duration (days)"
+//                     name="duration"
+//                     onChange={handleChange}
+//                   />
 //                 </>
 //               )}
 
 //               <Button
 //                 w="100%"
-//                 bg="brand.500"
+//                 bgGradient="linear(to-r, blue.400, cyan.400)"
 //                 color="white"
 //                 borderRadius="full"
-//                 _hover={{ bg: "brand.600" }}
+//                 _hover={{ transform: "scale(1.05)" }}
 //                 onClick={handleSubmit}
 //               >
 //                 Save Goal 💙
@@ -516,39 +244,6 @@
 //           </Box>
 //         </Collapse>
 
-//         {/* 📜 HISTORY TOGGLE */}
-//         {goals.length > 1 && (
-//           <>
-//             <Button variant="ghost" onClick={toggleHistory}>
-//               {showHistory ? "Hide History ▲" : "View Past Goals ▼"}
-//             </Button>
-
-//             <Collapse in={showHistory}>
-//               <VStack w="100%">
-//                 {goals
-//                   .filter(g => !g.is_active)
-//                   .map((g, i) => (
-//                     <Box
-//                       key={i}
-//                       w="100%"
-//                       p={4}
-//                       borderRadius="xl"
-//                       bg="white"
-//                       opacity={0.7}
-//                     >
-//                       <Text fontWeight="bold">
-//                         {g.goal_type.replace("_", " ")}
-//                       </Text>
-//                       <Text fontSize="sm">
-//                         {g.target_calories} kcal
-//                       </Text>
-//                     </Box>
-//                   ))}
-//               </VStack>
-//             </Collapse>
-//           </>
-//         )}
-
 //       </VStack>
 //     </Box>
 //   );
@@ -557,10 +252,11 @@
 // export default GoalSetup;
 
 
+// Version 2 :
+
 import {
   Box,
   Input,
-  Select,
   Button,
   Text,
   VStack,
@@ -568,12 +264,25 @@ import {
   Badge,
   Collapse,
   useDisclosure,
-  Flex
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem
 } from "@chakra-ui/react";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../utils/api";
+import { useAuth } from "../context/AuthContext";
 
 const GoalSetup = () => {
+  const { user } = useAuth();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+ 
+
   const [form, setForm] = useState<any>({
     height: "",
     weight: "",
@@ -584,45 +293,58 @@ const GoalSetup = () => {
     duration: ""
   });
 
-  const [goals, setGoals] = useState<any[]>([]);
+  const [goal, setGoal] = useState<any>(null);
+
   const { isOpen: showForm, onToggle: toggleForm } = useDisclosure();
-  const { isOpen: showHistory, onToggle: toggleHistory } = useDisclosure();
 
-  const userId = 3;
-
-  const fetchGoals = async () => {
-    const res = await axios.get(
-      `http://localhost:3004/api/users/profile/${userId}`
-    );
-    setGoals(res.data);
+  // 🔥 FETCH ACTIVE GOAL
+  const fetchGoal = async () => {
+    try {
+      const res = await api.get("/profile/active/me");
+      setGoal(res.data);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
+  // 🔥 INIT USER DATA
   useEffect(() => {
-    fetchGoals();
-  }, []);
+    if (!user) return;
 
+    setForm((prev: any) => ({
+      ...prev,
+      gender: user.gender || "male"
+    }));
+
+    fetchGoal();
+  }, [user]);
+
+  // 🔥 HANDLE INPUT
   const handleChange = (e: any) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm((prev: any) => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
   };
 
+  // 🔥 SUBMIT
   const handleSubmit = async () => {
-    await axios.post("http://localhost:3004/api/users/profile", {
-      userId,
+    await api.post("/profile", {
       height_cm: Number(form.height),
       weight_kg: Number(form.weight),
       gender: form.gender,
       goal_type: form.goal,
       activity_level: form.activity,
       target_weight: Number(form.targetWeight) || null,
-      duration_days: Number(form.duration) || null
+      duration_days: Number(form.duration) || null,
+      userId: user.id
     });
 
-    fetchGoals();
+    fetchGoal();
     toggleForm();
   };
 
-  const activeGoal = goals.find(g => g.is_active);
-
+  // 🔥 FORMAT
   const formatGoal = (g: any) => {
     if (!g) return "";
     if (!g.target_weight) return "Maintain current weight";
@@ -632,7 +354,6 @@ const GoalSetup = () => {
 
   return (
     <Box minH="100vh" bg="linear-gradient(180deg,#eaf6ff,#ffffff)" p={4}>
-
       <VStack maxW="420px" mx="auto" spacing={6}>
 
         {/* 🔥 HEADER */}
@@ -645,11 +366,11 @@ const GoalSetup = () => {
           w="100%"
           p={5}
           borderRadius="2xl"
-          bg="rgba(255,255,255,0.65)"
+          bg="rgba(255,255,255,0.7)"
           backdropFilter="blur(25px)"
           boxShadow="0 20px 60px rgba(0,0,0,0.1)"
         >
-          {!activeGoal ? (
+          {!goal ? (
             <VStack>
               <Text fontWeight="bold">No Goal Set 😴</Text>
               <Text fontSize="sm" color="gray.500">
@@ -665,12 +386,12 @@ const GoalSetup = () => {
 
               {/* 🔥 GOAL STORY */}
               <Text mt={3} fontSize="sm" color="gray.600">
-                {formatGoal(activeGoal)}
+                {formatGoal(goal)}
               </Text>
 
-              {activeGoal.duration_days && (
+              {goal.duration_days && (
                 <Text fontSize="xs" color="gray.500">
-                  Target duration: {activeGoal.duration_days} days
+                  Target duration: {goal.duration_days} days
                 </Text>
               )}
 
@@ -681,10 +402,10 @@ const GoalSetup = () => {
                 </Text>
 
                 <HStack mt={2} wrap="wrap">
-                  <Badge bg="brand.200">🔥 {activeGoal.target_calories} kcal</Badge>
-                  <Badge bg="brand.200">💪 {activeGoal.protein_target}g protein</Badge>
-                  <Badge bg="brand.200">🍞 {activeGoal.carbs_target}g carbs</Badge>
-                  <Badge bg="brand.200">🥑 {activeGoal.fats_target}g fats</Badge>
+                  <Badge bg="blue.100">🔥 {goal.target_calories} kcal</Badge>
+                  <Badge bg="blue.100">💪 {goal.protein_target}g protein</Badge>
+                  <Badge bg="blue.100">🍞 {goal.carbs_target}g carbs</Badge>
+                  <Badge bg="blue.100">🥑 {goal.fats_target}g fats</Badge>
                 </HStack>
               </Box>
             </>
@@ -695,14 +416,15 @@ const GoalSetup = () => {
         <Button
           w="100%"
           borderRadius="full"
-          bg="brand.500"
+          bgGradient="linear(to-r, blue.400, cyan.400)"
           color="white"
+          _hover={{ transform: "scale(1.03)" }}
           onClick={toggleForm}
         >
           {showForm ? "Close ✖" : "Set New Goal 🚀"}
         </Button>
 
-        {/* FORM */}
+        {/* 🔥 FORM */}
         <Collapse in={showForm}>
           <Box
             w="100%"
@@ -711,78 +433,82 @@ const GoalSetup = () => {
             bg="white"
             boxShadow="lg"
           >
-            <VStack spacing={3}>
+            <VStack spacing={4}>
 
               <HStack w="100%">
-                <Input placeholder="Height (cm)" name="height" onChange={handleChange}/>
-                <Input placeholder="Weight (kg)" name="weight" onChange={handleChange}/>
+                <Input name="height" placeholder="Height (cm)" onChange={handleChange}/>
+                <Input name="weight" placeholder="Weight (kg)" onChange={handleChange}/>
               </HStack>
 
-              <Select name="gender" onChange={handleChange}>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </Select>
+              {/* 🔥 GENDER MENU */}
+              <Menu>
+                <MenuButton as={Button} rightIcon={<ChevronDownIcon />} w="100%">
+                  {form.gender === "male" ? "👨 Male" : "👩 Female"}
+                </MenuButton>
+                <MenuList>
+                  <MenuItem onClick={() =>
+                    setForm((prev: any) => ({ ...prev, gender: "male" }))
+                  }>
+                    👨 Male
+                  </MenuItem>
+                  <MenuItem onClick={() =>
+                    setForm((prev: any) => ({ ...prev, gender: "female" }))
+                  }>
+                    👩 Female
+                  </MenuItem>
+                </MenuList>
+              </Menu>
 
-              <Select name="goal" onChange={handleChange}>
-                <option value="weight_loss">Weight Loss</option>
-                <option value="weight_gain">Weight Gain</option>
-                <option value="maintenance">Maintenance</option>
-              </Select>
+              {/* 🔥 GOAL MENU */}
+              <Menu>
+                <MenuButton as={Button} rightIcon={<ChevronDownIcon />} w="100%">
+                  {form.goal.replace("_", " ")}
+                </MenuButton>
+                <MenuList>
+                  <MenuItem onClick={() =>
+                    setForm((prev: any) => ({ ...prev, goal: "weight_loss" }))
+                  }>🔥 Weight Loss</MenuItem>
+                  <MenuItem onClick={() =>
+                    setForm((prev: any) => ({ ...prev, goal: "weight_gain" }))
+                  }>💪 Weight Gain</MenuItem>
+                  <MenuItem onClick={() =>
+                    setForm((prev: any) => ({ ...prev, goal: "maintenance" }))
+                  }>⚖️ Maintenance</MenuItem>
+                </MenuList>
+              </Menu>
 
-              <Select name="activity" onChange={handleChange}>
-                <option value="sedentary">Low</option>
-                <option value="moderate">Moderate</option>
-                <option value="active">High</option>
-              </Select>
+              {/* 🔥 ACTIVITY MENU */}
+              <Menu>
+                <MenuButton as={Button} rightIcon={<ChevronDownIcon />} w="100%">
+                  {form.activity}
+                </MenuButton>
+                <MenuList>
+                  <MenuItem onClick={() =>
+                    setForm((prev: any) => ({ ...prev, activity: "sedentary" }))
+                  }>🪑 Low</MenuItem>
+                  <MenuItem onClick={() =>
+                    setForm((prev: any) => ({ ...prev, activity: "moderate" }))
+                  }>🚶 Moderate</MenuItem>
+                  <MenuItem onClick={() =>
+                    setForm((prev: any) => ({ ...prev, activity: "active" }))
+                  }>🏃 Active</MenuItem>
+                </MenuList>
+              </Menu>
 
-              {(form.goal !== "maintenance") && (
+              {form.goal !== "maintenance" && (
                 <>
-                  <Input placeholder="Target Weight" name="targetWeight" onChange={handleChange}/>
-                  <Input placeholder="Duration (days)" name="duration" onChange={handleChange}/>
+                  <Input name="targetWeight" placeholder="Target Weight" onChange={handleChange}/>
+                  <Input name="duration" placeholder="Duration (days)" onChange={handleChange}/>
                 </>
               )}
 
-              <Button w="100%" bg="brand.500" color="white" onClick={handleSubmit}>
+              <Button w="100%" colorScheme="blue" onClick={handleSubmit}>
                 Save Goal 💙
               </Button>
 
             </VStack>
           </Box>
         </Collapse>
-
-        {/* 📜 HISTORY */}
-        {goals.length > 1 && (
-          <>
-            <Button variant="ghost" onClick={toggleHistory}>
-              {showHistory ? "Hide History ▲" : "View Goal History ▼"}
-            </Button>
-
-            <Collapse in={showHistory}>
-              <VStack w="100%">
-                {goals
-                  .filter(g => !g.is_active)
-                  .map((g, i) => (
-                    <Box
-                      key={i}
-                      w="100%"
-                      p={4}
-                      borderRadius="xl"
-                      bg="rgba(255,255,255,0.7)"
-                      backdropFilter="blur(10px)"
-                    >
-                      <Text fontWeight="bold">
-                        {formatGoal(g)}
-                      </Text>
-
-                      <Text fontSize="sm" color="gray.500">
-                        {g.duration_days} days • {g.target_calories} kcal/day
-                      </Text>
-                    </Box>
-                  ))}
-              </VStack>
-            </Collapse>
-          </>
-        )}
 
       </VStack>
     </Box>

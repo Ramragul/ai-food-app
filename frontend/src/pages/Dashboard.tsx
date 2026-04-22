@@ -216,6 +216,7 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useAuth } from "../context/AuthContext";
 
 const MotionBox = motion(Box);
 
@@ -225,10 +226,13 @@ const Dashboard = () => {
   const [data, setData] = useState<any>(null);
   const [expandedMeal, setExpandedMeal] = useState<string | null>(null);
   const [view, setView] = useState("DAY");
+  const { user } = useAuth();
+
+  const userId = user?.id;
 
   const fetchData = async (type: string) => {
     const res = await axios.get(
-      `http://localhost:3004/api/nutrition/dashboard-summary?userId=2&type=${type}`
+      `http://localhost:3004/api/nutrition/dashboard-summary?userId=${userId}&type=${type}`
     );
     setData(res.data);
   };

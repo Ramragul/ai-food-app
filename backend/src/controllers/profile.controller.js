@@ -100,9 +100,24 @@ export const getAllProfiles = async (req, res) => {
 };
 
 /* 🔥 GET ACTIVE GOAL */
+// export const getActiveProfile = async (req, res) => {
+//   try {
+//     const data = await getActiveProfileService(req.params.userId);
+//     res.json(data);
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
+
+
+
 export const getActiveProfile = async (req, res) => {
   try {
-    const data = await getActiveProfileService(req.params.userId);
+    const userId = req.user.id;
+    console.log("UserId received is "+userId)
+
+    const data = await getActiveProfileService(userId);
+
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });

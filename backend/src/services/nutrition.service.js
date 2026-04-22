@@ -151,7 +151,7 @@
 // Version 2  : Enhancement to v1
 
 import pool from "../db/connection.js";
-import { parseFoodWithAI } from "./ai/foodparser.service.js";
+import { parseFoodWithAI } from "./ai/foodParser.service.js";
 import { matchFood } from "./foodMatcher.service.js";
 import { estimateNutrition } from "./ai/nutritionEstimator.service.js";
 import { convertToServing } from "../utils/unitConverter.js";

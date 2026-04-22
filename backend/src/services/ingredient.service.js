@@ -64,6 +64,9 @@ import pool from "../db/connection.js";
  * 🔥 GET INGREDIENTS
  */
 export const getIngredients = async ({ category, type, search, mode }) => {
+
+  console.log("🔥 CORE API HIT");
+  
   let query = `
     SELECT 
       i.id,

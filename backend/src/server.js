@@ -3,7 +3,7 @@ import "dotenv/config";
 
 import app from "./app.js";
 
-const PORT = 3004;
+//const PORT = 3004;
 
 app.use((req, res, next) => {
   console.log("🔥 REQUEST:", req.method, req.url);

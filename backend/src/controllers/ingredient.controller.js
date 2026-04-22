@@ -85,7 +85,7 @@ export const fetchIngredients = async (req, res) => {
 
     res.json({ success: true, data });
   } catch (err) {
-    res.status(500).json({ success: false });
+    res.status(500).json({ success: false, error: err.message });
   }
 };
 

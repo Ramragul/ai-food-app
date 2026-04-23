@@ -1,136 +1,222 @@
+// Version 1
+
+
 // import pool from "../db/connection.js";
 // import { calculateCalories } from "../utils/health.js";
 
-// export const getDashboardService = async (userId) => {
-//   const today = await pool.query(
-//     "SELECT * FROM daily_nutrition WHERE user_id=$1 AND date=CURRENT_DATE",
-//     [userId]
-//   );
+// /**
+//  * 🔥 MAIN DASHBOARD SERVICE
+//  */
+// export const getDashboardService = async (userId, type = "DAY") => {
 
-//   const meals = await pool.query(
-//     `
-//     SELECT meal_type, SUM(calories) as calories,SUM(protein) as protein,
-//   SUM(carbs) as carbs,
-//   SUM(fats) as fats
-//     FROM meal_entries
-//     WHERE user_id=$1 AND DATE(created_at)=CURRENT_DATE
-//     GROUP BY meal_type
-//     `,
-//     [userId]
-//   );
-
-//   const profile = await pool.query(
+//   /* ---------------- PROFILE ---------------- */
+//   const profileRes = await pool.query(
 //     "SELECT * FROM user_profile WHERE user_id=$1",
 //     [userId]
 //   );
 
-//   const user = profile.rows[0];
+//   const user = profileRes.rows[0];
 
-//   const target = calculateCalories({
-//     weight: user.weight_kg,
-//     height: user.height_cm,
-//     activity: user.activity_level,
-//     goal: user.goal_type,
-//   });
+//   const hasProfile = !!user;
 
-//   const data = today.rows[0] || {};
+//   let target = 0;
+//   let targets = null;
+
+//   if (hasProfile) {
+//     target = calculateCalories({
+//       weight: user.weight_kg,
+//       height: user.height_cm,
+//       activity: user.activity_level,
+//       goal: user.goal_type,
+//     });
+
+//     // 🔥 simple macro targets (can improve later)
+//     targets = {
+//       calories: target,
+//       protein: Math.round(user.weight_kg * 1.2), // basic rule
+//       carbs: Math.round(target * 0.5 / 4),
+//       fats: Math.round(target * 0.25 / 9),
+//     };
+//   }
+
+//   /* ---------------- DATE FILTER ---------------- */
+//   let dateFilter = "CURRENT_DATE";
+//   let interval = "";
+
+//   if (type === "WEEK") {
+//     interval = "CURRENT_DATE - INTERVAL '6 days'";
+//   }
+
+//   if (type === "MONTH") {
+//     interval = "CURRENT_DATE - INTERVAL '30 days'";
+//   }
+
+//   /* ---------------- DAILY / RANGE DATA ---------------- */
+
+//   let nutritionQuery;
+
+//   if (type === "DAY") {
+//     nutritionQuery = await pool.query(
+//       `
+//       SELECT * FROM daily_nutrition
+//       WHERE user_id=$1 AND date=CURRENT_DATE
+//       `,
+//       [userId]
+//     );
+//   } else {
+//     nutritionQuery = await pool.query(
+//       `
+//       SELECT 
+//         SUM(total_calories) as total_calories,
+//         SUM(protein) as protein,
+//         SUM(carbs) as carbs,
+//         SUM(fats) as fats
+//       FROM daily_nutrition
+//       WHERE user_id=$1 AND date >= ${interval}
+//       `,
+//       [userId]
+//     );
+//   }
+
+//   const data = nutritionQuery.rows[0] || {};
+
+//   /* ---------------- MEAL SPLIT ---------------- */
+
+//   let mealSplit = [];
+
+//   if (type === "DAY") {
+//     const meals = await pool.query(
+//       `
+//       SELECT 
+//         meal_type,
+//         SUM(calories) as calories,
+//         SUM(protein) as protein,
+//         SUM(carbs) as carbs,
+//         SUM(fats) as fats
+//       FROM meal_entries
+//       WHERE user_id=$1 AND DATE(created_at)=CURRENT_DATE
+//       GROUP BY meal_type
+//       `,
+//       [userId]
+//     );
+
+//     mealSplit = meals.rows;
+//   }
+
+//   /* ---------------- TREND (WEEK / MONTH GRAPH) ---------------- */
+
+//   let trend = [];
+
+//   if (type === "WEEK") {
+//     const res = await pool.query(
+//       `
+//       SELECT 
+//         TO_CHAR(date, 'Dy') as label,
+//         total_calories as calories
+//       FROM daily_nutrition
+//       WHERE user_id = $1
+//         AND date >= CURRENT_DATE - INTERVAL '6 days'
+//       ORDER BY date ASC
+//       `,
+//       [userId]
+//     );
+
+//     trend = res.rows;
+//   }
+
+//   if (type === "MONTH") {
+//     const res = await pool.query(
+//       `
+//       SELECT 
+//         TO_CHAR(date, 'DD Mon') as label,
+//         total_calories as calories
+//       FROM daily_nutrition
+//       WHERE user_id = $1
+//         AND date >= CURRENT_DATE - INTERVAL '30 days'
+//       ORDER BY date ASC
+//       `,
+//       [userId]
+//     );
+
+//     trend = res.rows;
+//   }
+
+//   /* ---------------- STREAK (simple version) ---------------- */
+
+//   const streakRes = await pool.query(
+//     `
+//     SELECT COUNT(*) as streak
+//     FROM daily_nutrition
+//     WHERE user_id=$1 
+//       AND date >= CURRENT_DATE - INTERVAL '7 days'
+//     `,
+//     [userId]
+//   );
+
+//   const streak = streakRes.rows[0]?.streak || 0;
+
+//   /* ---------------- FINAL RESPONSE ---------------- */
 
 //   return {
-//     consumed: data.total_calories || 0,
-//     protein: data.protein || 0,
-//     carbs: data.carbs || 0,
-//     fats: data.fats || 0,
+//     hasProfile,
+
+//     consumed: Number(data.total_calories || 0),
+//     protein: Number(data.protein || 0),
+//     carbs: Number(data.carbs || 0),
+//     fats: Number(data.fats || 0),
+
 //     target,
-//     mealSplit: meals.rows,
+//     targets,
+
+//     mealSplit,   // only for DAY
+//     trend,       // only for WEEK / MONTH
+
+//     streak,
+//     type
 //   };
 // };
 
 
 
-// // Get Weekly Summary
-
-// export const getWeeklySummaryService = async (userId) => {
-//     const result = await pool.query(
-//       `
-//       SELECT 
-//         TO_CHAR(date, 'Dy') as day,
-//         SUM(total_calories) as calories
-//       FROM daily_nutrition
-//       WHERE user_id = $1
-//         AND date >= CURRENT_DATE - INTERVAL '6 days'
-//       GROUP BY date
-//       ORDER BY date ASC
-//       `,
-//       [userId]
-//     );
-  
-//     return result.rows;
-//   };
-
-
-
-//   // Get Monthly Summary
-
-
-//   export const getMonthlySummaryService = async (userId) => {
-//     const result = await pool.query(
-//       `
-//       SELECT 
-//         TO_CHAR(date, 'DD Mon') as day,
-//         SUM(total_calories) as calories
-//       FROM daily_nutrition
-//       WHERE user_id = $1
-//         AND date >= CURRENT_DATE - INTERVAL '30 days'
-//       GROUP BY date
-//       ORDER BY date ASC
-//       `,
-//       [userId]
-//     );
-  
-//     return result.rows;
-//   };
-
+// Version 2 
 
 import pool from "../db/connection.js";
-import { calculateCalories } from "../utils/health.js";
 
 /**
  * 🔥 MAIN DASHBOARD SERVICE
  */
 export const getDashboardService = async (userId, type = "DAY") => {
 
-  /* ---------------- PROFILE ---------------- */
+  /* ---------------- PROFILE (ONLY ACTIVE) ---------------- */
   const profileRes = await pool.query(
-    "SELECT * FROM user_profile WHERE user_id=$1",
+    `
+    SELECT *
+    FROM user_profile
+    WHERE user_id = $1 AND is_active = true
+    ORDER BY updated_at DESC
+    LIMIT 1
+    `,
     [userId]
   );
 
   const user = profileRes.rows[0];
-
   const hasProfile = !!user;
 
   let target = 0;
   let targets = null;
 
   if (hasProfile) {
-    target = calculateCalories({
-      weight: user.weight_kg,
-      height: user.height_cm,
-      activity: user.activity_level,
-      goal: user.goal_type,
-    });
+    target = Number(user.target_calories || 0);
 
-    // 🔥 simple macro targets (can improve later)
     targets = {
-      calories: target,
-      protein: Math.round(user.weight_kg * 1.2), // basic rule
-      carbs: Math.round(target * 0.5 / 4),
-      fats: Math.round(target * 0.25 / 9),
+      calories: Number(user.target_calories || 0),
+      protein: Number(user.protein_target || 0),
+      carbs: Number(user.carbs_target || 0),
+      fats: Number(user.fats_target || 0),
     };
   }
 
   /* ---------------- DATE FILTER ---------------- */
-  let dateFilter = "CURRENT_DATE";
   let interval = "";
 
   if (type === "WEEK") {
@@ -141,14 +227,19 @@ export const getDashboardService = async (userId, type = "DAY") => {
     interval = "CURRENT_DATE - INTERVAL '30 days'";
   }
 
-  /* ---------------- DAILY / RANGE DATA ---------------- */
+  /* ---------------- NUTRITION DATA ---------------- */
 
   let nutritionQuery;
 
   if (type === "DAY") {
     nutritionQuery = await pool.query(
       `
-      SELECT * FROM daily_nutrition
+      SELECT 
+        total_calories,
+        protein,
+        carbs,
+        fats
+      FROM daily_nutrition
       WHERE user_id=$1 AND date=CURRENT_DATE
       `,
       [userId]
@@ -157,10 +248,10 @@ export const getDashboardService = async (userId, type = "DAY") => {
     nutritionQuery = await pool.query(
       `
       SELECT 
-        SUM(total_calories) as total_calories,
-        SUM(protein) as protein,
-        SUM(carbs) as carbs,
-        SUM(fats) as fats
+        COALESCE(SUM(total_calories),0) as total_calories,
+        COALESCE(SUM(protein),0) as protein,
+        COALESCE(SUM(carbs),0) as carbs,
+        COALESCE(SUM(fats),0) as fats
       FROM daily_nutrition
       WHERE user_id=$1 AND date >= ${interval}
       `,
@@ -179,10 +270,10 @@ export const getDashboardService = async (userId, type = "DAY") => {
       `
       SELECT 
         meal_type,
-        SUM(calories) as calories,
-        SUM(protein) as protein,
-        SUM(carbs) as carbs,
-        SUM(fats) as fats
+        COALESCE(SUM(calories),0) as calories,
+        COALESCE(SUM(protein),0) as protein,
+        COALESCE(SUM(carbs),0) as carbs,
+        COALESCE(SUM(fats),0) as fats
       FROM meal_entries
       WHERE user_id=$1 AND DATE(created_at)=CURRENT_DATE
       GROUP BY meal_type
@@ -193,7 +284,7 @@ export const getDashboardService = async (userId, type = "DAY") => {
     mealSplit = meals.rows;
   }
 
-  /* ---------------- TREND (WEEK / MONTH GRAPH) ---------------- */
+  /* ---------------- TREND ---------------- */
 
   let trend = [];
 
@@ -231,19 +322,19 @@ export const getDashboardService = async (userId, type = "DAY") => {
     trend = res.rows;
   }
 
-  /* ---------------- STREAK (simple version) ---------------- */
-
+  /* ---------------- STREAK (IMPROVED LOGIC) ---------------- */
   const streakRes = await pool.query(
     `
     SELECT COUNT(*) as streak
     FROM daily_nutrition
     WHERE user_id=$1 
       AND date >= CURRENT_DATE - INTERVAL '7 days'
+      AND total_calories > 0
     `,
     [userId]
   );
 
-  const streak = streakRes.rows[0]?.streak || 0;
+  const streak = Number(streakRes.rows[0]?.streak || 0);
 
   /* ---------------- FINAL RESPONSE ---------------- */
 
@@ -258,8 +349,8 @@ export const getDashboardService = async (userId, type = "DAY") => {
     target,
     targets,
 
-    mealSplit,   // only for DAY
-    trend,       // only for WEEK / MONTH
+    mealSplit,   // only DAY
+    trend,       // WEEK / MONTH
 
     streak,
     type

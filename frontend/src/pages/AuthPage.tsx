@@ -707,7 +707,7 @@ import {
   Flex,
   Select,
   Progress,
-  HStack
+
 } from "@chakra-ui/react";
 import { useState } from "react";
 // import api from "../api/axios";
@@ -715,7 +715,7 @@ import api from "../utils/api"
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-import { FiHeart } from "react-icons/fi";
+
 import { FaHeart } from "react-icons/fa";
 
 const AuthPage = () => {

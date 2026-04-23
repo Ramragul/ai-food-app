@@ -9,7 +9,7 @@ import {
     useToast,
   } from "@chakra-ui/react";
   import { useState } from "react";
-  import axios from "axios";
+  // import axios from "axios";
   import { useAuth } from "../context/AuthContext";
 import api from "../utils/api";
 

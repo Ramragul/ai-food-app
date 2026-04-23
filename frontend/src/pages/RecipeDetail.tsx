@@ -518,6 +518,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import type { Recommendation } from "../types/meal";
 import { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import api from "../utils/api";
 
 const RecipeDetail = () => {
   const { state } = useLocation();
@@ -580,45 +581,7 @@ const RecipeDetail = () => {
             </Badge>
           </Flex>
 
-          {/* 💎 INGREDIENTS (PREMIUM UI) */}
-          {/* <Box w="100%" bg="white" p={4} borderRadius="xl" boxShadow="sm">
-            <Heading size="md" mb={3}>Ingredients</Heading>
 
-            <VStack spacing={3} align="stretch">
-              {mainItem.ingredients.map((ing, i) => {
-                const item =
-                  typeof ing === "string"
-                    ? { name: ing, quantity: "-" }
-                    : {
-                        name: ing.name,
-                        quantity: `${ing.quantity} ${ing.unit}`
-                      };
-
-                return (
-                  <Flex
-                    key={i}
-                    justify="space-between"
-                    align="center"
-                    p={3}
-                    borderRadius="lg"
-                    bg="gray.50"
-                    borderLeft="4px solid"
-                    borderColor="brand.400"
-                    _hover={{
-                      bg: "gray.100",
-                      transform: "translateX(2px)"
-                    }}
-                    transition="all 0.2s"
-                  >
-                    <Text fontWeight="medium">{item.name}</Text>
-                    <Text fontSize="sm" color="gray.600">
-                      {item.quantity}
-                    </Text>
-                  </Flex>
-                );
-              })}
-            </VStack>
-          </Box> */}
 
 <Box w="100%" bg="white" p={4} borderRadius="xl" boxShadow="sm">
   <Heading size="md" mb={3}>Ingredients</Heading>
@@ -719,29 +682,45 @@ const RecipeDetail = () => {
             color="white"
             borderRadius="full"
             _hover={{ bg: "brand.600", transform: "scale(1.02)" }}
+            // onClick={async () => {
+            //   try {
+            //     // const res = await fetch("http://localhost:3004/api/orders", {
+            //     //   method: "POST",
+            //     //   headers: {
+            //     //     "Content-Type": "application/json",
+            //     //   },
+            //     //   body: JSON.stringify({
+            //     //     userId: 1,
+            //     //     recipe: mainItem,
+            //     //   }),
+            //     // });
+
+            //     const res = await api.post("/api/orders", {
+            //       userId,
+            //       recipe: mainItem,
+            //     });
+
+            //     if (!res.ok) throw new Error("Failed");
+
+            //     const order = await res.json();
+            //     navigate("/order-success", { state: order });
+
+            //   } catch (err) {
+            //     alert("Something went wrong macha 😅");
+            //   }
+            // }}
+
             onClick={async () => {
               try {
-                // const res = await fetch("http://localhost:3004/api/orders", {
-                //   method: "POST",
-                //   headers: {
-                //     "Content-Type": "application/json",
-                //   },
-                //   body: JSON.stringify({
-                //     userId: 1,
-                //     recipe: mainItem,
-                //   }),
-                // });
-
                 const res = await api.post("/api/orders", {
                   userId,
                   recipe: mainItem,
                 });
-
-                if (!res.ok) throw new Error("Failed");
-
-                const order = await res.json();
+            
+                const order = res.data;
+            
                 navigate("/order-success", { state: order });
-
+            
               } catch (err) {
                 alert("Something went wrong macha 😅");
               }

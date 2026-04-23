@@ -46,11 +46,23 @@ import {
             {/* Ingredients */}
             <Box>
               <Text fontWeight="bold">🥗 Ingredients</Text>
-              <List spacing={1} mt={2}>
+              {/* <List spacing={1} mt={2}>
                 {mainItem.ingredients.map((ing, i) => (
                   <ListItem key={i}>• {ing}</ListItem>
                 ))}
-              </List>
+              </List> */}
+
+            <List spacing={1} mt={2}>
+              {mainItem.ingredients.map((ing, i) => (
+                <ListItem key={i}>
+                  •{" "}
+                  {typeof ing === "string"
+                    ? ing
+                    : `${ing.name} (${ing.quantity ?? ""} ${ing.unit ?? ""})`}
+                </ListItem>
+              ))}
+            </List>
+
             </Box>
   
             {/* Steps */}

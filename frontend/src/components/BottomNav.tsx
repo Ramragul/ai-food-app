@@ -195,7 +195,10 @@ const BottomNav: React.FC = () => {
                     ? "0 0 12px rgba(0,191,255,0.25)"
                     : "none"
                 }
-                transition="all 0.25s ease"
+                transition={{
+                  duration: 0.25,
+                  ease: "easeInOut"
+                }}
               >
                 <Icon
                   as={tab.icon}

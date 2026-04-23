@@ -213,7 +213,7 @@ import {
   HStack,
   Button
 } from "@chakra-ui/react";
-import axios from "axios";
+
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";

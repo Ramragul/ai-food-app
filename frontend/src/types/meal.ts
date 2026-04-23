@@ -11,7 +11,7 @@ export interface Nutrition {
     description: string;
     spiceLevel: string;
     cookingMethod: string;
-    ingredients: string[];   
+    ingredients: Ingredient[]; 
     utensils: string[];      
     steps: string[];         
     prepTime: string;        
@@ -25,3 +25,11 @@ export interface Nutrition {
     totalNutrition: Nutrition;
     imageUrl?: string;
   }
+
+  export type Ingredient =
+  | string
+  | {
+      name: string;
+      quantity: number | string;
+      unit?: string;
+    };

@@ -5,7 +5,8 @@ import { useMeals } from "../hooks/useMeals";
 import { useEffect } from "react";
 
 const Home = () => {
-  const { data, generateMeals } = useMeals();
+  // const { data, generateMeals } = useMeals();
+  const { data} = useMeals();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -17,7 +18,8 @@ const Home = () => {
         🍽️ AI Meal Planner
       </Heading>
 
-      <MealInputForm onSubmit={generateMeals} />
+      {/* <MealInputForm onSubmit={generateMeals} /> */}
+      <MealInputForm/>
 
       <RecommendationList data={data} />
     </Box>

@@ -20,7 +20,8 @@ const Orders = () => {
 
        
 
-        const data: Order[] = await res.json();
+        // const data: Order[] = await res.json();
+        const data: Order[] = res.data;
         setOrders(data);
       } catch (err) {
         console.error(err);

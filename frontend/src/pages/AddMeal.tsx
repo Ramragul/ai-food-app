@@ -2738,7 +2738,6 @@ import {
   Box,
   Input,
   Button,
-  Select,
   Text,
   VStack,
   Spinner,
@@ -2747,7 +2746,6 @@ import {
   Flex
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
@@ -2759,7 +2757,7 @@ import {
   MenuList,
   MenuItem
 } from "@chakra-ui/react";
-import { CheckIcon, ChevronDownIcon , CloseIcon } from "@chakra-ui/icons";
+import { CheckIcon, ChevronDownIcon  } from "@chakra-ui/icons";
 
 const AddMeal = () => {
   const [mealType, setMealType] = useState("BREAKFAST");

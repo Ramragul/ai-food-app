@@ -2020,10 +2020,9 @@ import {
   SimpleGrid,
   Spinner,
   Image,
-  useToast
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import axios from "axios";
+// import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAppMode } from "../../context/AppModeContext";
 
@@ -2052,6 +2051,10 @@ interface Ingredient {
   fibre: number;
 }
 
+// type MealInputFormProps = {
+//   onSubmit: (payload: any) => Promise<void>;
+// };
+
 const ALL_FOOD_TYPES = ["Sandwich", "Wrap", "RiceBowl"];
 
 const GOAL_PRESETS = [
@@ -2070,7 +2073,7 @@ const FALLBACK_IMG =
 const MealInputForm = () => {
   const navigate = useNavigate();
   const { mode } = useAppMode(); // 🔥 home / restaurant
-  const toast = useToast();
+  // const toast = useToast();
 
   const [goal, setGoal] = useState("");
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
@@ -2598,7 +2601,7 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
               <Tag
                 colorScheme={previewIngredient.type === "veg" ? "green" : "red"}
               >
-                {previewIngredient.type.toUpperCase()}
+                {previewIngredient?.type.toUpperCase()}
               </Tag>
 
               <Tag colorScheme="purple">

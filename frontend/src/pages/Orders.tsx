@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, Text, VStack, Spinner } from "@chakra-ui/react";
 import type { Order } from "../types/order";
+import api from "../utils/api";
 
 const Orders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -9,9 +10,15 @@ const Orders = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await fetch(
-          "http://localhost:3004/api/orders/user/1"
+        // const res = await fetch(
+        //   "http://localhost:3004/api/orders/user/1"
+        // );
+
+        const res = await api.get(
+          "/orders/user/1"
         );
+
+       
 
         const data: Order[] = await res.json();
         setOrders(data);

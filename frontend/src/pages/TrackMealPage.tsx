@@ -10,17 +10,27 @@ import {
   } from "@chakra-ui/react";
   import { useState } from "react";
   import axios from "axios";
-  
+  import { useAuth } from "../context/AuthContext";
+import api from "../utils/api";
+
   const TrackMealPage = () => {
     const [mealType, setMealType] = useState("breakfast");
     const [foodText, setFoodText] = useState("");
     const [result, setResult] = useState<any>(null);
     const toast = useToast();
+
+    const {user} = useAuth();
+    const userId = user.id;
   
     const handleAnalyze = async () => {
       try {
-        const res = await axios.post("http://localhost:3004/api/track/meals", {
-          userId: 1,
+        // const res = await axios.post("http://localhost:3004/api/track/meals", {
+        //   userId: 1,
+        //   mealType,
+        //   input: foodText,
+        // });
+        const res = await api.post("/track/meals", {
+          userId,
           mealType,
           input: foodText,
         });

@@ -517,6 +517,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import type { Recommendation } from "../types/meal";
 import { useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const RecipeDetail = () => {
   const { state } = useLocation();
@@ -524,6 +525,10 @@ const RecipeDetail = () => {
 
   const mainItem = data.items[0];
   const navigate = useNavigate();
+
+  const {user} = useAuth();
+
+  const userId = user.id;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -716,15 +721,20 @@ const RecipeDetail = () => {
             _hover={{ bg: "brand.600", transform: "scale(1.02)" }}
             onClick={async () => {
               try {
-                const res = await fetch("http://localhost:3004/api/orders", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    userId: 1,
-                    recipe: mainItem,
-                  }),
+                // const res = await fetch("http://localhost:3004/api/orders", {
+                //   method: "POST",
+                //   headers: {
+                //     "Content-Type": "application/json",
+                //   },
+                //   body: JSON.stringify({
+                //     userId: 1,
+                //     recipe: mainItem,
+                //   }),
+                // });
+
+                const res = await api.post("/api/orders", {
+                  userId,
+                  recipe: mainItem,
                 });
 
                 if (!res.ok) throw new Error("Failed");

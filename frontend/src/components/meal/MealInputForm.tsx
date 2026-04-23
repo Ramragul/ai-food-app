@@ -2037,6 +2037,7 @@ import {
   ModalBody,
   ModalFooter,
 } from "@chakra-ui/react";
+import api from "../../utils/api";
 
 interface Ingredient {
   id: number;
@@ -2115,8 +2116,11 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     useEffect(() => {
     const fetchIngredients = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:3004/api/ingredients/core?mode=${mode}`
+        // const res = await axios.get(
+        //   `http://localhost:3004/api/ingredients/core?mode=${mode}`
+        // );
+        const res = await api.get(
+          `/ingredients/core?mode=${mode}`
         );
         setAllIngredients(res.data.data || []);
       } catch (err) {
@@ -2176,8 +2180,12 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     try {
       setLoading(true);
   
-      const res = await axios.post(
-        "http://localhost:3004/api/ingredients/create-from-ai",
+      // const res = await axios.post(
+      //   "http://localhost:3004/api/ingredients/create-from-ai",
+      //   { name: customIngredient }
+      // );
+      const res = await api.post(
+        "/ingredients/create-from-ai",
         { name: customIngredient }
       );
   
@@ -2239,8 +2247,12 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const handleConfirmIngredient = async () => {
     try {
-      const res = await axios.post(
-        "http://localhost:3004/api/ingredients/confirm",
+      // const res = await axios.post(
+      //   "http://localhost:3004/api/ingredients/confirm",
+      //   previewIngredient
+      // );
+      const res = await api.post(
+        "/ingredients/confirm",
         previewIngredient
       );
   
@@ -2274,8 +2286,17 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
         .filter(Boolean)
         .join(", ");
 
-      const res = await axios.post(
-        "http://localhost:3004/api/meals/generate",
+      // const res = await axios.post(
+      //   "http://localhost:3004/api/meals/generate",
+      //   {
+      //     goal: finalGoal,
+      //     ingredients,
+      //     foodType,
+      //     page: 1,
+      //   }
+      // );
+      const res = await api.post(
+        "/meals/generate",
         {
           goal: finalGoal,
           ingredients,

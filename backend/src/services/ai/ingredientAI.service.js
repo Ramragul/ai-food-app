@@ -26,7 +26,8 @@ const fallbackNutrition = () => ({
   protein: 3,
   carbs: 15,
   fat: 3,
-  fibre: 2
+  fibre: 2,
+  type: ""
 });
 
 /**

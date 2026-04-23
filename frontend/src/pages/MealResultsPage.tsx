@@ -1,7 +1,7 @@
 import { Box, VStack, Text, Button, Spinner } from "@chakra-ui/react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../utils/api";
 import RecommendationList from "../components/meal/RecommendationList";
 
 const MealResultsPage = () => {
@@ -32,8 +32,18 @@ const MealResultsPage = () => {
     try {
       setLoading(true);
 
-      const res = await axios.post(
-        "http://localhost:3004/api/meals/generate",
+      // const res = await axios.post(
+      //   "http://localhost:3004/api/meals/generate",
+      //   {
+      //     goal,
+      //     ingredients,
+      //     foodType,
+      //     page: pageNumber,
+      //   }
+      // );
+
+      const res = await api.post(
+        "/meals/generate",
         {
           goal,
           ingredients,

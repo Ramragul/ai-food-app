@@ -1,6 +1,7 @@
 import { Box, Input, Button, VStack, Text } from "@chakra-ui/react";
 import { useState } from "react";
-import api from "../api/axios";
+// import api from "../api/axios";
+import api from "../utils/api"
 import { useAuth } from "../context/AuthContext";
 
 const Login = () => {

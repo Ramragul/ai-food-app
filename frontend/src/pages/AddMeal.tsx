@@ -2751,6 +2751,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
+import api from "../utils/api";
 
 import {
   Menu,
@@ -2790,10 +2791,16 @@ const AddMeal = () => {
 
     setLoading(true);
     try {
-      const res = await axios.post(
-        "http://localhost:3004/api/nutrition/add-meal",
-        { userId: userId, mealType, input }
-      );
+      // const res = await axios.post(
+      //   "http://localhost:3004/api/nutrition/add-meal",
+      //   { userId: userId, mealType, input }
+      // );
+
+      const res = await api.post("/nutrition/add-meal", {
+        userId,
+        mealType,
+        input
+      });
 
       const enriched = res.data.parsedItems.map((item: any) => ({
         ...item,
@@ -2845,8 +2852,13 @@ const AddMeal = () => {
   };
 
   const handleConfirm = async () => {
-    await axios.post(
-      "http://localhost:3004/api/nutrition/confirm-meal",
+    // await axios.post(
+    //   "http://localhost:3004/api/nutrition/confirm-meal",
+    //   { userId: userId, mealType, items: preview, total }
+    // );
+
+    await api.post(
+      "/nutrition/confirm-meal",
       { userId: userId, mealType, items: preview, total }
     );
 

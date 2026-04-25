@@ -5,7 +5,8 @@ type Mode = "home" | "restaurant";
 const AppModeContext = createContext<any>(null);
 
 export const AppModeProvider = ({ children }: any) => {
-  const [mode, setMode] = useState<Mode>("restaurant");
+  // const [mode, setMode] = useState<Mode>("restaurant");
+  const [mode, setMode] = useState<Mode>("home");
 
   useEffect(() => {
     const saved = localStorage.getItem("app_mode") as Mode;

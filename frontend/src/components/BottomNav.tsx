@@ -120,7 +120,8 @@ import {
   FiHome,
   FiPlusCircle,
   FiTarget,
-  FiActivity
+  FiActivity,
+  FiCoffee
 } from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
 import type { IconType } from "react-icons";
@@ -135,10 +136,11 @@ type Tab = {
 };
 
 const tabs: Tab[] = [
-  { name: "Home", icon: FiHome, path: "/home" },
+
+  { name: "Track", icon: FiActivity, path: "/home" },
   { name: "Add", icon: FiPlusCircle, path: "/add-meal" },
   { name: "Goal", icon: FiTarget, path: "/goal-setup" },
-  { name: "Track", icon: FiActivity, path: "/track-meal" }
+  { name: "Generate Meals", icon: FiCoffee, path: "/meals" }
 ];
 
 const BottomNav: React.FC = () => {
@@ -235,3 +237,7 @@ const BottomNav: React.FC = () => {
 };
 
 export default BottomNav;
+
+function FiFood(props: IconBaseProps): ReactNode {
+  throw new Error("Function not implemented.");
+}

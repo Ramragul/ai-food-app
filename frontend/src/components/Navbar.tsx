@@ -1557,13 +1557,13 @@ const Navbar: React.FC = () => {
     navigate("/");
   };
 
-  const isHomePage = location.pathname === "/home";
+  const isMealsPage = location.pathname === "/meals";
 
   // 🔥 PAGE TITLE LOGIC
   const getPageTitle = () => {
     if (location.pathname === "/profile") return "Profile";
     if (location.pathname === "/goal-setup") return "Your Goal";
-    if (location.pathname === "/track-meal") return "Today";
+    if (location.pathname === "/home") return "Dashboard";
     return "";
   };
 
@@ -1603,7 +1603,7 @@ const Navbar: React.FC = () => {
         {/* 🔥 CENTER AREA */}
         <Box flex={1} display="flex" justifyContent="center">
 
-          {isHomePage ? (
+          {isMealsPage ? (
             // ✅ TOGGLE
             <Box
               position="relative"
@@ -1627,7 +1627,9 @@ const Navbar: React.FC = () => {
                   boxShadow="0 0 12px rgba(0,191,255,0.25)"
                 />
 
-                <Button
+                {/* Will Be uncommented while opening restaurant */}
+
+                {/* <Button
                   zIndex={1}
                   flex={1}
                   size="sm"
@@ -1638,7 +1640,7 @@ const Navbar: React.FC = () => {
                   _hover={{ bg: "transparent" }}
                 >
                   🍽 <Box as="span" fontSize="xs">Restaurant</Box>
-                </Button>
+                </Button> */}
 
                 <Button
                   zIndex={1}
@@ -1650,7 +1652,7 @@ const Navbar: React.FC = () => {
                   onClick={() => setMode("home")}
                   _hover={{ bg: "transparent" }}
                 >
-                  🏠 <Box as="span" fontSize="xs">Home</Box>
+                  🏠 <Box as="span" fontSize="xs"> Home Kitchen</Box>
                 </Button>
 
               </Flex>

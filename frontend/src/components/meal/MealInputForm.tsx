@@ -2007,6 +2007,770 @@
 // version 10: clone of 9
 
 
+// import {
+//   Box,
+//   Button,
+//   Input,
+//   VStack,
+//   Text,
+//   HStack,
+//   Tag,
+//   TagLabel,
+//   TagCloseButton,
+//   SimpleGrid,
+//   Spinner,
+//   Image,
+// } from "@chakra-ui/react";
+// import { useState, useEffect, useRef } from "react";
+// // import axios from "axios";
+// import { useNavigate } from "react-router-dom";
+// import { useAppMode } from "../../context/AppModeContext";
+
+
+// // import { Player } from "@lottiefiles/react-lottie-player";
+// import * as LottieModule from "lottie-react";
+
+
+// import lottie from "lottie-web";
+// import chefAnimation from "../../animations/chef.json";
+
+
+
+
+// // ADD THIS IMPORT
+// import {
+//   Modal,
+//   ModalOverlay,
+//   ModalContent,
+//   ModalHeader,
+//   ModalBody,
+//   ModalFooter,
+// } from "@chakra-ui/react";
+// import api from "../../utils/api";
+
+// interface Ingredient {
+//   id: number;
+//   name: string;
+//   type: string;
+//   category: string;
+//   image_url: string;
+//   calories: number;
+//   protein: number;
+//   carbs: number;
+//   fat: number;
+//   fibre: number;
+// }
+
+// // type MealInputFormProps = {
+// //   onSubmit: (payload: any) => Promise<void>;
+// // };
+
+// const ALL_FOOD_TYPES = ["Sandwich", "Wrap", "RiceBowl"];
+
+// const GOAL_PRESETS = [
+//   "Weight Loss",
+//   "Muscle Gain",
+//   "High Protein",
+//   "Low Carb",
+//   "Low Calorie",
+//   "Balanced Diet",
+// ];
+
+// // ✅ fallback image
+// const FALLBACK_IMG =
+//   "https://cdn-icons-png.flaticon.com/512/1046/1046857.png";
+
+// const MealInputForm = () => {
+//   const navigate = useNavigate();
+//   const { mode } = useAppMode(); // 🔥 home / restaurant
+//   // const toast = useToast();
+
+//   const [goal, setGoal] = useState("");
+//   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
+//   const [ingredients, setIngredients] = useState<string[]>([]);
+//   const [foodType, setFoodType] = useState<string[]>([]);
+//   const [allIngredients, setAllIngredients] = useState<Ingredient[]>([]);
+//   const [filterType, setFilterType] = useState("all");
+//   const [search, setSearch] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const [existsMessage, setExistsMessage] = useState("");
+
+//   const [errorMessage, setErrorMessage] = useState("");
+
+//   const [previewIngredient, setPreviewIngredient] = useState<any>(null);
+// const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+//   const [customIngredient, setCustomIngredient] = useState("");
+
+//   const [loadingTextIndex, setLoadingTextIndex] = useState(0);
+
+//   const animationRef = useRef<HTMLDivElement | null>(null);
+
+//   const animationData =
+//   (chefAnimation as any)?.default || chefAnimation;
+
+//   const Lottie = (LottieModule as any).default || LottieModule;
+
+//   const loadingMessages = [
+//             "👨‍🍳 Cooking your delicious meals...",
+//             "🥗 Picking the best ingredients...",
+//             "🔥 Balancing macros perfectly...",
+//             "✨ Almost ready to serve..."
+//           ];
+
+
+//           useEffect(() => {
+//             if (!loading) return;
+          
+//             const interval = setInterval(() => {
+//               setLoadingTextIndex((prev) => (prev + 1) % loadingMessages.length);
+//             }, 1800);
+          
+//             return () => clearInterval(interval);
+//           }, [loading]);
+
+//           useEffect(() => {
+//             if (!loading || !animationRef.current) return;
+          
+//             const anim = lottie.loadAnimation({
+//               container: animationRef.current,
+//               renderer: "svg",
+//               loop: true,
+//               autoplay: true,
+//               animationData: (chefAnimation as any)?.default || chefAnimation,
+//             });
+          
+//             return () => anim.destroy();
+//           }, [loading]);
+
+
+
+//     useEffect(() => {
+//     const fetchIngredients = async () => {
+//       try {
+//         // const res = await axios.get(
+//         //   `http://localhost:3004/api/ingredients/core?mode=${mode}`
+//         // );
+//         const res = await api.get(
+//           `/ingredients/core?mode=${mode}`
+//         );
+//         setAllIngredients(res.data.data || []);
+//       } catch (err) {
+//         console.error("Failed to fetch ingredients", err);
+//       }
+//     };
+
+//     fetchIngredients();
+//   }, [mode]);
+
+//   const toggleItem = (item: string, list: string[], setList: any) => {
+//     if (list.includes(item)) {
+//       setList(list.filter((i) => i !== item));
+//     } else {
+//       setList([...list, item]);
+//     }
+//   };
+
+//   const toggleGoal = (item: string) => {
+//     if (selectedGoals.includes(item)) {
+//       setSelectedGoals(selectedGoals.filter((g) => g !== item));
+//     } else {
+//       setSelectedGoals([...selectedGoals, item]);
+//     }
+//   };
+
+
+
+//   const handleAddCustom = async () => {
+//     if (!customIngredient) return;
+  
+//     try {
+//       setLoading(true);
+  
+//       // const res = await axios.post(
+//       //   "http://localhost:3004/api/ingredients/create-from-ai",
+//       //   { name: customIngredient }
+//       // );
+//       const res = await api.post(
+//         "/ingredients/create-from-ai",
+//         { name: customIngredient }
+//       );
+  
+//       // ✅ EXISTS → SHOW MESSAGE + ADD
+//       if (res.data.exists) {
+//         const existing = res.data.data;
+  
+//         // setIngredients((prev) => [...prev, existing.name]);
+
+//         const normalizedName = existing.name.trim().toLowerCase();
+
+//         setIngredients((prev) => {
+//           const normalizedList = prev.map((i) => i.trim().toLowerCase());
+        
+//           if (normalizedList.includes(normalizedName)) {
+//             return prev;
+//           }
+        
+//           return [...prev, existing.name.trim()];
+//         });
+  
+//         setExistsMessage(`"${existing.name}" "is already available — added to your selection" ✅`);
+  
+//         setTimeout(() => setExistsMessage(""), 2500);
+  
+//         setCustomIngredient("");
+//         return;
+//       }
+
+//       // if (res.data.exists) {
+//       //   const existing = res.data.data;
+      
+//       //   setIngredients((prev) => [...prev, existing.name]);
+      
+//       //   toast({
+//       //     title: `${existing.name} already exists`,
+//       //     description: "Added to your ingredients",
+//       //     status: "success",
+//       //     duration: 2000,
+//       //     isClosable: true,
+//       //     position: "top",
+//       //   });
+      
+//       //   setCustomIngredient("");
+//       //   return;
+//       // }
+  
+//       // ✅ NEW → SHOW PREVIEW
+//       setPreviewIngredient(res.data.preview);
+//       setIsPreviewOpen(true);
+//       setCustomIngredient("");
+  
+//     } catch (err) {
+//       console.error(err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleConfirmIngredient = async () => {
+//     try {
+//       // const res = await axios.post(
+//       //   "http://localhost:3004/api/ingredients/confirm",
+//       //   previewIngredient
+//       // );
+//       const res = await api.post(
+//         "/ingredients/confirm",
+//         previewIngredient
+//       );
+  
+//       const saved = res.data.data || previewIngredient;
+  
+//       // ✅ update UI
+//       setAllIngredients((prev) => [saved, ...prev]);
+//       setIngredients((prev) => [...prev, saved.name]);
+  
+//       setIsPreviewOpen(false);
+//       setPreviewIngredient(null);
+//     } catch (err) {
+//       console.error(err);
+//     }
+//   };
+
+//   const handleSubmit = async () => {
+//     if (
+//       (!goal && selectedGoals.length === 0) ||
+//       ingredients.length === 0 ||
+//       foodType.length === 0
+//     ) {
+//       alert("Please fill all fields");
+//       return;
+//     }
+
+//     try {
+//       setLoading(true);
+
+//       const finalGoal = [...selectedGoals, goal.trim()]
+//         .filter(Boolean)
+//         .join(", ");
+
+//       // const res = await axios.post(
+//       //   "http://localhost:3004/api/meals/generate",
+//       //   {
+//       //     goal: finalGoal,
+//       //     ingredients,
+//       //     foodType,
+//       //     page: 1,
+//       //   }
+//       // );
+//       const res = await api.post(
+//         "/meals/generate",
+//         {
+//           goal: finalGoal,
+//           ingredients,
+//           foodType,
+//           page: 1,
+//         }
+//       );
+
+//       navigate("/results", {
+//         state: {
+//           goal: finalGoal,
+//           ingredients,
+//           foodType,
+//           initialMeals: res.data.recommendations,
+//         },
+//       });
+//     } catch (err: any) {
+//       console.error(err);
+    
+//       const message =
+//         err?.response?.data?.message ||
+//         "Something went wrong while generating meals";
+    
+//       setErrorMessage(message);
+    
+//       // auto hide after 3 sec
+//       setTimeout(() => setErrorMessage(""), 3000);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const filteredIngredients = allIngredients.filter((item) => {
+//     return (
+//       (filterType === "all" || item.type === filterType) &&
+//       item.name.toLowerCase().includes(search.toLowerCase())
+//     );
+//   });
+
+//   return (
+//     <>
+
+
+//     <Box
+//       p={6}
+//       borderRadius="2xl"
+//       boxShadow="lg"
+//       bg="white"
+//       maxW="900px"
+//       mx="auto"
+//       border="1px solid"
+//       borderColor="brand"
+//     >
+
+//       <VStack spacing={5} align="stretch">
+
+//         {/* 🎯 Goal */}
+//         <Box>
+//           <Text fontWeight="bold" mb={2}>🎯 Goal</Text>
+
+//           <Input
+//             placeholder="e.g. high protein"
+//             value={goal}
+//             onChange={(e) => setGoal(e.target.value)}
+//             mb={3}
+//           />
+
+//           <HStack flexWrap="wrap">
+//             {GOAL_PRESETS.map((item) => (
+//               <Tag
+//                 key={item}
+//                 size="lg"
+//                 bg={selectedGoals.includes(item) ? "brand.200" : "transparent"}
+//                 border="1px solid"
+//                 borderColor="brand.200"
+//                 cursor="pointer"
+//                 onClick={() => toggleGoal(item)}
+//               >
+//                 <TagLabel>{item}</TagLabel>
+//               </Tag>
+//             ))}
+//           </HStack>
+//         </Box>
+
+//         {/* 🥗 Ingredients */}
+//         <Box>
+//           <Text fontWeight="bold" mb={2}>
+//             🥗 Ingredients ({mode.toUpperCase()})
+//           </Text>
+
+//           <Input
+//             placeholder="Search ingredients"
+//             mb={3}
+//             value={search}
+//             onChange={(e) => setSearch(e.target.value)}
+//           />
+
+//           <HStack mb={3}>
+//             {["all", "veg", "non-veg"].map((type) => (
+//               <Button
+//                 key={type}
+//                 size="sm"
+//                 variant={filterType === type ? "solid" : "outline"}
+//                 colorScheme="brand"
+//                 onClick={() => setFilterType(type)}
+//               >
+//                 {type.toUpperCase()}
+//               </Button>
+//             ))}
+//           </HStack>
+
+//           {/* 🔥 ADD INGREDIENT (ONLY HOME) */}
+//           {mode === "home" && (
+//             <HStack mb={3}>
+//               <Input
+//                 placeholder="Add ingredient..."
+//                 value={customIngredient}
+//                 onChange={(e) => setCustomIngredient(e.target.value)}
+//               />
+//               <Button onClick={handleAddCustom} colorScheme="brand">
+//                 Add
+//               </Button>
+//             </HStack>
+//           )}
+
+
+
+
+// {/* {existsMessage && (
+//   <HStack
+//     px={4}
+//     py={2}
+//     borderRadius="full"
+//     bg="brand.50"
+//     border="1px solid"
+//     borderColor="brand.200"
+//     w="fit-content"
+//     spacing={2}
+//     mb={2}
+//     transition="all 0.2s ease"
+//     _hover={{ transform: "scale(1.02)" }}
+//   >
+//     <Box
+//       bg="brand.200"
+//       color="white"
+//       borderRadius="full"
+//       px={2}
+//       fontSize="xs"
+//       fontWeight="bold"
+//     >
+//       ✓
+//     </Box>
+
+//     <Text fontSize="sm" color="brand.700" fontWeight="medium">
+//       {existsMessage}
+//     </Text>
+//   </HStack>
+// )} */}
+
+// {existsMessage && (
+//   <HStack
+//   px={4}
+//   py={2}
+//   borderRadius="full"
+//   bg="linear-gradient(135deg, #eaf6ff, #f5fbff)"
+//   border="1px solid"
+//   borderColor="brand.200"
+//   w="fit-content"
+//   spacing={3}
+//   mb={3}
+
+//   animation="fadeSlide 0.4s cubic-bezier(0.22, 1, 0.36, 1)"
+//   boxShadow="0 4px 12px rgba(99, 189, 244, 0.25)"
+
+//   // 🔥 REAL SMOOTH FADE
+//   opacity={existsMessage ? 1 : 0}
+//   transition="opacity 0.4s ease"
+//   pointerEvents="none"
+// >
+//   <Box
+//     bg="brand.300"
+//     color="white"
+//     borderRadius="full"
+//     px={2}
+//     py={0.5}
+//     fontSize="xs"
+//     fontWeight="bold"
+//   >
+//     ✓
+//   </Box>
+
+//   <Text fontSize="sm" color="gray.700" fontWeight="medium">
+//     {existsMessage}
+//   </Text>
+// </HStack>
+// )}
+
+//           {/* 🔥 GRID (OLD UI RESTORED) */}
+//           <SimpleGrid columns={[2, 3, 4, 5]} spacing={4}>
+//             {filteredIngredients.map((item) => {
+//               const isSelected = ingredients.includes(item.name);
+
+//               return (
+//                 <Box
+//                   key={item.id}
+//                   borderRadius="xl"
+//                   overflow="hidden"
+//                   border="2px solid"
+//                   borderColor={isSelected ? "brand.400" : "gray.200"}
+//                   bg={isSelected ? "brand.50" : "white"}
+//                   cursor="pointer"
+//                   onClick={() =>
+//                     toggleItem(item.name, ingredients, setIngredients)
+//                   }
+//                   _hover={{ transform: "scale(1.05)" }}
+//                 >
+//                   <Box h="80px">
+//                     <Image
+//                       src={item.image_url || FALLBACK_IMG}
+//                       fallbackSrc={FALLBACK_IMG}
+//                       alt={item.name}
+//                       w="100%"
+//                       h="100%"
+//                       objectFit="cover"
+//                     />
+//                   </Box>
+
+//                   <Box p={2}>
+//                     <Text fontSize="sm" fontWeight="bold" noOfLines={1}>
+//                       {item.name}
+//                     </Text>
+//                     <Text fontSize="xs" color="gray.500">
+//                       {item.protein}g protein
+//                     </Text>
+//                   </Box>
+//                 </Box>
+//               );
+//             })}
+//           </SimpleGrid>
+//         </Box>
+
+//         {/* 🍱 Food Types */}
+//         <HStack flexWrap="wrap">
+//           {ALL_FOOD_TYPES.map((item) => (
+//             <Tag
+//               key={item}
+//               size="lg"
+//               bg={foodType.includes(item) ? "brand.200" : "transparent"}
+//               border="1px solid"
+//               borderColor="brand.200"
+//               cursor="pointer"
+//               onClick={() => toggleItem(item, foodType, setFoodType)}
+//             >
+//               <TagLabel>{item}</TagLabel>
+//             </Tag>
+//           ))}
+//         </HStack>
+
+//         {/* Selected */}
+//         <HStack flexWrap="wrap">
+//           {/* {ingredients.map((item) => (
+//             <Tag key={item} colorScheme="brand"> */}
+//               {ingredients.map((item, index) => (
+//               <Tag key={`${item}-${index}`} colorScheme="brand">
+//               <TagLabel>{item}</TagLabel>
+//               <TagCloseButton
+//                 onClick={() =>
+//                   setIngredients(ingredients.filter((i) => i !== item))
+//                 }
+//               />
+//             </Tag>
+//           ))}
+//         </HStack>
+
+//         {/* Loading */}
+//         {/* {loading && (
+//           <Box textAlign="center">
+//             <Spinner size="xl" />
+//             <Text mt={3}>Cooking your meals... 🍳</Text>
+//           </Box>
+//         )} */}
+
+//         {/* Rahul */}
+
+ 
+
+//         {/* {loading && (
+//   <VStack spacing={4} py={6}>
+
+//     <Box
+//       ref={animationRef}
+//       w="160px"
+//       h="160px"
+//       transform="scale(1.2)"
+//     />
+
+//     <Text fontWeight="bold" fontSize="md" textAlign="center">
+//       {loadingMessages[loadingTextIndex]}
+//     </Text>
+
+//     <Text fontSize="sm" color="gray.500" textAlign="center">
+//       🍳 Crafting meals perfectly for your goal
+//     </Text>
+
+//   </VStack>
+// )} */}
+
+
+// {errorMessage && (
+//   <Box
+//     px={4}
+//     py={3}
+//     borderRadius="xl"
+//     bg="linear-gradient(135deg, #ffeaea, #fff5f5)"
+//     border="1px solid"
+//     borderColor="red.200"
+//     boxShadow="0 4px 12px rgba(255, 0, 0, 0.15)"
+//     animation="fadeSlide 0.3s ease"
+//   >
+//     <Text fontSize="sm" color="red.600" fontWeight="medium">
+//       ⚠️ {errorMessage}
+//     </Text>
+//   </Box>
+// )}
+
+// {loading && (
+//   <Box
+//     position="fixed"
+//     top="0"
+//     left="0"
+//     width="100vw"
+//     height="100vh"
+//     bg="rgba(255, 255, 255, 0.15)" // very light overlay
+//     backdropFilter="blur(12px)"
+//     zIndex="9999"
+//     display="flex"
+//     alignItems="center"
+//     justifyContent="center"
+//   >
+//     <VStack spacing={6}>
+
+//       {/* 🔥 FLOATING ANIMATION (NO BOX BACKGROUND) */}
+//       <Box
+//         ref={animationRef}
+//         w="200px"
+//         h="200px"
+//         sx={{
+//           filter: "drop-shadow(0 12px 30px rgba(0,0,0,0.2))",
+//           animation: "float 3s ease-in-out infinite"
+//         }}
+//       />
+
+//       {/* 🔥 TEXT */}
+//       <Text
+//         fontWeight="bold"
+//         fontSize="lg"
+//         textAlign="center"
+//         color="gray.800"
+//       >
+//         {loadingMessages[loadingTextIndex]}
+//       </Text>
+
+//       <Text fontSize="sm" color="gray.600" textAlign="center">
+//         🍳 Crafting something delicious just for you...
+//       </Text>
+
+//     </VStack>
+//   </Box>
+// )}
+
+
+
+//         {/* Submit */}
+//         <Button
+//           isLoading={loading}
+//           bg="brand.200"
+//           onClick={handleSubmit}
+//         >
+//           ✨ Generate Meals
+//         </Button>
+
+//         <Modal isOpen={isPreviewOpen} onClose={() => setIsPreviewOpen(false)} isCentered>
+//   <ModalOverlay />
+//   <ModalContent borderRadius="2xl" p={2}>
+
+//     <ModalHeader fontSize="lg" fontWeight="bold">
+//       Add New Ingredient
+//     </ModalHeader>
+
+//     <ModalBody>
+//       {previewIngredient && (
+//         <VStack spacing={4} align="stretch">
+
+//           {/* NAME + TYPE */}
+//           <Box>
+//             <Text fontSize="xl" fontWeight="bold">
+//               {previewIngredient.name}
+//             </Text>
+
+//             <HStack mt={1}>
+//               <Tag
+//                 colorScheme={previewIngredient.type === "veg" ? "green" : "red"}
+//               >
+//                 {previewIngredient?.type.toUpperCase()}
+//               </Tag>
+
+//               <Tag colorScheme="purple">
+//                 {previewIngredient.category}
+//               </Tag>
+//             </HStack>
+//           </Box>
+
+//           {/* MACROS GRID */}
+//           <SimpleGrid columns={2} spacing={3}>
+//             <Box bg="gray.50" p={3} borderRadius="lg">
+//               <Text fontSize="xs" color="gray.500">Calories</Text>
+//               <Text fontWeight="bold">{previewIngredient.calories} kcal</Text>
+//             </Box>
+
+//             <Box bg="gray.50" p={3} borderRadius="lg">
+//               <Text fontSize="xs" color="gray.500">Protein</Text>
+//               <Text fontWeight="bold">{previewIngredient.protein} g</Text>
+//             </Box>
+
+//             <Box bg="gray.50" p={3} borderRadius="lg">
+//               <Text fontSize="xs" color="gray.500">Carbs</Text>
+//               <Text fontWeight="bold">{previewIngredient.carbs} g</Text>
+//             </Box>
+
+//             <Box bg="gray.50" p={3} borderRadius="lg">
+//               <Text fontSize="xs" color="gray.500">Fat</Text>
+//               <Text fontWeight="bold">{previewIngredient.fat} g</Text>
+//             </Box>
+//           </SimpleGrid>
+
+//           <Text fontSize="sm" color="gray.500">
+//             This ingredient is AI-generated. Please confirm before adding.
+//           </Text>
+
+//         </VStack>
+//       )}
+//     </ModalBody>
+
+//     <ModalFooter>
+//       <Button mr={3} variant="outline" onClick={() => setIsPreviewOpen(false)}>
+//         Cancel
+//       </Button>
+
+//       <Button colorScheme="brand" onClick={handleConfirmIngredient}>
+//         Confirm & Add
+//       </Button>
+//     </ModalFooter>
+
+//   </ModalContent>
+// </Modal>
+//       </VStack>
+     
+//     </Box>
+//     </>
+//   );
+// };
+
+// export default MealInputForm;
+
+
+// Version 11
+
 import {
   Box,
   Button,
@@ -2021,10 +2785,20 @@ import {
   Spinner,
   Image,
 } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 // import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAppMode } from "../../context/AppModeContext";
+
+
+// import { Player } from "@lottiefiles/react-lottie-player";
+import * as LottieModule from "lottie-react";
+
+
+import lottie from "lottie-web";
+import chefAnimation from "../../animations/chef.json";
+
+
 
 
 // ADD THIS IMPORT
@@ -2083,38 +2857,60 @@ const MealInputForm = () => {
   const [filterType, setFilterType] = useState("all");
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [ingredientsAddition, setIngredietnsAddition] = useState(false);
   const [existsMessage, setExistsMessage] = useState("");
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [previewIngredient, setPreviewIngredient] = useState<any>(null);
 const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const [customIngredient, setCustomIngredient] = useState("");
 
-  // 🔥 FETCH BASED ON MODE
-  // useEffect(() => {
-  //   const fetchIngredients = async () => {
-  //     try {
-  //       let url = "http://localhost:3004/api/ingredients/core";
+  const [loadingTextIndex, setLoadingTextIndex] = useState(0);
 
-  //       console.log("Mode value is " +mode)
+  const [visibleCount, setVisibleCount] = useState(10);
 
-  //       // 👉 restaurant → only restaurant
-  //       // 👉 home → ALL (backend should handle this OR we override)
-  //       if (mode === "restaurant") {
-  //         console.log("Inside Restaurant")
-  //         url += "?mode=restaurant";
-  //       }
+  const animationRef = useRef<HTMLDivElement | null>(null);
 
-  //       const res = await axios.get(url);
+  const animationData =
+  (chefAnimation as any)?.default || chefAnimation;
 
-  //       setAllIngredients(res.data.data || []);
-  //     } catch (err) {
-  //       console.error("Failed to fetch ingredients", err);
-  //     }
-  //   };
+  const Lottie = (LottieModule as any).default || LottieModule;
 
-  //   fetchIngredients();
-  // }, [mode]);
+  const loadingMessages = [
+            "👨‍🍳 Cooking your delicious meals...",
+            "🥗 Picking the best ingredients...",
+            "🔥 Balancing macros perfectly...",
+            "✨ Almost ready to serve..."
+          ];
+
+
+          useEffect(() => {
+            if (!loading) return;
+          
+            const interval = setInterval(() => {
+              setLoadingTextIndex((prev) => (prev + 1) % loadingMessages.length);
+            }, 1800);
+          
+            return () => clearInterval(interval);
+          }, [loading]);
+
+          useEffect(() => {
+            if (!loading || !animationRef.current) return;
+          
+            const anim = lottie.loadAnimation({
+              container: animationRef.current,
+              renderer: "svg",
+              loop: true,
+              autoplay: true,
+              animationData: (chefAnimation as any)?.default || chefAnimation,
+            });
+          
+            return () => anim.destroy();
+          }, [loading]);
+
+
 
     useEffect(() => {
     const fetchIngredients = async () => {
@@ -2134,6 +2930,10 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     fetchIngredients();
   }, [mode]);
 
+  useEffect(() => {
+    setVisibleCount(10);
+  }, [search, filterType]);
+
   const toggleItem = (item: string, list: string[], setList: any) => {
     if (list.includes(item)) {
       setList(list.filter((i) => i !== item));
@@ -2150,38 +2950,14 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     }
   };
 
-  // 🔥 ADD INGREDIENT (clean inline UI)
-  // const handleAddCustom = async () => {
-  //   if (!customIngredient) return;
 
-  //   try {
-  //     setLoading(true);
-
-  //     const res = await axios.post(
-  //       "http://localhost:3004/api/ingredients/create-from-ai",
-  //       { name: customIngredient }
-  //     );
-
-  //     const newItem = res.data.data || res.data.preview;
-
-  //     if (newItem) {
-  //       setAllIngredients((prev) => [newItem, ...prev]);
-  //       setIngredients((prev) => [...prev, newItem.name]);
-  //     }
-
-  //     setCustomIngredient("");
-  //   } catch (err) {
-  //     console.error(err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   const handleAddCustom = async () => {
     if (!customIngredient) return;
   
     try {
-      setLoading(true);
+      // setLoading(true);
+      setIngredietnsAddition(true)
   
       // const res = await axios.post(
       //   "http://localhost:3004/api/ingredients/create-from-ai",
@@ -2244,7 +3020,8 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     } catch (err) {
       console.error(err);
     } finally {
-      setLoading(false);
+      // setLoading(false);
+      setIngredietnsAddition(false);
     }
   };
 
@@ -2316,9 +3093,17 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
           initialMeals: res.data.recommendations,
         },
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to generate meals");
+    
+      const message =
+        err?.response?.data?.message ||
+        "Something went wrong while generating meals";
+    
+      setErrorMessage(message);
+    
+      // auto hide after 3 sec
+      setTimeout(() => setErrorMessage(""), 3000);
     } finally {
       setLoading(false);
     }
@@ -2331,7 +3116,12 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
     );
   });
 
+  const visibleIngredients = filteredIngredients.slice(0, visibleCount);
+
   return (
+    <>
+
+
     <Box
       p={6}
       borderRadius="2xl"
@@ -2342,6 +3132,7 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
       border="1px solid"
       borderColor="brand"
     >
+
       <VStack spacing={5} align="stretch">
 
         {/* 🎯 Goal */}
@@ -2400,7 +3191,7 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
           </HStack>
 
           {/* 🔥 ADD INGREDIENT (ONLY HOME) */}
-          {mode === "home" && (
+          {/* {mode === "home" && (
             <HStack mb={3}>
               <Input
                 placeholder="Add ingredient..."
@@ -2411,7 +3202,7 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
                 Add
               </Button>
             </HStack>
-          )}
+          )} */}
 
 
 
@@ -2487,7 +3278,7 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
           {/* 🔥 GRID (OLD UI RESTORED) */}
           <SimpleGrid columns={[2, 3, 4, 5]} spacing={4}>
-            {filteredIngredients.map((item) => {
+            {visibleIngredients.map((item) => {
               const isSelected = ingredients.includes(item.name);
 
               return (
@@ -2527,10 +3318,24 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
               );
             })}
           </SimpleGrid>
+
+          {visibleCount < filteredIngredients.length && (
+  <Button
+    mt={4}
+    size="sm"
+    variant="outline"
+    onClick={() => setVisibleCount((prev) => prev + 10)}
+  >
+    Show More ({filteredIngredients.length - visibleCount} remaining)
+  </Button>
+)}
         </Box>
 
         {/* 🍱 Food Types */}
-        <HStack flexWrap="wrap">
+       
+        
+        {/* <HStack flexWrap="wrap">
+         
           {ALL_FOOD_TYPES.map((item) => (
             <Tag
               key={item}
@@ -2544,7 +3349,89 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
               <TagLabel>{item}</TagLabel>
             </Tag>
           ))}
+        </HStack> */}
+
+
+        {/* Add Ingredients */}
+
+        {mode === "home" && (
+
+        <Box mt={4} p={3} borderRadius="lg" bg="gray.50" border="1px dashed" borderColor="gray.200">
+
+        <Text fontSize="xs" color="gray.500" mb={2}>
+          Didn’t find your ingredient?
+        </Text>
+
+        <HStack>
+          <Input
+            placeholder="e.g. quinoa, tofu, almond milk..."
+            value={customIngredient}
+            onChange={(e) => setCustomIngredient(e.target.value)}
+            bg="white"
+          />
+
+          <Button
+            onClick={handleAddCustom}
+            colorScheme="brand"
+            size="sm"
+          >
+            + Add
+          </Button>
         </HStack>
+
+        </Box> )}
+
+{/* Add Ingredients Logic Ends */}
+
+<Box>
+  {/* HEADER */}
+  <Text fontSize="sm" fontWeight="semibold" color="gray.700" mb={3}>
+    🍽️ Preferred Food Type
+  </Text>
+
+  {/* OPTIONS */}
+  <HStack spacing={3} overflowX="auto">
+
+    {ALL_FOOD_TYPES.map((item) => {
+      const isSelected = foodType.includes(item);
+
+      return (
+        <Box
+          key={item}
+          minW="110px"
+          px={4}
+          py={3}
+          borderRadius="xl"
+          bg={isSelected ? "brand.300" : "white"}
+          color={isSelected ? "white" : "gray.700"}
+          border="1px solid"
+          borderColor={isSelected ? "brand.300" : "gray.200"}
+          boxShadow={isSelected ? "0 6px 16px rgba(99,189,244,0.4)" : "sm"}
+          cursor="pointer"
+          textAlign="center"
+          transition="all 0.25s ease"
+          _hover={{
+            transform: "translateY(-3px)",
+            boxShadow: "md",
+          }}
+          onClick={() => toggleItem(item, foodType, setFoodType)}
+        >
+          {/* 🔥 ICON (gives premium feel) */}
+          <Text fontSize="20px" mb={1}>
+            {item === "Sandwich" && "🥪"}
+            {item === "Wrap" && "🌯"}
+            {item === "RiceBowl" && "🍚"}
+          </Text>
+
+          <Text fontSize="sm" fontWeight="semibold">
+            {item}
+          </Text>
+        </Box>
+      );
+    })}
+
+  </HStack>
+</Box>
 
         {/* Selected */}
         <HStack flexWrap="wrap">
@@ -2563,12 +3450,109 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
         </HStack>
 
         {/* Loading */}
-        {loading && (
+        {/* {loading && (
           <Box textAlign="center">
             <Spinner size="xl" />
             <Text mt={3}>Cooking your meals... 🍳</Text>
           </Box>
-        )}
+        )} */}
+
+                {ingredientsAddition && (
+          <Box textAlign="center">
+            <Spinner size="xl" />
+            <Text mt={3}>Adding your... 🍳</Text>
+          </Box>
+        )} 
+
+        {/* Rahul */}
+
+ 
+
+        {/* {loading && (
+  <VStack spacing={4} py={6}>
+
+    <Box
+      ref={animationRef}
+      w="160px"
+      h="160px"
+      transform="scale(1.2)"
+    />
+
+    <Text fontWeight="bold" fontSize="md" textAlign="center">
+      {loadingMessages[loadingTextIndex]}
+    </Text>
+
+    <Text fontSize="sm" color="gray.500" textAlign="center">
+      🍳 Crafting meals perfectly for your goal
+    </Text>
+
+  </VStack>
+)} */}
+
+
+{errorMessage && (
+  <Box
+    px={4}
+    py={3}
+    borderRadius="xl"
+    bg="linear-gradient(135deg, #ffeaea, #fff5f5)"
+    border="1px solid"
+    borderColor="red.200"
+    boxShadow="0 4px 12px rgba(255, 0, 0, 0.15)"
+    animation="fadeSlide 0.3s ease"
+  >
+    <Text fontSize="sm" color="red.600" fontWeight="medium">
+      ⚠️ {errorMessage}
+    </Text>
+  </Box>
+)}
+
+{loading && (
+  <Box
+    position="fixed"
+    top="0"
+    left="0"
+    width="100vw"
+    height="100vh"
+    bg="rgba(255, 255, 255, 0.15)" // very light overlay
+    backdropFilter="blur(12px)"
+    zIndex="9999"
+    display="flex"
+    alignItems="center"
+    justifyContent="center"
+  >
+    <VStack spacing={6}>
+
+      {/* 🔥 FLOATING ANIMATION (NO BOX BACKGROUND) */}
+      <Box
+        ref={animationRef}
+        w="200px"
+        h="200px"
+        sx={{
+          filter: "drop-shadow(0 12px 30px rgba(0,0,0,0.2))",
+          animation: "float 3s ease-in-out infinite"
+        }}
+      />
+
+      {/* 🔥 TEXT */}
+      <Text
+        fontWeight="bold"
+        fontSize="lg"
+        textAlign="center"
+        color="gray.800"
+      >
+        {loadingMessages[loadingTextIndex]}
+      </Text>
+
+      <Text fontSize="sm" color="gray.600" textAlign="center">
+        🍳 Crafting something delicious just for you...
+      </Text>
+
+    </VStack>
+  </Box>
+)}
+
+
 
         {/* Submit */}
         <Button
@@ -2654,8 +3638,15 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   </ModalContent>
 </Modal>
       </VStack>
+     
     </Box>
+    </>
   );
 };
 
 export default MealInputForm;
+
+
+
+
+

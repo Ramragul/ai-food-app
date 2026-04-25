@@ -244,7 +244,7 @@ const AppRoutes: React.FC = () => {
       {/* 🔓 PUBLIC */}
       <Route
         path="/"
-        element={user ? <Navigate to="/track-meal" /> : <AuthPage />}
+        element={user ? <Navigate to="/home" /> : <AuthPage />}
       />
       <Route path="/login" element={<Navigate to="/" />} />
 
@@ -256,7 +256,7 @@ const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       >
-        <Route path="/home" element={<Home />} />
+        <Route path="/meals" element={<Home />} />
         <Route path="/recipe" element={<RecipeDetail />} />
         <Route path="/chef/orders" element={<ChefOrders />} />
         <Route path="/results" element={<MealResultsPage />} />
@@ -264,7 +264,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/order-success" element={<OrderSuccess />} />
         <Route path="/track-meal1" element={<TrackMealPage />} />
         <Route path="/add-meal" element={<AddMeal />} />
-        <Route path="/track-meal" element={<Dashboard />} />
+        <Route path="/home" element={<Dashboard />} />
         <Route path="/goal-setup" element={<GoalSetup />} />
 
         <Route path="/profile" element={<ProfilePage />} />

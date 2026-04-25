@@ -20,12 +20,18 @@ const MealResultsPage = () => {
       return;
     }
 
+
+
     // ✅ USE BACKEND DATA DIRECTLY (NO OVERRIDE)
     if (initialMeals.length > 0) {
       setMeals(initialMeals);
     } else {
       fetchMeals(1);
     }
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
   }, []);
 
   const fetchMeals = async (pageNumber: number) => {
@@ -73,9 +79,37 @@ const MealResultsPage = () => {
   return (
     <Box p={6} maxW="1100px" mx="auto">
       <VStack spacing={6} align="stretch">
-        <Text fontSize="2xl" fontWeight="bold">
+        {/* <Text fontSize="2xl" fontWeight="bold">
           🍽️ Generated Meals
-        </Text>
+        </Text> */}
+
+<Box
+  p={5}
+  borderRadius="2xl"
+  bg="linear-gradient(135deg, #eaf6ff, #f5fbff)"
+  border="1px solid"
+  borderColor="brand.200"
+  boxShadow="0 6px 18px rgba(99, 189, 244, 0.25)"
+>
+
+  <VStack align="start" spacing={2}>
+
+    {/* 🔥 TITLE */}
+    <Text
+      fontSize="xl"
+      fontWeight="bold"
+      color="gray.800"
+    >
+      🍽️ Your Meals Are Ready
+    </Text>
+
+    {/* 🔥 SUBTEXT */}
+    <Text fontSize="sm" color="gray.600">
+      Crafted based on your goal & preferences
+    </Text>
+
+  </VStack>
+</Box>
 
         {/* EMPTY STATE */}
         {!loading && meals.length === 0 && (

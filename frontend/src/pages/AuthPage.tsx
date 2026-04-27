@@ -1161,7 +1161,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
 
-import fitnessVideo from "../../public/videos/fitness.mp4";
+import fitnessVideo from "../assets/videos/fitness.mp4";
 // import { ArrowBackIcon } from "@chakra-ui/icons";
 
 const AuthPage = () => {
@@ -1240,7 +1240,7 @@ const AuthPage = () => {
   return (
     <Box minH="100vh" position="relative" overflow="hidden">
 
-      <video autoPlay muted loop playsInline preload="none"
+      <video autoPlay muted loop playsInline preload="auto"
         style={{
           position: "absolute",
           width: "100%",
@@ -1248,7 +1248,7 @@ const AuthPage = () => {
           objectFit: "cover"
         }}
       >
-        <source src={fitnessVideo} type="video/mp4"/>
+        <source src={fitnessVideo} type="video/mp4" />
       </video>
 
       <Box position="absolute" w="100%" h="100%" bg="rgba(0,0,0,0.35)" />

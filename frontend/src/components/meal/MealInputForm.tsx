@@ -2792,7 +2792,7 @@ import { useAppMode } from "../../context/AppModeContext";
 
 
 // import { Player } from "@lottiefiles/react-lottie-player";
-import * as LottieModule from "lottie-react";
+// import * as LottieModule from "lottie-react";
 
 
 import lottie from "lottie-web";
@@ -2873,10 +2873,10 @@ const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const animationRef = useRef<HTMLDivElement | null>(null);
 
-  const animationData =
-  (chefAnimation as any)?.default || chefAnimation;
+  // const animationData =
+  // (chefAnimation as any)?.default || chefAnimation;
 
-  const Lottie = (LottieModule as any).default || LottieModule;
+  // const Lottie = (LottieModule as any).default || LottieModule;
 
   const loadingMessages = [
             "👨‍🍳 Cooking your delicious meals...",

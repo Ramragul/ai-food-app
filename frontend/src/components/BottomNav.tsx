@@ -108,40 +108,184 @@
 
 // Version 2 
 
+// import {
+//   Box,
+//   HStack,
+//   Icon,
+//   Text,
+//   VStack
+// } from "@chakra-ui/react";
+// import { motion } from "framer-motion";
+// import {
+
+//   FiPlusCircle,
+//   FiTarget,
+//   FiActivity,
+//   FiCoffee
+// } from "react-icons/fi";
+// import { useLocation, useNavigate } from "react-router-dom";
+// import type { IconType } from "react-icons";
+
+// const MotionBox = motion(Box);
+// const MotionVStack = motion(VStack);
+
+// type Tab = {
+//   name: string;
+//   icon: IconType;
+//   path: string;
+// };
+
+// const tabs: Tab[] = [
+
+//   { name: "Track", icon: FiActivity, path: "/home" },
+//   { name: "Add", icon: FiPlusCircle, path: "/add-meal" },
+//   { name: "Goal", icon: FiTarget, path: "/goal-setup" },
+//   { name: "Generate Meals", icon: FiCoffee, path: "/meals" }
+// ];
+
+// const BottomNav: React.FC = () => {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+
+//   return (
+//     <Box
+//       position="fixed"
+//       bottom="14px"
+//       left="50%"
+//       transform="translateX(-50%)"
+//       w="92%"
+//       maxW="420px"
+//       bg="rgba(255,255,255,0.75)"
+//       backdropFilter="blur(20px)"
+//       borderRadius="2xl"
+//       boxShadow="0 20px 40px rgba(0,0,0,0.08)"
+//       border="1px solid rgba(0,0,0,0.04)"
+//       py={2}
+//       px={2}
+//       zIndex={100}
+//     >
+//       <HStack justify="space-between">
+
+//         {tabs.map((tab) => {
+//           const isActive = location.pathname === tab.path;
+
+//           return (
+//             <MotionVStack
+//               key={tab.path}
+//               spacing={0}
+//               cursor="pointer"
+//               flex={1}
+//               onClick={() => navigate(tab.path)}
+//               initial={false}
+//               animate={{
+//                 y: isActive ? -4 : 0
+//               }}
+//               transition={{ type: "spring", stiffness: 300 }}
+//             >
+//               {/* 🔥 ICON CONTAINER */}
+//               <MotionBox
+//                 position="relative"
+//                 w="42px"
+//                 h="42px"
+//                 display="flex"
+//                 alignItems="center"
+//                 justifyContent="center"
+//                 borderRadius="full"
+//                 bg={isActive ? "rgba(0,191,255,0.12)" : "transparent"}
+//                 boxShadow={
+//                   isActive
+//                     ? "0 0 12px rgba(0,191,255,0.25)"
+//                     : "none"
+//                 }
+//                 transition={{
+//                   duration: 0.25,
+//                   ease: "easeInOut"
+//                 }}
+//               >
+//                 <Icon
+//                   as={tab.icon}
+//                   boxSize={5}
+//                   color={isActive ? "blue.500" : "gray.500"}
+//                 />
+//               </MotionBox>
+
+//               {/* 🔥 LABEL */}
+//               <MotionBox
+//                 mt="2px"
+//                 initial={false}
+//                 animate={{
+//                   opacity: isActive ? 1 : 0.6,
+//                   scale: isActive ? 1 : 0.9
+//                 }}
+//                 transition={{ duration: 0.2 }}
+//               >
+//                 <Text
+//                   fontSize="10px"
+//                   fontWeight={isActive ? "600" : "500"}
+//                   color={isActive ? "blue.500" : "gray.400"}
+//                 >
+//                   {tab.name}
+//                 </Text>
+//               </MotionBox>
+//             </MotionVStack>
+//           );
+//         })}
+
+//       </HStack>
+//     </Box>
+//   );
+// };
+
+// export default BottomNav;
+
+// function FiFood(props: IconBaseProps): ReactNode {
+//   throw new Error("Function not implemented.");
+// }
+
+
+
+// Version 3 : icon enhancements 
+
 import {
   Box,
   HStack,
-  Icon,
   Text,
   VStack
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import {
-  FiHome,
-  FiPlusCircle,
-  FiTarget,
-  FiActivity,
-  FiCoffee
-} from "react-icons/fi";
 import { useLocation, useNavigate } from "react-router-dom";
-import type { IconType } from "react-icons";
+// import {
+//   BarChart3,
+//   PlusCircle,
+//   Target,
+//   Utensils
+// } from "lucide-react";
+
+
 
 const MotionBox = motion(Box);
 const MotionVStack = motion(VStack);
 
 type Tab = {
   name: string;
-  icon: IconType;
+  icon: string;
   path: string;
 };
 
 const tabs: Tab[] = [
-
-  { name: "Track", icon: FiActivity, path: "/home" },
-  { name: "Add", icon: FiPlusCircle, path: "/add-meal" },
-  { name: "Goal", icon: FiTarget, path: "/goal-setup" },
-  { name: "Generate Meals", icon: FiCoffee, path: "/meals" }
+  //{ name: "Track", icon: "📊🥗🍔🍳🧑🏻‍🍳", path: "/home" },
+  { name: "Home", icon: "🏠", path: "/home" },
+  { name: "Add Meal", icon: "➕", path: "/add-meal" },
+  { name: "Goal", icon: "🎯", path: "/goal-setup" },
+  { name: "Kitchen", icon: "🍳", path: "/meals" }
 ];
+
+// const tabs: Tab[] = [
+//   { name: "Track", icon: BarChart3, path: "/home" },
+//   { name: "Add", icon: PlusCircle, path: "/add-meal" },
+//   { name: "Goal", icon: Target, path: "/goal-setup" },
+//   { name: "Meals", icon: Utensils, path: "/meals" }
+// ];
 
 const BottomNav: React.FC = () => {
   const navigate = useNavigate();
@@ -155,17 +299,15 @@ const BottomNav: React.FC = () => {
       transform="translateX(-50%)"
       w="92%"
       maxW="420px"
-      bg="rgba(255,255,255,0.75)"
+      bg="rgba(255,255,255,0.8)"
       backdropFilter="blur(20px)"
       borderRadius="2xl"
       boxShadow="0 20px 40px rgba(0,0,0,0.08)"
-      border="1px solid rgba(0,0,0,0.04)"
       py={2}
       px={2}
       zIndex={100}
     >
       <HStack justify="space-between">
-
         {tabs.map((tab) => {
           const isActive = location.pathname === tab.path;
 
@@ -176,61 +318,30 @@ const BottomNav: React.FC = () => {
               cursor="pointer"
               flex={1}
               onClick={() => navigate(tab.path)}
-              initial={false}
-              animate={{
-                y: isActive ? -4 : 0
-              }}
-              transition={{ type: "spring", stiffness: 300 }}
+              animate={{ y: isActive ? -4 : 0 }}
             >
-              {/* 🔥 ICON CONTAINER */}
+              {/* 🔥 EMOJI ICON */}
               <MotionBox
-                position="relative"
-                w="42px"
-                h="42px"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                borderRadius="full"
-                bg={isActive ? "rgba(0,191,255,0.12)" : "transparent"}
-                boxShadow={
-                  isActive
-                    ? "0 0 12px rgba(0,191,255,0.25)"
-                    : "none"
-                }
-                transition={{
-                  duration: 0.25,
-                  ease: "easeInOut"
+                fontSize="26px"
+                animate={{
+                  scale: isActive ? 1.3 : 1
                 }}
+                transition={{ type: "spring", stiffness: 300 }}
               >
-                <Icon
-                  as={tab.icon}
-                  boxSize={5}
-                  color={isActive ? "blue.500" : "gray.500"}
-                />
+                {tab.icon}
               </MotionBox>
 
-              {/* 🔥 LABEL */}
-              <MotionBox
+              <Text
+                fontSize="10px"
+                fontWeight={isActive ? "600" : "500"}
+                color={isActive ? "blue.500" : "gray.400"}
                 mt="2px"
-                initial={false}
-                animate={{
-                  opacity: isActive ? 1 : 0.6,
-                  scale: isActive ? 1 : 0.9
-                }}
-                transition={{ duration: 0.2 }}
               >
-                <Text
-                  fontSize="10px"
-                  fontWeight={isActive ? "600" : "500"}
-                  color={isActive ? "blue.500" : "gray.400"}
-                >
-                  {tab.name}
-                </Text>
-              </MotionBox>
+                {tab.name}
+              </Text>
             </MotionVStack>
           );
         })}
-
       </HStack>
     </Box>
   );
@@ -238,6 +349,106 @@ const BottomNav: React.FC = () => {
 
 export default BottomNav;
 
-function FiFood(props: IconBaseProps): ReactNode {
-  throw new Error("Function not implemented.");
-}
+
+
+// import {
+//   Box,
+//   HStack,
+//   Text,
+//   VStack
+// } from "@chakra-ui/react";
+// import { motion } from "framer-motion";
+// import { useLocation, useNavigate } from "react-router-dom";
+// import {
+//   BarChart3,
+//   PlusCircle,
+//   Target,
+//   Utensils
+// } from "lucide-react";
+// import type { LucideIcon } from "lucide-react";
+
+// const MotionBox = motion(Box);
+// const MotionVStack = motion(VStack);
+
+// type Tab = {
+//   name: string;
+//   icon: LucideIcon;
+//   path: string;
+// };
+
+// const tabs: Tab[] = [
+//   { name: "Track", icon: BarChart3, path: "/home" },
+//   { name: "Add", icon: PlusCircle, path: "/add-meal" },
+//   { name: "Goal", icon: Target, path: "/goal-setup" },
+//   { name: "Meals", icon: Utensils, path: "/meals" }
+// ];
+
+// const BottomNav: React.FC = () => {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+
+//   return (
+//     <Box
+//       position="fixed"
+//       bottom="14px"
+//       left="50%"
+//       transform="translateX(-50%)"
+//       w="92%"
+//       maxW="420px"
+//       bg="rgba(255,255,255,0.8)"
+//       backdropFilter="blur(20px)"
+//       borderRadius="2xl"
+//       boxShadow="0 20px 40px rgba(0,0,0,0.08)"
+//       py={2}
+//       px={2}
+//       zIndex={100}
+//     >
+//       <HStack justify="space-between">
+//         {tabs.map((tab) => {
+//           const isActive = location.pathname === tab.path;
+//           const IconComponent = tab.icon; // ✅ IMPORTANT
+
+//           return (
+//             <MotionVStack
+//               key={tab.path}
+//               spacing={0}
+//               cursor="pointer"
+//               flex={1}
+//               onClick={() => navigate(tab.path)}
+//               animate={{ y: isActive ? -4 : 0 }}
+//             >
+//               {/* 🔥 ICON */}
+//               <MotionBox
+//                 display="flex"
+//                 alignItems="center"
+//                 justifyContent="center"
+//                 h="40px"
+//                 animate={{
+//                   scale: isActive ? 1.25 : 1
+//                 }}
+//                 transition={{ type: "spring", stiffness: 300 }}
+//               >
+//                 <IconComponent
+//                   size={24}
+//                   color={isActive ? "#3182CE" : "#A0AEC0"}
+//                 />
+//               </MotionBox>
+
+//               {/* 🔥 LABEL */}
+//               <Text
+//                 fontSize="10px"
+//                 fontWeight={isActive ? "600" : "500"}
+//                 color={isActive ? "blue.500" : "gray.400"}
+//                 mt="2px"
+//               >
+//                 {tab.name}
+//               </Text>
+//             </MotionVStack>
+//           );
+//         })}
+//       </HStack>
+//     </Box>
+//   );
+// };
+
+// export default BottomNav;

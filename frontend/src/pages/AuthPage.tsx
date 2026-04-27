@@ -1160,7 +1160,9 @@ import api from "../utils/api"
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
-import { ArrowBackIcon } from "@chakra-ui/icons";
+
+import fitnessVideo from "../../public/videos/fitness.mp4";
+// import { ArrowBackIcon } from "@chakra-ui/icons";
 
 const AuthPage = () => {
   const { login } = useAuth();
@@ -1246,7 +1248,7 @@ const AuthPage = () => {
           objectFit: "cover"
         }}
       >
-        <source src="/videos/fitness.mp4" type="video/mp4" />
+        <source src={fitnessVideo} type="video/mp4"/>
       </video>
 
       <Box position="absolute" w="100%" h="100%" bg="rgba(0,0,0,0.35)" />

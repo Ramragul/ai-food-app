@@ -220,6 +220,7 @@ import ProtectedRoute from "../components/ProtectedRoute";
 
 // Pages
 import Home from "../pages/Home";
+
 import RecipeDetail from "../pages/RecipeDetail";
 import ChefOrders from "../pages/ChefOrders";
 import MealResultsPage from "../pages/MealResultsPage";
@@ -235,6 +236,12 @@ import AppLayout from "../components/AppLayout";
 import ProfilePage from "../pages/ProfilePage";
 
 
+import ContactUsPage from "../pages/ContactUsPage";
+import TermsConditionsPage from "../pages/TermsConditionsPage";
+import PrivacyPolicyPage from "../pages/PrivacyPolicyPage";
+
+
+
 const AppRoutes: React.FC = () => {
   const { user } = useAuth();
 
@@ -247,6 +254,10 @@ const AppRoutes: React.FC = () => {
         element={user ? <Navigate to="/home" /> : <AuthPage />}
       />
       <Route path="/login" element={<Navigate to="/" />} />
+
+      <Route path="/contactus" element={<ContactUsPage />} />
+        <Route path="/tc" element={<TermsConditionsPage/>} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
 
       {/* 🔐 PROTECTED + LAYOUT (ONE WRAPPER 💎) */}
       <Route
@@ -268,6 +279,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/goal-setup" element={<GoalSetup />} />
 
         <Route path="/profile" element={<ProfilePage />} />
+      
       </Route>
 
       {/* 🔥 FALLBACK */}

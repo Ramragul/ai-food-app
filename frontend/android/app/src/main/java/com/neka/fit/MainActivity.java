@@ -1,4 +1,4 @@
-package nekaapp.com;
+package com.neka.fit;
 
 import com.getcapacitor.BridgeActivity;
 

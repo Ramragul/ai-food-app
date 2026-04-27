@@ -1529,7 +1529,8 @@ import {
   MenuList,
   MenuItem,
   Icon,
-  Image
+  Image,
+  Text,
 } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -1563,7 +1564,8 @@ const Navbar: React.FC = () => {
   const getPageTitle = () => {
     if (location.pathname === "/profile") return "Profile";
     if (location.pathname === "/goal-setup") return "Your Goal";
-    if (location.pathname === "/home") return "Dashboard";
+    if (location.pathname === "/add-meal") return "Add what you ate today";
+    if (location.pathname === "/home") return "Your Intake Dashboard";
     return "";
   };
 
@@ -1671,7 +1673,10 @@ const Navbar: React.FC = () => {
                 color="gray.700"
                 letterSpacing="0.5px"
               >
-                {getPageTitle()}
+                {/* {getPageTitle()} */}
+                <Text color="brand.900">
+                {getPageTitle() ?? ""}
+              </Text>
               </MotionBox>
             </AnimatePresence>
           )}

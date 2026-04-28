@@ -43,7 +43,7 @@ const DeleteAccount = () => {
             • Some data may be retained temporarily for legal/security purposes  
           </Text>
 
-          {/* <Text fontSize="sm" color="gray.300">
+          <Text fontSize="sm" color="gray.300">
             Enter your registered email or mobile number below to proceed:
           </Text>
 
@@ -63,7 +63,7 @@ const DeleteAccount = () => {
             isDisabled={!email}
           >
             Request Account Deletion
-          </Button> */}
+          </Button>
 
           <Text fontSize="xs" color="gray.400">
             You can  request deletion by emailing us at

@@ -6,7 +6,7 @@ const DeleteAccount = () => {
 
   const handleRequest = () => {
     // For now just mail redirect (simple + Play Store compliant)
-    window.location.href = `mailto:support@nekaapp.com?subject=Delete Account Request&body=Please delete my account associated with: ${email}`;
+    window.location.href = `mailto:iotprograms@gmail.com?subject=Delete Account Request&body=Please delete my account associated with: ${email}`;
   };
 
   return (
@@ -66,7 +66,7 @@ const DeleteAccount = () => {
           </Button>
 
           <Text fontSize="xs" color="gray.400">
-            You can  request deletion by emailing us at
+            You can also request deletion by emailing us at
             iotprograms@gmail.com. Requests are processed within 7 days.
           </Text>
         </VStack>

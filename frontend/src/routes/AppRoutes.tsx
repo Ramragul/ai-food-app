@@ -239,6 +239,7 @@ import ProfilePage from "../pages/ProfilePage";
 import ContactUsPage from "../pages/ContactUsPage";
 import TermsConditionsPage from "../pages/TermsConditionsPage";
 import PrivacyPolicyPage from "../pages/PrivacyPolicyPage";
+import DeleteAccount from "../pages/DeleteAccount";
 
 
 
@@ -258,6 +259,7 @@ const AppRoutes: React.FC = () => {
       <Route path="/contactus" element={<ContactUsPage />} />
         <Route path="/tc" element={<TermsConditionsPage/>} />
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
+        <Route path="/delete-account" element={<DeleteAccount/>} />
 
       {/* 🔐 PROTECTED + LAYOUT (ONE WRAPPER 💎) */}
       <Route

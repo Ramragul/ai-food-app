@@ -1161,7 +1161,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
 
-// import fitnessVideo from "../assets/videos/fitness.mp4";
+import fitnessVideo from "../assets/videos/fitness.mp4";
 // import { ArrowBackIcon } from "@chakra-ui/icons";
 
 const AuthPage = () => {

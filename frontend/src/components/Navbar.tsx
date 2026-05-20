@@ -1583,7 +1583,12 @@ const Navbar: React.FC = () => {
       initial={{ y: -30, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
     >
-      <Flex align="center" justify="space-between">
+
+      <Flex
+      align="center"
+      justify="space-between"
+      minH="56px"
+      >
 
         {/* 🔥 BRAND */}
         <Box

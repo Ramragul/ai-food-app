@@ -1,20 +1,34 @@
-// import { StrictMode } from 'react'
-// import { createRoot } from 'react-dom/client'
-// import './index.css'
-// import App from './App.tsx'
+// Version 1
 
-// createRoot(document.getElementById('root')!).render(
-//   <StrictMode>
-//     <App />
-//   </StrictMode>,
-// )
 
+// import React from "react";
+// import ReactDOM from "react-dom/client";
+// import App from "./App";
+// import { ChakraProvider } from "@chakra-ui/react";
+// import theme from "../src/theme/theme.ts";
+
+// ReactDOM.createRoot(document.getElementById("root")!).render(
+//   <React.StrictMode>
+//     <ChakraProvider theme={theme}>
+//       <App />
+//     </ChakraProvider>
+//   </React.StrictMode>
+// );
+
+
+// Version 2
 
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "../src/theme/theme.ts";
+
+import { StatusBar, Style } from "@capacitor/status-bar";
+
+// 🔥 IMPORTANT FIX
+StatusBar.setOverlaysWebView({ overlay: false });
+StatusBar.setStyle({ style: Style.Dark });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

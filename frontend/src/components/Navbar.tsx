@@ -1537,7 +1537,9 @@ import {
   FiUser,
   FiTarget,
   FiActivity,
-  FiLogOut
+  FiLogOut,
+  FiDelete,
+  FiTrash
 } from "react-icons/fi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppMode } from "../context/AppModeContext";
@@ -1731,6 +1733,10 @@ const Navbar: React.FC = () => {
               onClick={handleLogout}
             >
               Logout
+            </MenuItem>
+
+            <MenuItem icon={<Icon as={FiTrash} />} onClick={() => navigate("/delete-account")}>
+              Delete Account
             </MenuItem>
           </MenuList>
         </Menu>

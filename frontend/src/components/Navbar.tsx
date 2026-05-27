@@ -1539,7 +1539,9 @@ import {
   FiActivity,
   FiLogOut,
   FiDelete,
-  FiTrash
+  FiTrash,
+  FiLifeBuoy,
+  FiTrendingUp
 } from "react-icons/fi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppMode } from "../context/AppModeContext";
@@ -1725,6 +1727,10 @@ const Navbar: React.FC = () => {
 
             <MenuItem icon={<Icon as={FiActivity} />} onClick={() => navigate("/track-meal")}>
               My Day
+            </MenuItem>
+
+             <MenuItem icon={<Icon as={FiTrendingUp} />} onClick={() => navigate("/bmi-calculator")}>
+              BMI Calculator
             </MenuItem>
 
             <MenuItem

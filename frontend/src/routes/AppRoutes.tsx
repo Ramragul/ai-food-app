@@ -240,6 +240,7 @@ import ContactUsPage from "../pages/ContactUsPage";
 import TermsConditionsPage from "../pages/TermsConditionsPage";
 import PrivacyPolicyPage from "../pages/PrivacyPolicyPage";
 import DeleteAccount from "../pages/DeleteAccount";
+import BMICalculator from "../pages/BMICalculator";
 
 
 
@@ -281,6 +282,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/goal-setup" element={<GoalSetup />} />
 
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/bmi-calculator" element={<BMICalculator />} />
       
       </Route>
 

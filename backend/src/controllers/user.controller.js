@@ -38,7 +38,8 @@
 
 import {
     getUserProfileService,
-    updateUserProfileService
+    updateUserProfileService,
+    deleteUserAccountService
   } from "../services/user/user.service.js";
   
   /**
@@ -85,3 +86,28 @@ import {
       });
     }
   };
+
+
+/**
+ * DELETE USER ACCOUNT
+ */
+export const deleteAccount = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    await deleteUserAccountService(userId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Account deleted successfully"
+    });
+
+  } catch (err) {
+    console.error("DELETE ACCOUNT ERROR:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete account"
+    });
+  }
+};

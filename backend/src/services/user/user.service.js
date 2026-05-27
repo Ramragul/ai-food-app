@@ -34,3 +34,20 @@ export const updateUserProfileService = async (userId, data) => {
 
   return { message: "Profile updated successfully" };
 };
+
+
+
+/**
+ * DELETE USER ACCOUNT SERVICE
+ */
+export const deleteUserAccountService = async (userId) => {
+  await pool.query(
+    `DELETE FROM users
+     WHERE id = $1`,
+    [userId]
+  );
+
+  return {
+    message: "Account deleted successfully"
+  };
+};

@@ -2,6 +2,8 @@ import pool from "../db/connection.js";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/jwt.js";
 
+
+
 export const signupService = async (data) => {
   const {
     name,
@@ -36,6 +38,7 @@ export const signupService = async (data) => {
 export const loginService = async (mobile, password) => {
   const result = await pool.query(
     "SELECT * FROM users WHERE mobile=$1",
+   
     [mobile]
   );
 

@@ -1926,6 +1926,334 @@ const normalizeAIResponse = (parsed) => {
   return { recommendations: [] };
 };
 
+
+// Version 1
+
+// export const getMealRecommendations = async ({
+//   goal,
+//   structuredGoal,
+//   ingredients,
+//   foodType,
+//   count = 5,
+// }) => {
+//   try {
+//     const ingredientNames = normalizeIngredients(ingredients);
+
+//     const mainIngredients = await fetchMainIngredientsFromDB(
+//       ingredientNames
+//     );
+
+//     const supportingIngredients = await fetchSupportingIngredients();
+
+//     const dbMap = buildIngredientMap([
+//       ...supportingIngredients,
+//     ]);
+
+//     const dbIngredientNames = [
+//       ...new Set(Object.values(dbMap).map(i => i.name))
+//     ];
+
+    
+// const prompt = `
+// You are an expert chef + nutritionist.
+
+// User goals (raw):
+// ${goal}
+
+// --------------------------------------
+// STRUCTURED UNDERSTANDING
+// --------------------------------------
+
+// Goal Type: ${structuredGoal?.goalType || "not specified"}
+
+// Preferences:
+// ${JSON.stringify(structuredGoal?.preferences || {}, null, 2)}
+
+// Targets:
+// ${JSON.stringify(structuredGoal?.targets || {}, null, 2)}
+
+// --------------------------------------
+// AVAILABLE INGREDIENTS (STRICT CONSTRAINT)
+// --------------------------------------
+
+// Main ingredients:
+// ${ingredients.join(", ")}
+
+// Supporting / Base ingredients:
+// ${dbIngredientNames.slice(0, 25).join(", ")}
+
+// 🚨 RULE:
+// - You MUST ONLY use ingredients from the above lists
+// - DO NOT use anything outside
+// - Kitchen constraint is STRICT
+
+// --------------------------------------
+// 🚨 CRITICAL OUTPUT RULE (HIGHEST PRIORITY)
+// --------------------------------------
+
+// Each item MUST include:
+
+// - "ingredients" (MANDATORY)
+// - MUST have at least 3 items
+// - MUST NEVER be empty
+// - NEVER return []
+
+// Format MUST be:
+
+
+// "ingredients": [
+//   { "name": "chicken", "quantity": 200, "unit": "g" },
+//   { "name": "rice", "quantity": 100, "unit": "g" }
+// ]
+
+// ❌ NOT:
+// "ingredients": []
+// ❌ NOT:
+// "1 cup rice"
+
+// If ingredients are missing → RESPONSE IS INVALID
+
+// --------------------------------------
+// STEP 1: UNDERSTAND GOALS
+// --------------------------------------
+
+// Extract:
+// - protein / carbs / fat / calories
+// - body goal
+
+// If missing → estimate intelligently
+
+// --------------------------------------
+// STEP 2: GENERATE RECOMMENDATIONS
+// --------------------------------------
+
+// - EXACTLY ${count} recommendations
+// - UNIQUE dishes only
+// - realistic & practical
+
+// - Types:
+//   → "single"
+//   → "combo" (ONLY if needed)
+
+// COMBO RULE:
+// - Use only if necessary
+// - First add whey protein if needed
+
+// --------------------------------------
+// STEP 3: FOOD TYPE RULES
+// --------------------------------------
+
+// - Respect foodType strictly
+// - Distribute if multiple
+
+// --------------------------------------
+// STEP 4: TASTE & REALISM
+// --------------------------------------
+
+// - Must be tasty
+// - Must be cookable
+// - Avoid boring food
+
+// --------------------------------------
+// STEP 5: NUTRITION RULES
+// --------------------------------------
+
+// - Within ±15g protein
+// - Avoid unrealistic macros
+
+// --------------------------------------
+// STEP 6: COOKING DETAILS
+// --------------------------------------
+
+// Each item MUST include:
+
+// - ingredients (MANDATORY — already defined above)
+// - steps (4–8 steps)
+// - prepTime
+// - difficulty
+
+// Steps MUST USE the ingredients listed above
+
+// --------------------------------------
+// SMART INGREDIENT RULES
+// --------------------------------------
+
+// - Use user ingredients:
+//   ${ingredients.join(", ")}
+
+// - Use 1–2 per dish
+// - Distribute across dishes
+
+// - Supporting ingredients:
+//   → use only when needed
+//   → keep minimal
+
+// --------------------------------------
+// OUTPUT FORMAT (STRICT JSON)
+// --------------------------------------
+
+// Return ONLY JSON.
+
+// {
+//   "recommendations": [
+//     {
+//       "type": "single",
+//       "items": [
+//         {
+//           "name": "",
+//           "foodType": "",
+//           "description": "",
+//           "spiceLevel": "",
+//           "cookingMethod": "",
+//           "ingredients": [
+//             "chicken",
+//             "rice",
+//             "onion"
+//           ],
+//           "utensils": [],
+//           "steps": [],
+//           "prepTime": "",
+//           "difficulty": "",
+//           "nutrition": {
+//             "protein": "",
+//             "calories": "",
+//             "fat": "",
+//               "carbs": ""
+//           }
+//         }
+//       ],
+//       "totalNutrition": {
+//         "protein": "",
+//         "calories": "",
+//         "fat": "",
+//         "carbs": ""
+//       }
+//     }
+//   ]
+// }
+// `;
+
+//     const callAI = async () => {
+//       const res = await axios.post(
+//         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${process.env.GEMINI_API_KEY}`,
+//         { contents: [{ parts: [{ text: prompt }] }] }
+//       );
+
+//       return res.data.candidates?.[0]?.content?.parts?.[0]?.text;
+//     };
+
+//     let parsed;
+
+//     const cleaned = await callAI();
+//     parsed = extractValidJSON(cleaned);
+//     parsed = normalizeAIResponse(parsed);
+
+//     // for (const rec of parsed.recommendations) {
+//     //   for (const item of rec.items || []) {
+
+//     //     // 🔥 MAIN FIX
+//     //     if (!item.ingredients || item.ingredients.length === 0) {
+//     //       console.log("⚠️ Extracting ingredients from steps");
+
+//     //       item.ingredients = extractIngredientsFromSteps(
+//     //         item.steps,
+//     //         dbMap
+//     //       );
+//     //     }
+
+//     //     item.ingredients = sanitizeIngredients(
+//     //       item.ingredients,
+//     //       dbMap
+//     //     );
+
+//     //     item.nutrition = calculateNutrition(
+//     //       item.ingredients,
+//     //       dbMap
+//     //     );
+//     //   }
+
+//     //   const mainItem = rec.items?.[0];
+//     //   if (mainItem?.name) {
+//     //     try {
+//     //       rec.imageUrl = await fetchFoodImage(mainItem.name);
+//     //       console.log("Imageurl" +rec.imageUrl) 
+//     //     } catch {
+//     //       rec.imageUrl = null;
+//     //     }
+//     //   }
+//     // }
+
+//     for (const rec of parsed.recommendations) {
+//       for (const item of rec.items || []) {
+    
+//         // 🔥 STEP 1: fallback if AI gives empty ingredients
+//         if (!item.ingredients || item.ingredients.length === 0) {
+//           console.log("⚠️ Extracting ingredients from steps");
+    
+//           const extracted = extractIngredientsFromSteps(
+//             item.steps,
+//             dbMap
+//           );
+    
+//           // ✅ convert to structured format
+//           item.ingredients = extracted.map(name => ({
+//             name,
+//             quantity: 100, // default for now
+//             unit: "g",
+//           }));
+//         }
+    
+//         // 🔥 STEP 2: normalize existing AI ingredients (IMPORTANT)
+//         else {
+//           item.ingredients = item.ingredients.map(i => {
+//             // if already object → keep
+//             if (typeof i === "object") return i;
+    
+//             // if string → convert
+//             return {
+//               name: i,
+//               quantity: 100,
+//               unit: "g",
+//             };
+//           });
+//         }
+    
+//         // 🔥 STEP 3: sanitize (DB mapping)
+//         item.ingredients = sanitizeIngredients(
+//           item.ingredients,
+//           dbMap
+//         );
+    
+//         // 🔥 STEP 4: nutrition calculation
+//         item.nutrition = calculateNutrition(
+//           item.ingredients,
+//           dbMap
+//         );
+//       }
+    
+//       const mainItem = rec.items?.[0];
+//       if (mainItem?.name) {
+//         try {
+//           rec.imageUrl = await fetchFoodImage(mainItem.name);
+//           console.log("Imageurl " + rec.imageUrl);
+//         } catch {
+//           rec.imageUrl = null;
+//         }
+//       }
+//     }
+
+//     return parsed;
+
+//   } catch (error) {
+//     console.error("AI Error:", error.message);
+//     throw new Error("Failed to generate meals");
+//   }
+// };
+
+
+
+// Version 2 
+
 export const getMealRecommendations = async ({
   goal,
   structuredGoal,
@@ -2086,6 +2414,13 @@ SMART INGREDIENT RULES
   → keep minimal
 
 --------------------------------------
+  RICE BOWL RULE
+--------------------------------------
+- If foodType is "RiceBowl", MUST include rice
+- Add realistic rice quantity (100g–200g cooked rice)
+- Nutrition MUST include rice macros
+- Steps MUST mention cooking/serving rice
+  --------------------------------------
 OUTPUT FORMAT (STRICT JSON)
 --------------------------------------
 
@@ -2220,6 +2555,22 @@ Return ONLY JSON.
           item.ingredients,
           dbMap
         );
+
+        if (
+              item.foodType?.toLowerCase() === "RiceBowl"
+            ) {
+              const hasRice = item.ingredients.some(i =>
+                i.name.toLowerCase().includes("rice")
+              );
+
+              if (!hasRice) {
+                item.ingredients.push({
+                  name: "white rice",
+                  quantity: 150,
+                  unit: "g",
+                });
+              }
+            }
     
         // 🔥 STEP 4: nutrition calculation
         item.nutrition = calculateNutrition(

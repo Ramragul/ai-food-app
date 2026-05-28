@@ -2515,66 +2515,39 @@ Return ONLY JSON.
     //   }
     // }
 
-    for (const rec of parsed.recommendations) {
-      for (const item of rec.items || []) {
-    
-        // 🔥 STEP 1: fallback if AI gives empty ingredients
-        if (!item.ingredients || item.ingredients.length === 0) {
-          console.log("⚠️ Extracting ingredients from steps");
-    
-          const extracted = extractIngredientsFromSteps(
-            item.steps,
-            dbMap
-          );
-    
-          // ✅ convert to structured format
-          item.ingredients = extracted.map(name => ({
-            name,
-            quantity: 100, // default for now
-            unit: "g",
-          }));
-        }
-    
-        // 🔥 STEP 2: normalize existing AI ingredients (IMPORTANT)
-        else {
-          item.ingredients = item.ingredients.map(i => {
-            // if already object → keep
-            if (typeof i === "object") return i;
-    
-            // if string → convert
-            return {
-              name: i,
-              quantity: 100,
-              unit: "g",
-            };
-          });
-        }
-    
-        // 🔥 STEP 3: sanitize (DB mapping)
-        item.ingredients = sanitizeIngredients(
-          item.ingredients,
-          dbMap
-        );
+const isRiceBowlSelected =
+  foodType?.some(
+    f => f.toLowerCase() === "ricebowl"
+  );
 
-        if (
-              item.foodType?.toLowerCase() === "ricebowl"
-            ) {
-              const hasRice = item.ingredients.some(i =>
-                i.name.toLowerCase().includes("rice")
-              );
+for (const rec of parsed.recommendations) {
+  for (const item of rec.items || []) {
 
-              if (!hasRice) {
-                item.ingredients.push({
-                  name: "white rice",
-                  quantity: 150,
-                  unit: "g",
-                });
-              }
-            }
+    // sanitize
+    item.ingredients = sanitizeIngredients(
+      item.ingredients,
+      dbMap
+    );
 
-                if (
-      item.foodType?.toLowerCase() === "ricebowl"
-    ) {
+    // 🔥 RICE FIX
+    if (isRiceBowlSelected) {
+
+      const hasRice = item.ingredients.some(i =>
+        i.name?.toLowerCase().includes("rice")
+      );
+
+      if (!hasRice) {
+        item.ingredients.push({
+          name: "white rice",
+          quantity: 150,
+          unit: "g",
+        });
+      }
+    }
+
+    // 🔥 STEP FIX
+    if (isRiceBowlSelected) {
+
       const riceStepExists = item.steps?.some(step =>
         step.toLowerCase().includes("rice")
       );
@@ -2585,24 +2558,13 @@ Return ONLY JSON.
         );
       }
     }
-    
-        // 🔥 STEP 4: nutrition calculation
-        item.nutrition = calculateNutrition(
-          item.ingredients,
-          dbMap
-        );
-      }
-    
-      const mainItem = rec.items?.[0];
-      if (mainItem?.name) {
-        try {
-          rec.imageUrl = await fetchFoodImage(mainItem.name);
-          console.log("Imageurl " + rec.imageUrl);
-        } catch {
-          rec.imageUrl = null;
-        }
-      }
-    }
+
+    item.nutrition = calculateNutrition(
+      item.ingredients,
+      dbMap
+    );
+  }
+}
 
     return parsed;
 

@@ -2369,7 +2369,37 @@ STEP 3: FOOD TYPE RULES
 --------------------------------------
 
 - Respect foodType strictly
-- Distribute if multiple
+- If multiple foodType values are selected,
+  distribute recommendations across them realistically
+
+- Each recommendation item MUST belong to ONE specific requested foodType
+
+- Each item MUST include:
+  "requestedFoodType"
+
+- "requestedFoodType" MUST exactly match one of the user-selected foodType values
+
+Examples:
+If user selected:
+["Wrap", "RiceBowl"]
+
+Then recommendations should contain:
+- some items with:
+  "requestedFoodType": "Wrap"
+
+- some items with:
+  "requestedFoodType": "RiceBowl"
+
+IMPORTANT:
+- Do NOT invent new requestedFoodType values
+- Preserve exact capitalization and spelling
+- This field is mandatory for every item
+
+RICE BOWL RULE:
+- If requestedFoodType is "RiceBowl":
+  - MUST include rice in ingredients
+  - MUST include rice serving in steps
+  - Nutrition MUST include rice macros
 
 --------------------------------------
 STEP 4: TASTE & REALISM
@@ -2420,7 +2450,9 @@ SMART INGREDIENT RULES
 - Add realistic rice quantity (100g–200g cooked rice)
 - Nutrition MUST include rice macros
 - Steps MUST mention cooking/serving rice
-  --------------------------------------
+
+
+--------------------------------------
 OUTPUT FORMAT (STRICT JSON)
 --------------------------------------
 
@@ -2434,6 +2466,7 @@ Return ONLY JSON.
         {
           "name": "",
           "foodType": "",
+          "requestedFoodType": "",
           "description": "",
           "spiceLevel": "",
           "cookingMethod": "",
@@ -2515,10 +2548,7 @@ Return ONLY JSON.
     //   }
     // }
 
-const isRiceBowlSelected =
-  foodType?.some(
-    f => f.toLowerCase() === "ricebowl"
-  );
+
 
 for (const rec of parsed.recommendations) {
   for (const item of rec.items || []) {
@@ -2529,8 +2559,13 @@ for (const rec of parsed.recommendations) {
       dbMap
     );
 
-    // 🔥 RICE FIX
-    if (isRiceBowlSelected) {
+    // 🔥 ONLY FOR RICE BOWL MEALS
+    const isRiceMeal =
+      item.requestedFoodType
+        ?.toLowerCase()
+        === "ricebowl";
+
+    if (isRiceMeal) {
 
       const hasRice = item.ingredients.some(i =>
         i.name?.toLowerCase().includes("rice")
@@ -2543,10 +2578,6 @@ for (const rec of parsed.recommendations) {
           unit: "g",
         });
       }
-    }
-
-    // 🔥 STEP FIX
-    if (isRiceBowlSelected) {
 
       const riceStepExists = item.steps?.some(step =>
         step.toLowerCase().includes("rice")
@@ -2554,7 +2585,7 @@ for (const rec of parsed.recommendations) {
 
       if (!riceStepExists) {
         item.steps.push(
-          "Cook 150 g white rice separately and serve the curry over the rice."
+          "Cook 150 g white rice separately and serve the meal over the rice."
         );
       }
     }

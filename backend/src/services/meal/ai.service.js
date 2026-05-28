@@ -2557,7 +2557,7 @@ Return ONLY JSON.
         );
 
         if (
-              item.foodType?.toLowerCase() === "RiceBowl"
+              item.foodType?.toLowerCase() === "ricebowl"
             ) {
               const hasRice = item.ingredients.some(i =>
                 i.name.toLowerCase().includes("rice")
@@ -2571,6 +2571,20 @@ Return ONLY JSON.
                 });
               }
             }
+
+                if (
+      item.foodType?.toLowerCase() === "ricebowl"
+    ) {
+      const riceStepExists = item.steps?.some(step =>
+        step.toLowerCase().includes("rice")
+      );
+
+      if (!riceStepExists) {
+        item.steps.push(
+          "Cook 150 g white rice separately and serve the curry over the rice."
+        );
+      }
+    }
     
         // 🔥 STEP 4: nutrition calculation
         item.nutrition = calculateNutrition(

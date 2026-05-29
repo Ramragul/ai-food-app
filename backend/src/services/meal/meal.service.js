@@ -494,26 +494,38 @@ export const generateMealService = async ({
       if (vectorResults.length > 0) {
         console.log("✅ VECTOR HIT");
 
-        allMeals = vectorResults.map(r => ({
-          type: "single",
-          items: [
-            {
-              name: r.name,
-              description: r.description,
-              ingredients: r.ingredients || [],
-              steps: r.steps || [],
-              prepTime: r.prep_time,
-              difficulty: r.difficulty,
-              nutrition: {
-                protein: r.protein,
-                calories: r.calories,
-                fat: r.fat,
-                carbs: r.carbs,
-              },
+      allMeals = vectorResults.map((r) => ({
+        type: "single",
+
+        items: [
+          {
+            name: r.name,
+            description: r.description,
+
+            ingredients: r.ingredients || [],
+            steps: r.steps || [],
+
+            prepTime: r.prep_time,
+            difficulty: r.difficulty,
+
+            nutrition: {
+              protein: r.protein,
+              calories: r.calories,
+              fat: r.fat,
+              carbs: r.carbs,
             },
-          ],
-          imageUrl: r.image_url,
-        }));
+          },
+        ],
+
+        totalNutrition: {
+          protein: r.protein,
+          calories: r.calories,
+          fat: r.fat,
+          carbs: r.carbs,
+        },
+
+        imageUrl: r.image_url,
+      }));
 
         await redis.set(cacheKey, JSON.stringify(allMeals), {
           ex: 3600,

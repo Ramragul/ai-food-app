@@ -502,7 +502,17 @@ export const generateMealService = async ({
             name: r.name,
             description: r.description,
 
-            ingredients: r.ingredients || [],
+            // ingredients: r.ingredients || [],
+
+            ingredients: (r.ingredients || []).map((ing) => {
+            try {
+              return typeof ing === "string"
+                ? JSON.parse(ing)
+                : ing;
+            } catch {
+              return ing;
+            }
+          }),
             steps: r.steps || [],
 
             prepTime: r.prep_time,

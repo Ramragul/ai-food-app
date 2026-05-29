@@ -550,7 +550,7 @@ export const generateMealService = async ({
   foodType,
 });
 
-// Remove recipes that have ZERO overlap with selected ingredients
+// Remove recipes that have ZERO overlap with selected ingredients , optimisation
 const filteredVectorResults =
   ingredients?.length > 0
     ? vectorResults.filter((recipe) => {

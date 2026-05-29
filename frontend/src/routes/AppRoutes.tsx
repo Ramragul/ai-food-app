@@ -257,10 +257,7 @@ const AppRoutes: React.FC = () => {
       />
       <Route path="/login" element={<Navigate to="/" />} />
 
-      <Route path="/contactus" element={<ContactUsPage />} />
-        <Route path="/tc" element={<TermsConditionsPage/>} />
-        <Route path="/privacy" element={<PrivacyPolicyPage />} />
-        <Route path="/delete-account" element={<DeleteAccount/>} />
+   
 
       {/* 🔐 PROTECTED + LAYOUT (ONE WRAPPER 💎) */}
       <Route
@@ -283,6 +280,11 @@ const AppRoutes: React.FC = () => {
 
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/bmi-calculator" element={<BMICalculator />} />
+
+           <Route path="/contactus" element={<ContactUsPage />} />
+        <Route path="/tc" element={<TermsConditionsPage/>} />
+        <Route path="/privacy" element={<PrivacyPolicyPage />} />
+        <Route path="/delete-account" element={<DeleteAccount/>} />
       
       </Route>
 

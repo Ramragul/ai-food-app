@@ -299,6 +299,7 @@ import {
   Select,
   HStack,
   Divider,
+  Link,
 } from "@chakra-ui/react";
 
 import { useState } from "react";
@@ -312,21 +313,15 @@ import {
 const BMICalculator = () => {
   const toast = useToast();
 
-  // Height units
   const [heightUnit, setHeightUnit] = useState("cm");
-
-  // Weight units
   const [weightUnit, setWeightUnit] = useState("kg");
 
-  // Height states
   const [heightCm, setHeightCm] = useState("");
   const [feet, setFeet] = useState("");
   const [inches, setInches] = useState("");
 
-  // Weight state
   const [weight, setWeight] = useState("");
 
-  // Result
   const [bmi, setBmi] = useState<number | null>(null);
   const [category, setCategory] = useState("");
   const [healthTip, setHealthTip] = useState("");
@@ -345,8 +340,6 @@ const BMICalculator = () => {
     }
 
     let heightInMeters = 0;
-
-    // Height conversion
 
     if (heightUnit === "cm") {
       if (!heightCm) {
@@ -381,15 +374,11 @@ const BMICalculator = () => {
       heightInMeters = totalInches * 0.0254;
     }
 
-    // Weight conversion
-
     let weightInKg = Number(weight);
 
     if (weightUnit === "lbs") {
       weightInKg = Number(weight) * 0.453592;
     }
-
-    // BMI Calculation
 
     const bmiValue =
       weightInKg / (heightInMeters * heightInMeters);
@@ -398,27 +387,25 @@ const BMICalculator = () => {
 
     setBmi(roundedBMI);
 
-    // Category
-
     if (roundedBMI < 18.5) {
       setCategory("Underweight");
       setHealthTip(
-        "Consider increasing nutritious calorie intake and strength training."
+        "General wellness suggestion: focus on balanced nutrition and regular physical activity."
       );
     } else if (roundedBMI < 25) {
       setCategory("Normal Weight");
       setHealthTip(
-        "Great job! Maintain a balanced diet and regular exercise."
+        "General wellness suggestion: continue maintaining healthy lifestyle habits."
       );
     } else if (roundedBMI < 30) {
       setCategory("Overweight");
       setHealthTip(
-        "Try increasing physical activity and improving food quality."
+        "General wellness suggestion: consider increasing physical activity and maintaining balanced nutrition."
       );
     } else {
       setCategory("Obese");
       setHealthTip(
-        "Consider a structured fitness and nutrition plan for healthier progress."
+        "General wellness suggestion: consider discussing your health goals with a qualified healthcare professional."
       );
     }
   };
@@ -462,8 +449,6 @@ const BMICalculator = () => {
         animation="fadeSlide 0.4s ease"
       >
         <VStack spacing={6}>
-          {/* Header */}
-
           <Flex direction="column" align="center">
             <Box
               bg="brand.100"
@@ -495,8 +480,6 @@ const BMICalculator = () => {
               Check your Body Mass Index instantly
             </Text>
           </Flex>
-
-          {/* Height Section */}
 
           <Box w="100%">
             <Flex
@@ -572,8 +555,6 @@ const BMICalculator = () => {
             )}
           </Box>
 
-          {/* Weight Section */}
-
           <Box w="100%">
             <Flex
               justify="space-between"
@@ -622,8 +603,6 @@ const BMICalculator = () => {
             </Flex>
           </Box>
 
-          {/* Button */}
-
           <Button
             w="100%"
             size="lg"
@@ -639,8 +618,6 @@ const BMICalculator = () => {
           >
             Calculate BMI
           </Button>
-
-          {/* Result */}
 
           <ScaleFade initialScale={0.9} in={bmi !== null}>
             {bmi !== null && (
@@ -697,7 +674,7 @@ const BMICalculator = () => {
                       fontSize="xs"
                       color="gray.500"
                     >
-                      Healthy BMI Range:
+                      Healthy BMI Range
                     </Text>
 
                     <Text
@@ -708,6 +685,69 @@ const BMICalculator = () => {
                       18.5 - 24.9
                     </Text>
                   </Box>
+
+                  <Box
+                    bg="gray.50"
+                    p={4}
+                    borderRadius="xl"
+                    w="100%"
+                  >
+                    <VStack
+                      spacing={2}
+                      align="stretch"
+                    >
+                      <Text
+                        fontSize="xs"
+                        fontWeight="bold"
+                        color="gray.700"
+                      >
+                        Medical References
+                      </Text>
+
+                      <Text
+                        fontSize="xs"
+                        color="gray.600"
+                      >
+                        BMI classifications and healthy BMI
+                        ranges are based on guidance published
+                        by the World Health Organization (WHO)
+                        and the Centers for Disease Control and
+                        Prevention (CDC).
+                      </Text>
+
+                      <Link
+                        href="https://www.cdc.gov/bmi/about/index.html"
+                        isExternal
+                        fontSize="xs"
+                        color="blue.500"
+                      >
+                        CDC BMI Information
+                      </Link>
+
+                      <Link
+                        href="https://www.who.int/news-room/fact-sheets/detail/obesity-and-overweight"
+                        isExternal
+                        fontSize="xs"
+                        color="blue.500"
+                      >
+                        WHO BMI Information
+                      </Link>
+                    </VStack>
+                  </Box>
+
+                  <Text
+                    textAlign="center"
+                    fontSize="10px"
+                    color="gray.500"
+                    px={2}
+                  >
+                    This calculator provides general wellness
+                    information only and is not intended to
+                    diagnose, treat, cure, or prevent any
+                    disease. Consult a qualified healthcare
+                    professional for personalized medical
+                    advice.
+                  </Text>
                 </VStack>
               </Box>
             )}

@@ -1538,10 +1538,10 @@ import {
   FiTarget,
   FiActivity,
   FiLogOut,
-  FiDelete,
   FiTrash,
-  FiLifeBuoy,
-  FiTrendingUp
+  FiTrendingUp,
+  FiShield,
+  FiFileText
 } from "react-icons/fi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppMode } from "../context/AppModeContext";
@@ -1731,6 +1731,12 @@ const Navbar: React.FC = () => {
 
              <MenuItem icon={<Icon as={FiTrendingUp} />} onClick={() => navigate("/bmi-calculator")}>
               BMI Calculator
+            </MenuItem>
+            <MenuItem icon={<Icon as={FiFileText} />} onClick={() => navigate("/tc")}>
+              Terms & Conditions
+            </MenuItem>
+            <MenuItem icon={<Icon as={FiShield} />} onClick={() => navigate("/privacy")}>
+              Privacy Policy
             </MenuItem>
 
             <MenuItem

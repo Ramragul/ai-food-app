@@ -485,63 +485,145 @@ export const generateMealService = async ({
     if (!allMeals.length) {
       console.log("🔍 SOURCE: VECTOR");
 
-      const vectorResults = await searchSimilarRecipes({
-        structuredGoal,
-        ingredients,
-        foodType,
-      });
+    //   const vectorResults = await searchSimilarRecipes({
+    //     structuredGoal,
+    //     ingredients,
+    //     foodType,
+    //   });
 
-      if (vectorResults.length > 0) {
-        console.log("✅ VECTOR HIT");
+    //   if (vectorResults.length > 0) {
+    //     console.log("✅ VECTOR HIT");
 
-      allMeals = vectorResults.map((r) => ({
-        type: "single",
+    //   allMeals = vectorResults.map((r) => ({
+    //     type: "single",
 
-        items: [
-          {
-            name: r.name,
-            description: r.description,
+    //     items: [
+    //       {
+    //         name: r.name,
+    //         description: r.description,
 
-            // ingredients: r.ingredients || [],
+    //         // ingredients: r.ingredients || [],
 
-            ingredients: (r.ingredients || []).map((ing) => {
+    //         ingredients: (r.ingredients || []).map((ing) => {
+    //         try {
+    //           return typeof ing === "string"
+    //             ? JSON.parse(ing)
+    //             : ing;
+    //         } catch {
+    //           return ing;
+    //         }
+    //       }),
+    //         steps: r.steps || [],
+
+    //         prepTime: r.prep_time,
+    //         difficulty: r.difficulty,
+
+    //         nutrition: {
+    //           protein: r.protein,
+    //           calories: r.calories,
+    //           fat: r.fat,
+    //           carbs: r.carbs,
+    //         },
+    //       },
+    //     ],
+
+    //     totalNutrition: {
+    //       protein: r.protein,
+    //       calories: r.calories,
+    //       fat: r.fat,
+    //       carbs: r.carbs,
+    //     },
+
+    //     imageUrl: r.image_url,
+    //   }));
+
+    //     await redis.set(cacheKey, JSON.stringify(allMeals), {
+    //       ex: 3600,
+    //     });
+    //   }
+    // }
+
+
+    const vectorResults = await searchSimilarRecipes({
+  structuredGoal,
+  ingredients,
+  foodType,
+});
+
+// Remove recipes that have ZERO overlap with selected ingredients
+const filteredVectorResults =
+  ingredients?.length > 0
+    ? vectorResults.filter((recipe) => {
+        const recipeIngredients = (recipe.ingredients || [])
+          .map((ing) => {
             try {
-              return typeof ing === "string"
-                ? JSON.parse(ing)
-                : ing;
+              const parsed =
+                typeof ing === "string"
+                  ? JSON.parse(ing)
+                  : ing;
+
+              return parsed.name?.toLowerCase();
             } catch {
-              return ing;
+              return "";
             }
-          }),
-            steps: r.steps || [],
+          });
 
-            prepTime: r.prep_time,
-            difficulty: r.difficulty,
+        return ingredients.some((userIng) =>
+          recipeIngredients.includes(
+            userIng.toLowerCase()
+          )
+        );
+      })
+    : vectorResults;
 
-            nutrition: {
-              protein: r.protein,
-              calories: r.calories,
-              fat: r.fat,
-              carbs: r.carbs,
-            },
-          },
-        ],
+if (filteredVectorResults.length > 0) {
+  console.log("✅ VECTOR HIT");
 
-        totalNutrition: {
+  allMeals = filteredVectorResults.map((r) => ({
+    type: "single",
+
+    items: [
+      {
+        name: r.name,
+        description: r.description,
+
+        ingredients: (r.ingredients || []).map((ing) => {
+          try {
+            return typeof ing === "string"
+              ? JSON.parse(ing)
+              : ing;
+          } catch {
+            return ing;
+          }
+        }),
+
+        steps: r.steps || [],
+        prepTime: r.prep_time,
+        difficulty: r.difficulty,
+
+        nutrition: {
           protein: r.protein,
           calories: r.calories,
           fat: r.fat,
           carbs: r.carbs,
         },
+      },
+    ],
 
-        imageUrl: r.image_url,
-      }));
+    totalNutrition: {
+      protein: r.protein,
+      calories: r.calories,
+      fat: r.fat,
+      carbs: r.carbs,
+    },
 
-        await redis.set(cacheKey, JSON.stringify(allMeals), {
-          ex: 3600,
-        });
-      }
-    }
+    imageUrl: r.image_url,
+  }));
+
+  await redis.set(cacheKey, JSON.stringify(allMeals), {
+    ex: 3600,
+  });
+}
 
     // 🔴 STEP 3: AI FALLBACK
     if (!allMeals.length) {

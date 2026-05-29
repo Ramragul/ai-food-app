@@ -661,7 +661,7 @@ if (filteredVectorResults.length > 0) {
     return {
       recommendations: allMeals.slice(start, end),
     };
-
+  }
   } catch (err) {
     console.error("Service Error:", err);
     throw err;

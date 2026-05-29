@@ -660,6 +660,7 @@ if (filteredVectorResults.length > 0) {
 
     return {
       recommendations: allMeals.slice(start, end),
+      hasMore: end < allMeals.length,
     };
   }
   } catch (err) {

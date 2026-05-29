@@ -14,6 +14,8 @@ const MealResultsPage = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
 
+  const [hasMore, setHasMore] = useState(true);
+
   useEffect(() => {
     if (!state) {
       navigate("/");
@@ -59,6 +61,8 @@ const MealResultsPage = () => {
       );
 
       const newMeals = res.data.recommendations || [];
+
+      setHasMore(res.data.hasMore ?? false);
 
       setMeals((prev) =>
         pageNumber === 1 ? newMeals : [...prev, ...newMeals]
@@ -123,9 +127,18 @@ const MealResultsPage = () => {
         {loading && <Spinner alignSelf="center" />}
 
         {/* LOAD MORE */}
-        <Button onClick={handleLoadMore} isDisabled={loading}>
+        {/* <Button onClick={handleLoadMore} isDisabled={loading}>
+          Load More
+        </Button> */}
+
+        {hasMore && (
+        <Button
+          onClick={handleLoadMore}
+          isDisabled={loading}
+        >
           Load More
         </Button>
+      )}
 
         {/* BACK */}
         <Button variant="outline" onClick={() => navigate("/")}>

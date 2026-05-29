@@ -304,7 +304,7 @@ import { getEmbedding } from "../embedding/embedding.service.js";
 import { buildEmbeddingText } from "../embedding/embeddingText.js";
 
 const PAGE_SIZE = 5;
-const SIMILARITY_THRESHOLD = 0.3;
+const SIMILARITY_THRESHOLD = 1.0;
 
 // 🔍 VECTOR SEARCH
 const searchSimilarRecipes = async ({
@@ -327,19 +327,45 @@ const searchSimilarRecipes = async ({
       return [];
     }
 
-    const result = await pool.query(
-      `
-      SELECT *,
-        embedding <-> $1 AS distance
-      FROM recipes
-      WHERE goal_type = $2
-      ORDER BY embedding <-> $1
-      LIMIT 20
-      `,
-      [`[${embedding.join(",")}]`, structuredGoal.goalType]
-    );
+    // const result = await pool.query(
+    //   `
+    //   SELECT *,
+    //     embedding <-> $1 AS distance
+    //   FROM recipes
+    //   WHERE goal_type = $2
+    //   ORDER BY embedding <-> $1
+    //   LIMIT 20
+    //   `,
+    //   [`[${embedding.join(",")}]`, structuredGoal.goalType]
+    // );
 
-    return result.rows.filter(r => r.distance < SIMILARITY_THRESHOLD);
+    // return result.rows.filter(r => r.distance < SIMILARITY_THRESHOLD);
+
+    const result = await pool.query(
+  `
+  SELECT *,
+    embedding <-> $1 AS distance
+  FROM recipes
+  WHERE goal_type = $2
+  ORDER BY embedding <-> $1
+  LIMIT 20
+  `,
+  [`[${embedding.join(",")}]`, structuredGoal.goalType]
+);
+
+console.log("========== VECTOR RESULTS ==========");
+
+result.rows.forEach((r) => {
+  console.log(
+    `Recipe: ${r.name} | Distance: ${r.distance}`
+  );
+});
+
+console.log("===================================");
+
+return result.rows.filter(
+  (r) => r.distance < SIMILARITY_THRESHOLD
+);
 
   } catch (err) {
     console.error("❌ Vector search failed:", err.message);
@@ -465,7 +491,7 @@ export const generateMealService = async ({
         foodType,
       });
 
-      if (vectorResults.length > 5) {
+      if (vectorResults.length > 0) {
         console.log("✅ VECTOR HIT");
 
         allMeals = vectorResults.map(r => ({

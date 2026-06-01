@@ -9,6 +9,7 @@ import profileRoutes from "./routes/profile.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import { redis } from "./utils/redisClient.js"; // adjust path if needed
 import userRoutes from "./routes/user.routes.js";
+import mealPlanRoutes from "./routes/mealPlan.routes.js";
 
 
 
@@ -31,6 +32,8 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/auth", authRoutes);
 
 app.use("/api/user", userRoutes);
+
+app.use("/api/meal-plan", mealPlanRoutes);
 
 
 

@@ -106,6 +106,153 @@ const getAllowedFoodTypes = (foodPreference) => {
   return map[foodPreference] || ["veg"];
 };
 
+
+
+
+const calculateScaledMeal = async (
+  mealId,
+  targetCalories
+) => {
+
+  const mealResult = await pool.query(
+    `
+    SELECT
+      m.id,
+      m.name,
+      m.meal_category,
+      m.food_type,
+      m.description,
+      m.image_url,
+      m.preparation_steps,
+
+      mn.calories,
+      mn.protein,
+      mn.carbs,
+      mn.fats,
+
+      msr.min_scale_factor,
+      msr.max_scale_factor
+
+    FROM meals m
+
+    JOIN meal_nutrition mn
+      ON mn.meal_id = m.id
+
+    LEFT JOIN meal_serving_rules msr
+      ON msr.meal_id = m.id
+
+    WHERE m.id = $1
+    `,
+    [mealId]
+  );
+
+  const meal = mealResult.rows[0];
+
+  if (!meal) {
+    throw new Error("Meal not found");
+  }
+
+  let scaleFactor =
+    targetCalories /
+    Number(meal.calories);
+
+  scaleFactor = Math.max(
+    Number(meal.min_scale_factor || 0.75),
+    Math.min(
+      Number(meal.max_scale_factor || 2),
+      scaleFactor
+    )
+  );
+
+  const ingredientResult =
+    await pool.query(
+      `
+      SELECT
+        mi.quantity_g,
+
+        i.id as ingredient_id,
+        i.name,
+
+        np.calories,
+        np.protein,
+        np.carbs,
+        np.fat,
+        np.fibre
+
+      FROM meal_ingredients mi
+
+      JOIN ingredients i
+        ON i.id = mi.ingredient_id
+
+      JOIN nutrition_per_100g np
+        ON np.ingredient_id = i.id
+
+      WHERE mi.meal_id = $1
+      `,
+      [mealId]
+    );
+
+  let totalCalories = 0;
+  let totalProtein = 0;
+  let totalCarbs = 0;
+  let totalFats = 0;
+  let totalFiber = 0;
+
+  const ingredients =
+    ingredientResult.rows.map((item) => {
+
+      const scaledQty =
+        Number(item.quantity_g) *
+        scaleFactor;
+
+      totalCalories +=
+        (scaledQty * Number(item.calories)) / 100;
+
+      totalProtein +=
+        (scaledQty * Number(item.protein)) / 100;
+
+      totalCarbs +=
+        (scaledQty * Number(item.carbs)) / 100;
+
+      totalFats +=
+        (scaledQty * Number(item.fat)) / 100;
+
+      totalFiber +=
+        (scaledQty * Number(item.fibre)) / 100;
+
+      return {
+        ingredientId: item.ingredient_id,
+        ingredientName: item.name,
+        quantity_g: Math.round(scaledQty)
+      };
+    });
+
+  return {
+    mealId: meal.id,
+    mealName: meal.name,
+    mealCategory: meal.meal_category,
+    foodType: meal.food_type,
+    imageUrl: meal.image_url,
+    description: meal.description,
+
+    scaleFactor: Number(
+      scaleFactor.toFixed(2)
+    ),
+
+    finalMacros: {
+      calories: Math.round(totalCalories),
+      protein: Math.round(totalProtein),
+      carbs: Math.round(totalCarbs),
+      fats: Math.round(totalFats),
+      fiber: Math.round(totalFiber)
+    },
+
+    ingredients,
+
+    preparationSteps:
+      meal.preparation_steps || []
+  };
+};
 /*
 |--------------------------------------------------------------------------
 | GET MEAL OPTIONS
@@ -118,22 +265,13 @@ const getMealOptions = async (
   allowedFoodTypes,
   limit
 ) => {
+
   const result = await pool.query(
     `
     SELECT
       m.id,
-      m.name,
-      m.meal_category,
-      m.food_type,
-      m.cuisine,
-      m.description,
-      m.image_url,
-
       mn.calories,
-      mn.protein,
-      mn.carbs,
-      mn.fats,
-      mn.fiber
+      mn.protein
 
     FROM meals m
 
@@ -146,8 +284,8 @@ const getMealOptions = async (
       AND m.is_active = true
 
     ORDER BY
-      ABS(mn.protein - $3) ASC,
-      ABS(mn.calories - $4) ASC
+      ABS(mn.protein - $3),
+      ABS(mn.calories - $4)
 
     LIMIT $5
     `,
@@ -156,11 +294,21 @@ const getMealOptions = async (
       allowedFoodTypes,
       target.protein,
       target.calories,
-      limit,
+      limit
     ]
   );
 
-  return result.rows;
+  const meals =
+    await Promise.all(
+      result.rows.map((meal) =>
+        calculateScaledMeal(
+          meal.id,
+          target.calories
+        )
+      )
+    );
+
+  return meals;
 };
 
 /*

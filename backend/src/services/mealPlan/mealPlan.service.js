@@ -259,10 +259,64 @@ const calculateScaledMeal = async (
 |--------------------------------------------------------------------------
 */
 
+// const getMealOptions = async (
+//   mealCategory,
+//   target,
+//   allowedFoodTypes,
+//   limit
+// ) => {
+
+//   const result = await pool.query(
+//     `
+//     SELECT
+//       m.id,
+//       mn.calories,
+//       mn.protein
+
+//     FROM meals m
+
+//     JOIN meal_nutrition mn
+//       ON mn.meal_id = m.id
+
+//     WHERE
+//       m.meal_category = $1
+//       AND m.food_type = ANY($2)
+//       AND m.is_active = true
+
+//     ORDER BY
+//       ABS(mn.protein - $3),
+//       ABS(mn.calories - $4)
+
+//     LIMIT $5
+//     `,
+//     [
+//       mealCategory,
+//       allowedFoodTypes,
+//       target.protein,
+//       target.calories,
+//       limit
+//     ]
+//   );
+
+//   const meals =
+//     await Promise.all(
+//       result.rows.map((meal) =>
+//         calculateScaledMeal(
+//           meal.id,
+//           target.calories
+//         )
+//       )
+//     );
+
+//   return meals;
+// };
+
+
 const getMealOptions = async (
   mealCategory,
   target,
   allowedFoodTypes,
+  goalType,
   limit
 ) => {
 
@@ -282,31 +336,35 @@ const getMealOptions = async (
       m.meal_category = $1
       AND m.food_type = ANY($2)
       AND m.is_active = true
+      AND (
+        m.goal_tags IS NULL
+        OR $3 = ANY(m.goal_tags)
+      )
 
     ORDER BY
-      ABS(mn.protein - $3),
-      ABS(mn.calories - $4)
+      ABS(mn.protein - $4),
+      ABS(mn.calories - $5)
 
-    LIMIT $5
+    LIMIT $6
     `,
     [
       mealCategory,
       allowedFoodTypes,
+      goalType,
       target.protein,
       target.calories,
       limit
     ]
   );
 
-  const meals =
-    await Promise.all(
-      result.rows.map((meal) =>
-        calculateScaledMeal(
-          meal.id,
-          target.calories
-        )
+  const meals = await Promise.all(
+    result.rows.map((meal) =>
+      calculateScaledMeal(
+        meal.id,
+        target.calories
       )
-    );
+    )
+  );
 
   return meals;
 };
@@ -326,45 +384,79 @@ export const generateMealPlanService = async (userId) => {
     profile.food_preference
   );
 
+  // const breakfast = await getMealOptions(
+  //   "breakfast",
+  //   targets.breakfast,
+  //   allowedFoodTypes,
+  //   5
+  // );
+
+  // const lunch = await getMealOptions(
+  //   "lunch",
+  //   targets.lunch,
+  //   allowedFoodTypes,
+  //   5
+  // );
+
+  // const snack = await getMealOptions(
+  //   "snack",
+  //   targets.snack,
+  //   allowedFoodTypes,
+  //   3
+  // );
+
+  // const dinner = await getMealOptions(
+  //   "dinner",
+  //   targets.dinner,
+  //   allowedFoodTypes,
+  //   5
+  // );
+
   const breakfast = await getMealOptions(
-    "breakfast",
-    targets.breakfast,
-    allowedFoodTypes,
-    5
-  );
+  "breakfast",
+  targets.breakfast,
+  allowedFoodTypes,
+  profile.goal_type,
+  5
+);
 
-  const lunch = await getMealOptions(
-    "lunch",
-    targets.lunch,
-    allowedFoodTypes,
-    5
-  );
+const lunch = await getMealOptions(
+  "lunch",
+  targets.lunch,
+  allowedFoodTypes,
+  profile.goal_type,
+  5
+);
 
-  const snack = await getMealOptions(
-    "snack",
-    targets.snack,
-    allowedFoodTypes,
-    3
-  );
+const snack = await getMealOptions(
+  "snack",
+  targets.snack,
+  allowedFoodTypes,
+  profile.goal_type,
+  3
+);
 
-  const dinner = await getMealOptions(
-    "dinner",
-    targets.dinner,
-    allowedFoodTypes,
-    5
-  );
+const dinner = await getMealOptions(
+  "dinner",
+  targets.dinner,
+  allowedFoodTypes,
+  profile.goal_type,
+  5
+);
 
-  return {
-    targets: {
-      calories: profile.target_calories,
-      protein: profile.protein_target,
-      carbs: profile.carbs_target,
-      fats: profile.fats_target,
-    },
+return {
+  goalType: profile.goal_type,
 
-    breakfast,
-    lunch,
-    snack,
-    dinner,
-  };
+  targets: {
+    calories: profile.target_calories,
+    protein: profile.protein_target,
+    carbs: profile.carbs_target,
+    fats: profile.fats_target,
+  },
+
+  breakfast,
+  lunch,
+  snack,
+  dinner,
+};
 };

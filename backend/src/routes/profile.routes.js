@@ -35,7 +35,7 @@ router.post("/", authMiddleware, createProfile);
 // ✅ history
 router.get("/", authMiddleware, getAllProfiles);
 
-router.delete("/", authMiddleware, removeActiveGoal)
+router.delete("/active", authMiddleware, removeActiveGoal)
 
 // ✅ active (MOST IMPORTANT)
 router.get("/active/me", authMiddleware, getActiveProfile);

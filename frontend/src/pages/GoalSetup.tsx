@@ -296,10 +296,37 @@ const GOALS = [
 ];
 
 const ACTIVITIES = [
-  { id: "sedentary", icon: "🪑", title: "Low" },
-  { id: "moderate", icon: "🚶", title: "Moderate" },
-  { id: "active", icon: "🏃", title: "Active" },
-  { id: "athlete", icon: "🏋️", title: "Athlete" },
+  {
+    id: "sedentary",
+    icon: "🪑",
+    title: "Low Activity",
+    description:
+      "Office job, little exercise, less than 5,000 steps/day",
+  },
+
+  {
+    id: "moderate",
+    icon: "🚶",
+    title: "Moderate",
+    description:
+      "Walking regularly, gym 2-3 times/week, 5k-10k steps/day",
+  },
+
+  {
+    id: "active",
+    icon: "🏃",
+    title: "Active",
+    description:
+      "Gym 4-6 times/week, sports, 10k+ steps/day",
+  },
+
+  {
+    id: "athlete",
+    icon: "🏋️",
+    title: "Athlete",
+    description:
+      "Intense training, competitive sports, daily workouts",
+  },
 ];
 
 const GoalSetup = () => {
@@ -376,6 +403,34 @@ const GoalSetup = () => {
     );
   }
 
+  const GOAL_EXPLANATION:any = {
+
+  fat_loss:
+    "Burn fat while preserving muscle.",
+
+  weight_loss:
+    "Reduce overall body weight.",
+
+  lean_muscle_gain:
+    "Build muscle with minimal fat gain.",
+
+  bulk_up:
+    "Aggressive calorie surplus for muscle growth.",
+
+  strength_gain:
+    "Focus on strength and power.",
+
+  maintenance:
+    "Maintain current physique.",
+
+  healthy_lifestyle:
+    "Long-term health and wellness.",
+
+  athletic_performance:
+    "Improve endurance and recovery."
+
+};
+
   return (
     <Box minH="100vh" bg="gray.50" p={4}>
       <VStack maxW="800px" mx="auto" spacing={6}>
@@ -417,9 +472,75 @@ const GoalSetup = () => {
                 <Badge colorScheme="green">ACTIVE</Badge>
               </HStack>
 
-              <Text mt={3} fontWeight="bold" fontSize="xl">
-                {goal.goal_type?.replaceAll("_", " ").toUpperCase()}
-              </Text>
+<Text
+  mt={3}
+  fontWeight="bold"
+  fontSize="xl"
+>
+  {goal.goal_type
+    ?.replaceAll("_"," ")
+    ?.toUpperCase()}
+</Text>
+
+<Text
+  mt={2}
+  color="gray.500"
+>
+  {
+    GOAL_EXPLANATION[
+      goal.goal_type
+    ]
+  }
+</Text>
+
+<Box
+  mt={5}
+  p={4}
+  borderRadius="2xl"
+  bg="blue.50"
+>
+  <Text
+    fontSize="sm"
+    color="gray.600"
+  >
+    Your Transformation
+  </Text>
+
+  <Text
+    fontSize="3xl"
+    fontWeight="bold"
+    mt={1}
+  >
+    {goal.weight_kg}kg
+    {" ➜ "}
+    {goal.target_weight || goal.weight_kg}kg
+  </Text>
+
+  <Text
+    fontSize="sm"
+    mt={2}
+    color="gray.600"
+  >
+    Duration:
+    {" "}
+    {goal.duration_days || "-"}
+    {" "}
+    days
+  </Text>
+
+  <Text
+    fontSize="sm"
+    mt={2}
+    color="gray.600"
+  >
+    Activity Level:
+    {" "}
+    {goal.activity_level
+      ?.replace("_"," ")
+      ?.toUpperCase()}
+  </Text>
+
+</Box>
 
               <SimpleGrid columns={2} spacing={3} mt={4}>
                 <Box bg="blue.50" p={3} borderRadius="xl">
@@ -450,7 +571,7 @@ const GoalSetup = () => {
                 variant="ghost"
                 onClick={handleDeleteGoal}
               >
-                Remove Goal
+                Reset Goal
               </Button>
             </>
           )}
@@ -516,18 +637,64 @@ const GoalSetup = () => {
               Activity Level
             </Text>
 
-            <SimpleGrid columns={2} spacing={3}>
-              {ACTIVITIES.map((a) => (
-                <Button
-                  key={a.id}
-                  h="70px"
-                  colorScheme={form.activity === a.id ? "blue" : "gray"}
-                  onClick={() => setForm((p) => ({ ...p, activity: a.id }))}
-                >
-                  {a.icon} {a.title}
-                </Button>
-              ))}
-            </SimpleGrid>
+<SimpleGrid
+  columns={[1,2]}
+  spacing={3}
+>
+  {ACTIVITIES.map((a) => (
+
+    <Box
+      key={a.id}
+      p={4}
+      borderRadius="2xl"
+      cursor="pointer"
+      bg={
+        form.activity === a.id
+          ? "blue.50"
+          : "white"
+      }
+      border={
+        form.activity === a.id
+          ? "2px solid"
+          : "1px solid"
+      }
+      borderColor={
+        form.activity === a.id
+          ? "blue.400"
+          : "gray.200"
+      }
+      onClick={() =>
+        setForm((p:any) => ({
+          ...p,
+          activity:a.id
+        }))
+      }
+    >
+      <Text
+        fontSize="2xl"
+      >
+        {a.icon}
+      </Text>
+
+      <Text
+        fontWeight="bold"
+        mt={2}
+      >
+        {a.title}
+      </Text>
+
+      <Text
+        mt={2}
+        fontSize="xs"
+        color="gray.500"
+      >
+        {a.description}
+      </Text>
+
+    </Box>
+
+  ))}
+</SimpleGrid>
 
             <SimpleGrid columns={2} spacing={3} mt={6}>
               <Input

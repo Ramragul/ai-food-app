@@ -84,12 +84,38 @@ const MealPlanDetailPage = () => {
 
           <Box>
 
-            <Badge
+            {/* <Badge
               colorScheme="blue"
               mb={3}
             >
               {meal.mealCategory}
-            </Badge>
+            </Badge> */}
+
+            <HStack mb={3} spacing={2}>
+
+  <Badge colorScheme="blue">
+    {meal.mealCategory}
+  </Badge>
+
+  <Badge
+    colorScheme={
+      meal.foodType === "veg"
+        ? "green"
+        : meal.foodType === "eggitarian"
+        ? "yellow"
+        : "red"
+    }
+  >
+    {
+      meal.foodType === "veg"
+        ? "🟢 Veg"
+        : meal.foodType === "eggitarian"
+        ? "🟡 Eggitarian"
+        : "🔴 Non-Veg"
+    }
+  </Badge>
+
+</HStack>
 
             <Heading size="lg">
               {meal.mealName}
@@ -163,12 +189,12 @@ const MealPlanDetailPage = () => {
               adjusted for your fitness goal.
             </Text>
 
-            <Badge
+            {/* <Badge
               mt={3}
               colorScheme="green"
             >
               Scale Factor: {meal.scaleFactor}
-            </Badge>
+            </Badge> */}
           </Box>
 
           {/* INGREDIENTS */}

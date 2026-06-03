@@ -157,6 +157,8 @@ import {
   useState,
 } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 import api from "../utils/api";
 
 import MealSection from "../components/mealPlan/MealSection";
@@ -200,6 +202,7 @@ const TargetCard = ({
 );
 
 const MealPlanPage = () => {
+  const navigate = useNavigate();
   const [data, setData] =
     useState<any>();
 
@@ -210,6 +213,11 @@ const MealPlanPage = () => {
     selectedMeal,
     setSelectedMeal,
   ] = useState("all");
+
+  const [
+  selectedFoodType,
+  setSelectedFoodType,
+] = useState("all");
 
   useEffect(() => {
     const load = async () => {
@@ -242,15 +250,132 @@ const MealPlanPage = () => {
     );
   }
 
-  if (!data) {
-    return (
-      <Center h="80vh">
-        <Text>
-          Unable to load meal plan
+
+if (!data) {
+
+  return (
+    <Center
+      minH="85vh"
+      px={6}
+    >
+      <Box
+        maxW="500px"
+        w="100%"
+        textAlign="center"
+        bg="white"
+        p={8}
+        borderRadius="3xl"
+        boxShadow="xl"
+      >
+
+        <Text
+          fontSize="7xl"
+          mb={2}
+        >
+          🍱
         </Text>
-      </Center>
-    );
+
+        <Heading
+          size="lg"
+          mb={3}
+          color="gray.800"
+        >
+          No Meal Plan Available
+        </Heading>
+
+        <Text
+          color="gray.600"
+          lineHeight="tall"
+          mb={6}
+        >
+          Set your fitness goal to unlock
+          personalized meal recommendations
+          tailored to your calories,
+          protein, carbs, lifestyle and
+          food preferences.
+        </Text>
+
+        <Box
+          bg="blue.50"
+          p={4}
+          borderRadius="2xl"
+          mb={6}
+        >
+          <Text
+            fontSize="sm"
+            color="gray.700"
+          >
+            💪 Muscle Gain
+          </Text>
+
+          <Text
+            fontSize="sm"
+            color="gray.700"
+          >
+            🔥 Fat Loss
+          </Text>
+
+          <Text
+            fontSize="sm"
+            color="gray.700"
+          >
+            🏋️ Bulk Up
+          </Text>
+
+          <Text
+            fontSize="sm"
+            color="gray.700"
+          >
+            ❤️ Healthy Lifestyle
+          </Text>
+        </Box>
+
+        <Button
+          colorScheme="blue"
+          size="lg"
+          h="60px"
+          borderRadius="full"
+          w="full"
+          fontWeight="bold"
+          onClick={() =>
+            navigate(
+              "/goal-setup"
+            )
+          }
+        >
+          🎯 Set My Goal
+        </Button>
+
+        <Text
+          mt={4}
+          fontSize="xs"
+          color="gray.500"
+        >
+          Takes less than 30 seconds
+        </Text>
+
+      </Box>
+    </Center>
+  );
+}
+
+
+const filterMeals = (
+  meals: any[]
+) => {
+
+  if (
+    selectedFoodType === "all"
+  ) {
+    return meals;
   }
+
+  return meals.filter(
+    (meal) =>
+      meal.foodType ===
+      selectedFoodType
+  );
+};
 
   return (
     <Box
@@ -298,6 +423,23 @@ const MealPlanPage = () => {
               )
               ?.toUpperCase()}
           </Text>
+
+          {/* <Text
+  mt={1}
+  opacity={0.9}
+>
+  Showing:
+  {" "}
+  {
+    selectedFoodType === "all"
+      ? "All Food Types"
+      : selectedFoodType === "veg"
+      ? "Veg"
+      : selectedFoodType === "eggitarian"
+      ? "Eggitarian"
+      : "Non-Veg"
+  }
+</Text> */}
         </Box>
       </Box>
 
@@ -345,6 +487,70 @@ const MealPlanPage = () => {
         >
           Browse Meals
         </Text>
+
+        <Box mb={8}>
+  <Text
+    fontWeight="bold"
+    mb={3}
+    color="gray.700"
+  >
+    Food Type
+  </Text>
+
+  <HStack
+    overflowX="auto"
+    spacing={3}
+    pb={2}
+  >
+    {[
+      {
+        label: "All",
+        value: "all",
+      },
+
+      {
+        label: "🟢 Veg",
+        value: "veg",
+      },
+
+      {
+        label: "🟡 Eggitarian",
+        value: "eggitarian",
+      },
+
+      {
+        label: "🔴 Non-Veg",
+        value: "nonveg",
+      },
+    ].map((item) => (
+      <Button
+        key={item.value}
+        borderRadius="full"
+        size="sm"
+        px={6}
+        colorScheme={
+          selectedFoodType ===
+          item.value
+            ? "green"
+            : "gray"
+        }
+        variant={
+          selectedFoodType ===
+          item.value
+            ? "solid"
+            : "outline"
+        }
+        onClick={() =>
+          setSelectedFoodType(
+            item.value
+          )
+        }
+      >
+        {item.label}
+      </Button>
+    ))}
+  </HStack>
+</Box>
 
         <HStack
           overflowX="auto"
@@ -412,9 +618,9 @@ const MealPlanPage = () => {
           "breakfast") && (
         <MealSection
           title="🍳 Breakfast"
-          meals={
-            data.breakfast
-          }
+meals={filterMeals(
+  data.breakfast
+)}
         />
       )}
 
@@ -426,7 +632,9 @@ const MealPlanPage = () => {
           "lunch") && (
         <MealSection
           title="🍛 Lunch"
-          meals={data.lunch}
+          meals={filterMeals(
+  data.lunch
+)}
         />
       )}
 
@@ -438,7 +646,9 @@ const MealPlanPage = () => {
           "snack") && (
         <MealSection
           title="🥜 Snack"
-          meals={data.snack}
+          meals={filterMeals(
+  data.snack
+)}
         />
       )}
 
@@ -450,7 +660,9 @@ const MealPlanPage = () => {
           "dinner") && (
         <MealSection
           title="🌙 Dinner"
-          meals={data.dinner}
+          meals={filterMeals(
+  data.dinner
+)}
         />
       )}
     </Box>

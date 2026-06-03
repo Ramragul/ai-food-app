@@ -139,10 +139,9 @@ const calculateTargets = ({
   height,
   gender,
   activity,
-  goal,
-  targetWeight,
-  durationDays
+  goal
 }) => {
+
   const age = 25;
 
   const bmr =
@@ -154,29 +153,81 @@ const calculateTargets = ({
     sedentary: 1.2,
     moderate: 1.55,
     active: 1.725,
+    athlete: 1.9
   };
 
-  let tdee = bmr * (activityMap[activity] || 1.2);
+  let tdee =
+    bmr *
+    (activityMap[activity] || 1.55);
 
-  if (goal === "weight_loss" && targetWeight && durationDays) {
-    const deficit =
-      ((weight - targetWeight) * 7700) / durationDays;
-    tdee -= deficit;
-  }
+  const goalConfig = {
 
-  if (goal === "weight_gain") {
-    tdee += 300;
-  }
+    fat_loss: {
+      calorieAdjustment: -500,
+      proteinMultiplier: 2.2
+    },
 
-  const protein = weight * 1.5;
-  const fats = (tdee * 0.25) / 9;
-  const carbs = (tdee - (protein * 4 + fats * 9)) / 4;
+    weight_loss: {
+      calorieAdjustment: -300,
+      proteinMultiplier: 2.0
+    },
+
+    maintenance: {
+      calorieAdjustment: 0,
+      proteinMultiplier: 1.6
+    },
+
+    lean_muscle_gain: {
+      calorieAdjustment: 250,
+      proteinMultiplier: 2.2
+    },
+
+    bulk_up: {
+      calorieAdjustment: 500,
+      proteinMultiplier: 2.0
+    },
+
+    strength_gain: {
+      calorieAdjustment: 300,
+      proteinMultiplier: 2.3
+    },
+
+    athletic_performance: {
+      calorieAdjustment: 200,
+      proteinMultiplier: 1.8
+    },
+
+    healthy_lifestyle: {
+      calorieAdjustment: 0,
+      proteinMultiplier: 1.5
+    }
+
+  };
+
+  const config =
+    goalConfig[goal] ||
+    goalConfig.maintenance;
+
+  tdee += config.calorieAdjustment;
+
+  const protein =
+    weight *
+    config.proteinMultiplier;
+
+  const fats =
+    (tdee * 0.25) / 9;
+
+  const carbs =
+    (
+      tdee -
+      (protein * 4 + fats * 9)
+    ) / 4;
 
   return {
     calories: Math.round(tdee),
     protein: Math.round(protein),
     carbs: Math.round(carbs),
-    fats: Math.round(fats),
+    fats: Math.round(fats)
   };
 };
 
@@ -279,4 +330,20 @@ export const getActiveProfileService = async (userId) => {
   );
 
   return result.rows[0] || null;
+};
+
+
+export const removeActiveGoalService =
+async (userId) => {
+
+  await pool.query(
+    `
+    UPDATE user_profile
+    SET is_active = false
+    WHERE user_id = $1
+    AND is_active = true
+    `,
+    [userId]
+  );
+
 };

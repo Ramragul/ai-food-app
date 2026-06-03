@@ -57,7 +57,8 @@
 import {
   createProfileService,
   getAllProfilesService,
-  getActiveProfileService
+  getActiveProfileService,
+  removeActiveGoalService
 } from "../services/profile/profile.service.js";
 
 /* 🔥 CREATE NEW GOAL */
@@ -122,4 +123,29 @@ export const getActiveProfile = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+};
+
+
+export const removeActiveGoal =
+async (req, res) => {
+
+  try {
+
+    await removeActiveGoalService(
+      req.user.id
+    );
+
+    return res.json({
+      success: true,
+      message: "Goal removed"
+    });
+
+  } catch (err) {
+
+    return res.status(500).json({
+      error: err.message
+    });
+
+  }
+
 };

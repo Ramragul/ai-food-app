@@ -277,7 +277,8 @@ const tabs: Tab[] = [
   { name: "Home", icon: "🏠", path: "/home" },
   { name: "Add Meal", icon: "➕", path: "/add-meal" },
   { name: "Goal", icon: "🎯", path: "/goal-setup" },
-  { name: "Kitchen", icon: "🍳", path: "/meals" }
+  { name: "Smart Diet", icon: "🍱", path: "/meal-plan" }
+  // { name: "Kitchen", icon: "🍳", path: "/meals" }
 ];
 
 // const tabs: Tab[] = [

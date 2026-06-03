@@ -241,6 +241,8 @@ import TermsConditionsPage from "../pages/TermsConditionsPage";
 import PrivacyPolicyPage from "../pages/PrivacyPolicyPage";
 import DeleteAccount from "../pages/DeleteAccount";
 import BMICalculator from "../pages/BMICalculator";
+import MealPlanDetailPage from "../pages/MealPlanDetailPage";
+import MealPlanPage from "../pages/MealPlanPage";
 
 
 
@@ -256,6 +258,8 @@ const AppRoutes: React.FC = () => {
         element={user ? <Navigate to="/home" /> : <AuthPage />}
       />
       <Route path="/login" element={<Navigate to="/" />} />
+
+       
 
    
 
@@ -278,6 +282,9 @@ const AppRoutes: React.FC = () => {
         <Route path="/home" element={<Dashboard />} />
         <Route path="/goal-setup" element={<GoalSetup />} />
 
+        <Route path="/meal-plan" element={<MealPlanPage />} />
+        <Route path="/meal-plan/:id" element={<MealPlanDetailPage />} />
+
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/bmi-calculator" element={<BMICalculator />} />
 
@@ -285,6 +292,8 @@ const AppRoutes: React.FC = () => {
         <Route path="/tc" element={<TermsConditionsPage/>} />
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/delete-account" element={<DeleteAccount/>} />
+
+       
       
       </Route>
 

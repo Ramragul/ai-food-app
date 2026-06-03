@@ -1717,37 +1717,41 @@ const Navbar: React.FC = () => {
             border="1px solid rgba(0,0,0,0.05)"
             minW="200px"
           >
-            <MenuItem icon={<Icon as={FiUser} />} onClick={() => navigate("/profile")}>
+            <MenuItem icon={<Text fontSize="lg">🦸🏻</Text>} onClick={() => navigate("/profile")}>
               Profile
             </MenuItem>
 
-            <MenuItem icon={<Icon as={FiTarget} />} onClick={() => navigate("/goal-setup")}>
-              My Goal
+            <MenuItem icon={<Text fontSize="lg">🍳</Text>} onClick={() => navigate("/meals")}>
+             AI Kitchen
             </MenuItem>
 
-            <MenuItem icon={<Icon as={FiActivity} />} onClick={() => navigate("/track-meal")}>
+            {/* <MenuItem icon={<Text fontSize="lg">🍱</Text>} onClick={() => navigate("/goal-setup")}>
+              My Goal
+            </MenuItem> */}
+
+            <MenuItem icon={<Text fontSize="lg">🌝</Text>} onClick={() => navigate("/track-meal")}>
               My Day
             </MenuItem>
 
-             <MenuItem icon={<Icon as={FiTrendingUp} />} onClick={() => navigate("/bmi-calculator")}>
+             <MenuItem icon={<Text fontSize="lg">⚖️</Text>} onClick={() => navigate("/bmi-calculator")}>
               BMI Calculator
             </MenuItem>
-            <MenuItem icon={<Icon as={FiFileText} />} onClick={() => navigate("/tc")}>
+            <MenuItem icon={<Text fontSize="lg">📜</Text>} onClick={() => navigate("/tc")}>
               Terms & Conditions
             </MenuItem>
-            <MenuItem icon={<Icon as={FiShield} />} onClick={() => navigate("/privacy")}>
+            <MenuItem icon={<Text fontSize="lg">🔒</Text>} onClick={() => navigate("/privacy")}>
               Privacy Policy
             </MenuItem>
 
             <MenuItem
-              icon={<Icon as={FiLogOut} />}
+              icon={<Text fontSize="lg">🚪</Text>}
               color="red.500"
               onClick={handleLogout}
             >
               Logout
             </MenuItem>
 
-            <MenuItem icon={<Icon as={FiTrash} />} onClick={() => navigate("/delete-account")}>
+            <MenuItem icon={<Text fontSize="lg">🗑️</Text>} onClick={() => navigate("/delete-account")}>
               Delete Account
             </MenuItem>
           </MenuList>

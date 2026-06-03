@@ -22,7 +22,8 @@ import express from "express";
 import {
   createProfile,
   getAllProfiles,
-  getActiveProfile
+  getActiveProfile,
+  removeActiveGoal
 } from "../controllers/profile.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 
@@ -33,6 +34,8 @@ router.post("/", authMiddleware, createProfile);
 
 // ✅ history
 router.get("/", authMiddleware, getAllProfiles);
+
+router.delete("/", authMiddleware, removeActiveGoal)
 
 // ✅ active (MOST IMPORTANT)
 router.get("/active/me", authMiddleware, getActiveProfile);

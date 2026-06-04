@@ -1528,7 +1528,6 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  Icon,
   Image,
   Text,
 } from "@chakra-ui/react";

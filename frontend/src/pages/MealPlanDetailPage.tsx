@@ -12,7 +12,6 @@ import {
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
-  Divider,
   HStack
 } from "@chakra-ui/react";
 

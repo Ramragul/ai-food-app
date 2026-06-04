@@ -1533,16 +1533,16 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  FiUser,
-  FiTarget,
-  FiActivity,
-  FiLogOut,
-  FiTrash,
-  FiTrendingUp,
-  FiShield,
-  FiFileText
-} from "react-icons/fi";
+// import {
+//   FiUser,
+//   FiTarget,
+//   FiActivity,
+//   FiLogOut,
+//   FiTrash,
+//   FiTrendingUp,
+//   FiShield,
+//   FiFileText
+// } from "react-icons/fi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppMode } from "../context/AppModeContext";
 import { useAuth } from "../context/AuthContext";

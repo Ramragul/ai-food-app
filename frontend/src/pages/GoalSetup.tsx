@@ -566,13 +566,13 @@ const GoalSetup = () => {
 const [goalSaved, setGoalSaved] = useState(false);
 const [goalSaveError, setGoalSaveError] = useState(false);
 
-  const loadingMessages = [
-  "🔍 Analysing body metrics...",
-  "⚡ Calculating calorie targets...",
-  "💪 Optimizing protein intake...",
-  "🥗 Creating macro plan...",
-  "🎯 Finalizing your goal..."
-];
+//   const loadingMessages = [
+//   "🔍 Analysing body metrics...",
+//   "⚡ Calculating calorie targets...",
+//   "💪 Optimizing protein intake...",
+//   "🥗 Creating macro plan...",
+//   "🎯 Finalizing your goal..."
+// ];
 
 
 

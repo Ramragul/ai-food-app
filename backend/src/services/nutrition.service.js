@@ -1,27 +1,101 @@
-// Version 1  : working version
-
-
+// Version 1  
 
 // import pool from "../db/connection.js";
-// import { parseFoodWithAI } from "./ai/foodparser.service.js";
+// import { parseFoodWithAI } from "./ai/foodParser.service.js";
 // import { matchFood } from "./foodMatcher.service.js";
 // import { estimateNutrition } from "./ai/nutritionEstimator.service.js";
 // import { convertToServing } from "../utils/unitConverter.js";
 
+// import { getEmbedding } from "./ai/embedding.service.js";
 
-// // 🔥 OPTIONAL: normalize food names (improves AI accuracy)
+
+// /**
+//  * 🔥 Normalize food names (improves consistency)
+//  */
 // const normalizeFood = (name) => {
-//   const lower = name.toLowerCase();
+//   const lower = name.toLowerCase().trim();
 
 //   if (lower.includes("chicken")) return "chicken curry";
 //   if (lower.includes("paneer")) return "paneer curry";
 //   if (lower.includes("tea")) return "milk tea";
 
-//   return name;
+//   return lower;
 // };
 
+// /**
+//  * 🔥 SAVE AI FOOD INTO DB (CACHE)
+//  */
+// // const saveFoodToDB = async (food, nutritionPerServing) => {
+// //   try {
+// //     await pool.query(
+// //       `INSERT INTO food_master 
+// //       (name, unit, calories, protein, carbs, fats, aliases, category)
+// //       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+// //       ON CONFLICT DO NOTHING`,
+// //       [
+// //         food,
+// //         "serving",
+// //         nutritionPerServing.calories,
+// //         nutritionPerServing.protein,
+// //         nutritionPerServing.carbs,
+// //         nutritionPerServing.fats,
+// //         [
+// //           food,
+// //           food.replace("curry", "").trim(),
+// //           food.replace("gravy", "").trim(),
+// //         ],
+// //         "AI_GENERATED",
+// //       ]
+// //     );
+// //   } catch (err) {
+// //     console.error("❌ DB Save Failed:", err.message);
+// //   }
+// // };
 
-// // 🔥 STEP 1: Parse + Enrich (NO DB SAVE)
+
+
+
+
+
+
+// const saveFoodToDB = async (food, nutritionPerServing) => {
+//   try {
+//     const embedding = await getEmbedding(food);
+
+//     // ✅ FIX: correct vector format
+//     const formattedEmbedding = `[${embedding
+//       .map((n) => Number(n))
+//       .join(",")}]`;
+
+//     await pool.query(
+//       `INSERT INTO food_master 
+//       (name, unit, calories, protein, carbs, fats, aliases, category, embedding)
+//       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+//       ON CONFLICT DO NOTHING`,
+//       [
+//         food,
+//         "serving",
+//         nutritionPerServing.calories,
+//         nutritionPerServing.protein,
+//         nutritionPerServing.carbs,
+//         nutritionPerServing.fats,
+//         [
+//           food,
+//           food.replace("curry", "").trim(),
+//           food.replace("gravy", "").trim(),
+//         ],
+//         "AI_GENERATED",
+//         formattedEmbedding,
+//       ]
+//     );
+//   } catch (err) {
+//     console.error("❌ DB Save Failed:", err.message);
+//   }
+// };
+
+// /**
+//  * 🔥 STEP 1: Parse + Enrich (NO DB SAVE except AI cache)
+//  */
 // export const addMealService = async ({ userId, input, mealType }) => {
 //   const items = await parseFoodWithAI(input);
 
@@ -30,39 +104,50 @@
 //   let total = { calories: 0, protein: 0, carbs: 0, fats: 0 };
 //   let enrichedItems = [];
 
-  
-
 //   for (let item of items) {
-//     let match = await matchFood(item.food);
-  
-//     // 🔥 FIX: Convert quantity properly
+//     const normalizedFood = normalizeFood(item.food);
+
+//     let match = await matchFood(normalizedFood);
+
 //     const servingQty = convertToServing(
 //       item.quantity,
 //       item.unit,
-//       item.food
+//       normalizedFood
 //     );
-  
+
 //     let nutrition;
 //     let source = "AI";
 //     let confidence = 0.6;
-  
+
 //     if (match) {
+//       // ✅ DB HIT
 //       const f = match.food;
-  
+
 //       nutrition = {
 //         calories: f.calories * servingQty,
 //         protein: f.protein * servingQty,
 //         carbs: f.carbs * servingQty,
 //         fats: f.fats * servingQty,
 //       };
-  
+
 //       source = match.source;
 //       confidence = match.confidence;
+
 //     } else {
+//       // 🔥 AI CALL
 //       try {
-//         const aiData = await estimateNutrition(item.food, servingQty);
-  
+//         const aiData = await estimateNutrition(normalizedFood, servingQty);
+
 //         nutrition = aiData;
+
+//         // 🔥 VERY IMPORTANT: Save PER SERVING (not total)
+//         await saveFoodToDB(normalizedFood, {
+//           calories: aiData.calories / servingQty,
+//           protein: aiData.protein / servingQty,
+//           carbs: aiData.carbs / servingQty,
+//           fats: aiData.fats / servingQty,
+//         });
+
 //       } catch {
 //         nutrition = {
 //           calories: 0,
@@ -70,20 +155,21 @@
 //           carbs: 0,
 //           fats: 0,
 //         };
-  
+
 //         source = "UNKNOWN";
 //         confidence = 0.3;
 //       }
 //     }
-  
+
 //     total.calories += nutrition.calories;
 //     total.protein += nutrition.protein;
 //     total.carbs += nutrition.carbs;
 //     total.fats += nutrition.fats;
-  
+
 //     enrichedItems.push({
 //       ...item,
-//       quantity: servingQty, // ✅ normalized
+//       food: normalizedFood,
+//       quantity: servingQty,
 //       ...nutrition,
 //       source,
 //       confidence,
@@ -96,9 +182,9 @@
 //   };
 // };
 
-
-
-// // 🔥 STEP 2: SAVE TO DB (TRANSACTION SAFE)
+// /**
+//  * 🔥 STEP 2: SAVE TO DB (TRANSACTION SAFE)
+//  */
 // export const confirmMealService = async ({
 //   userId,
 //   mealType,
@@ -148,7 +234,8 @@
 // };
 
 
-// Version 2  : Enhancement to v1
+// Version 2 : Enhancement to V1
+
 
 import pool from "../db/connection.js";
 import { parseFoodWithAI } from "./ai/foodParser.service.js";
@@ -157,6 +244,7 @@ import { estimateNutrition } from "./ai/nutritionEstimator.service.js";
 import { convertToServing } from "../utils/unitConverter.js";
 
 import { getEmbedding } from "./ai/embedding.service.js";
+import { getServingsForFood } from "./foodServing.service.js";
 
 
 /**
@@ -269,21 +357,28 @@ export const addMealService = async ({ userId, input, mealType }) => {
     let source = "AI";
     let confidence = 0.6;
 
-    if (match) {
-      // ✅ DB HIT
-      const f = match.food;
+if (match) {
+  const f = match.food;
 
-      nutrition = {
-        calories: f.calories * servingQty,
-        protein: f.protein * servingQty,
-        carbs: f.carbs * servingQty,
-        fats: f.fats * servingQty,
-      };
+  const servings = await getServingsForFood(f.id);
 
-      source = match.source;
-      confidence = match.confidence;
+  nutrition = {
+    calories: f.calories * servingQty,
+    protein: f.protein * servingQty,
+    carbs: f.carbs * servingQty,
+    fats: f.fats * servingQty,
+  };
 
-    } else {
+  source = match.source;
+  confidence = match.confidence;
+
+  item.servings = servings;
+
+  item.selectedServing =
+    servings.find((s) => s.is_default) ||
+    servings[0] ||
+    null;
+} else {
       // 🔥 AI CALL
       try {
         const aiData = await estimateNutrition(normalizedFood, servingQty);
@@ -320,9 +415,16 @@ export const addMealService = async ({ userId, input, mealType }) => {
       ...item,
       food: normalizedFood,
       quantity: servingQty,
+
       ...nutrition,
+
       source,
       confidence,
+
+      servings: item.servings || [],
+
+      selectedServing:
+        item.selectedServing || null,
     });
   }
 

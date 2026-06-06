@@ -244,7 +244,7 @@ import { estimateNutrition } from "./ai/nutritionEstimator.service.js";
 import { convertToServing } from "../utils/unitConverter.js";
 
 import { getEmbedding } from "./ai/embedding.service.js";
-import { getServingsForFood } from "./foodServing.service.js";
+import { getServingsForFood , createDefaultServings } from "./foodServing.service.js";
 
 
 /**
@@ -293,41 +293,98 @@ const normalizeFood = (name) => {
 
 
 
+const buildAliases = (food) => {
+  const aliases = new Set();
+
+  aliases.add(food.toLowerCase().trim());
+
+  aliases.add(
+    food.toLowerCase().replace("curry", "").trim()
+  );
+
+  aliases.add(
+    food.toLowerCase().replace("gravy", "").trim()
+  );
+
+  return [...aliases].filter(Boolean);
+};
 
 
-
-const saveFoodToDB = async (food, nutritionPerServing) => {
+const saveFoodToDB = async (
+  food,
+  nutritionPerServing
+) => {
   try {
+    // ✅ prevent duplicate inserts
+    const existing = await matchFood(food);
+
+    if (existing) {
+      console.log(
+        `✅ Food already exists: ${existing.food.name}`
+      );
+
+      return existing.food.id;
+    }
+
     const embedding = await getEmbedding(food);
 
-    // ✅ FIX: correct vector format
     const formattedEmbedding = `[${embedding
       .map((n) => Number(n))
       .join(",")}]`;
 
-    await pool.query(
-      `INSERT INTO food_master 
-      (name, unit, calories, protein, carbs, fats, aliases, category, embedding)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-      ON CONFLICT DO NOTHING`,
+    const aliases = buildAliases(food);
+
+    const result = await pool.query(
+      `
+      INSERT INTO food_master
+      (
+        name,
+        unit,
+        calories,
+        protein,
+        carbs,
+        fats,
+        aliases,
+        category,
+        embedding
+      )
+      VALUES
+      (
+        $1,$2,$3,$4,$5,$6,$7,$8,$9
+      )
+      RETURNING id
+      `,
       [
-        food,
+        food.toLowerCase().trim(),
         "serving",
         nutritionPerServing.calories,
         nutritionPerServing.protein,
         nutritionPerServing.carbs,
         nutritionPerServing.fats,
-        [
-          food,
-          food.replace("curry", "").trim(),
-          food.replace("gravy", "").trim(),
-        ],
+        aliases,
         "AI_GENERATED",
         formattedEmbedding,
       ]
     );
+
+    const foodId = result.rows[0]?.id;
+
+    if (foodId) {
+  await createDefaultServings(foodId);
+}
+
+    console.log(
+      `✅ New food saved: ${food} (${foodId})`
+    );
+
+    return foodId;
   } catch (err) {
-    console.error("❌ DB Save Failed:", err.message);
+    console.error(
+      "❌ DB Save Failed:",
+      err.message
+    );
+
+    return null;
   }
 };
 

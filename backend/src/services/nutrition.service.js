@@ -470,6 +470,10 @@ export const addMealService = async ({ userId, input, mealType }) => {
     let nutrition;
     let source = "AI";
     let confidence = 0.6;
+    let nutrition;
+    let grams = 0;
+
+
 
 
 
@@ -485,7 +489,7 @@ if (match) {
   //   fats: f.fats * servingQty,
   // };
 
-const grams =
+ grams =
   convertToGrams(
     item.quantity,
     item.unit,
@@ -519,7 +523,7 @@ nutrition =
     
 
     // Calculate nutrition using per100g values
-const grams =
+ grams =
   convertToGrams(
     item.quantity,
     item.unit,

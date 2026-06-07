@@ -334,6 +334,8 @@ const saveFoodToDB = async (
 
     const aliases = buildAliases(food);
 
+    const foodType = getFoodType(food);
+
     const result = await pool.query(
       `
       INSERT INTO food_master
@@ -346,11 +348,12 @@ const saveFoodToDB = async (
         fats,
         aliases,
         category,
-        embedding
+        embedding,
+        food_type
       )
       VALUES
       (
-        $1,$2,$3,$4,$5,$6,$7,$8,$9
+        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10
       )
       RETURNING id
       `,
@@ -364,6 +367,7 @@ const saveFoodToDB = async (
         aliases,
         "AI_GENERATED",
         formattedEmbedding,
+        foodType,
       ]
     );
 
@@ -540,4 +544,44 @@ export const confirmMealService = async ({
   } finally {
     client.release();
   }
+};
+
+
+
+const getFoodType = (food) => {
+  const name = food.toLowerCase();
+
+  const countableFoods = [
+    "idli",
+    "dosa",
+    "chapathi",
+    "roti",
+    "poori",
+    "egg"
+  ];
+
+  const volumeFoods = [
+    "milk",
+    "juice",
+    "lassi",
+    "buttermilk"
+  ];
+
+  if (
+    countableFoods.some((f) =>
+      name.includes(f)
+    )
+  ) {
+    return "COUNTABLE";
+  }
+
+  if (
+    volumeFoods.some((f) =>
+      name.includes(f)
+    )
+  ) {
+    return "VOLUME_BASED";
+  }
+
+  return "WEIGHT_BASED";
 };

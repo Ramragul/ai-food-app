@@ -571,21 +571,41 @@ const grams =
     total.carbs += nutrition.carbs;
     total.fats += nutrition.fats;
 
+    // enrichedItems.push({
+    //   ...item,
+    //   food: normalizedFood,
+    //   quantity: servingQty,
+
+    //   ...nutrition,
+
+    //   source,
+    //   confidence,
+
+    //   servings: item.servings || [],
+
+    //   selectedServing:
+    //     item.selectedServing || null,
+    // });
+
     enrichedItems.push({
-      ...item,
-      food: normalizedFood,
-      quantity: servingQty,
+  ...item,
 
-      ...nutrition,
+  food: normalizedFood,
 
-      source,
-      confidence,
+  quantity: item.quantity,
 
-      servings: item.servings || [],
+  grams,
 
-      selectedServing:
-        item.selectedServing || null,
-    });
+  ...nutrition,
+
+  source,
+  confidence,
+
+  servings: item.servings || [],
+
+  selectedServing:
+    item.selectedServing || null,
+});
   }
 
   return {

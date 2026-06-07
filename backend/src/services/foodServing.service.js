@@ -25,7 +25,9 @@ const result = await pool.query(
 
 export const createDefaultServings = async (
   foodId,
-  foodType
+  foodType,
+  typicalServingWeight
+
 ) => {
   try {
   let values = [];
@@ -37,37 +39,42 @@ export const createDefaultServings = async (
 
   switch (foodType) {
 
-    case "COUNTABLE":
-      values = [
-        [
-          foodId,
-          "1 Piece",
-          "PIECE",
-          40,
-          null,
-          1,
-          true
-        ],
-        [
-          foodId,
-          "2 Pieces",
-          "PIECE",
-          80,
-          null,
-          2,
-          false
-        ],
-        [
-          foodId,
-          "100g",
-          "WEIGHT",
-          100,
-          null,
-          null,
-          false
-        ]
-      ];
-      break;
+case "COUNTABLE":
+
+  const weight =
+    typicalServingWeight || 50;
+
+  values = [
+    [
+      foodId,
+      "1 Piece",
+      "PIECE",
+      weight,
+      null,
+      1,
+      true
+    ],
+    [
+      foodId,
+      "2 Pieces",
+      "PIECE",
+      weight * 2,
+      null,
+      2,
+      false
+    ],
+    [
+      foodId,
+      "100g",
+      "WEIGHT",
+      100,
+      null,
+      null,
+      false
+    ]
+  ];
+
+  break;
 
     case "VOLUME_BASED":
       values = [

@@ -248,6 +248,7 @@ import { calculateNutritionFromGrams } from "../utils/nutritionCalculator.js";
 
 import { getEmbedding } from "./ai/embedding.service.js";
 import { getServingsForFood , createDefaultServings } from "./foodServing.service.js";
+import { findReferenceFood } from "./foodReference.service.js";
 
 
 /**
@@ -343,6 +344,21 @@ const saveFoodToDB = async (
 
       return existing.food.id;
     }
+
+    const referenceFood =
+  await findReferenceFood(food);
+
+if (referenceFood) {
+  nutritionData.foodType =
+    referenceFood.food_type;
+
+  nutritionData.typicalServingWeight =
+    referenceFood.typical_serving_weight;
+
+  console.log(
+    `✅ Using reference data for ${food}`
+  );
+}
 
     const embedding =
       await getEmbedding(food);
@@ -450,9 +466,15 @@ export const addMealService = async ({ userId, input, mealType }) => {
   let enrichedItems = [];
 
   for (let item of items) {
+    // const normalizedFood = normalizeFood(item.food);
+
+    // let match = await matchFood(normalizedFood);
+
     const normalizedFood = normalizeFood(item.food);
 
-    let match = await matchFood(normalizedFood);
+const referenceFood = await findReferenceFood(normalizedFood);
+
+let match = await matchFood(normalizedFood);
 
   
 
@@ -503,6 +525,14 @@ nutrition =
     const aiData = await estimateNutrition(
   normalizedFood
 );
+
+if (referenceFood) {
+  aiData.foodType =
+    referenceFood.food_type;
+
+  aiData.typicalServingWeight =
+    referenceFood.typical_serving_weight;
+}
 
     
 

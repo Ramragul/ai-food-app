@@ -3,20 +3,22 @@
 import pool from "../db/connection.js";
 
 export const getServingsForFood = async (foodId) => {
-  const result = await pool.query(
-    `
-    SELECT
-      id,
-      serving_name,
-      grams,
-      multiplier,
-      is_default
-    FROM food_servings
-    WHERE food_id = $1
-    ORDER BY multiplier
-    `,
-    [foodId]
-  );
+const result = await pool.query(
+  `
+  SELECT
+    id,
+    serving_name,
+    serving_type,
+    grams,
+    ml,
+    piece_count,
+    is_default
+  FROM food_servings
+  WHERE food_id = $1
+  ORDER BY is_default DESC, id ASC
+  `,
+  [foodId]
+);
 
   return result.rows;
 };

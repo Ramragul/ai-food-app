@@ -461,13 +461,9 @@ export const addMealService = async ({ userId, input, mealType }) => {
 
     let match = await matchFood(normalizedFood);
 
-    // const servingQty = convertToServing(
-    //   item.quantity,
-    //   item.unit,
-    //   normalizedFood
-    // );
+  
 
-    let nutrition;
+   
     let source = "AI";
     let confidence = 0.6;
     let nutrition;
@@ -482,12 +478,7 @@ if (match) {
 
   const servings = await getServingsForFood(f.id);
 
-  // nutrition = {
-  //   calories: f.calories * servingQty,
-  //   protein: f.protein * servingQty,
-  //   carbs: f.carbs * servingQty,
-  //   fats: f.fats * servingQty,
-  // };
+
 
  grams =
   convertToGrams(
@@ -590,21 +581,7 @@ nutrition =
     total.carbs += nutrition.carbs;
     total.fats += nutrition.fats;
 
-    // enrichedItems.push({
-    //   ...item,
-    //   food: normalizedFood,
-    //   quantity: servingQty,
 
-    //   ...nutrition,
-
-    //   source,
-    //   confidence,
-
-    //   servings: item.servings || [],
-
-    //   selectedServing:
-    //     item.selectedServing || null,
-    // });
 
     enrichedItems.push({
   ...item,
@@ -633,33 +610,7 @@ nutrition =
   };
 };
 
-/**
- * Helper function for above service
 
- */
-
-// const calculateNutritionFromGrams = (
-//   food,
-//   grams
-// ) => {
-//   return {
-//     calories:
-//       (food.calories_per_100g / 100) *
-//       grams,
-
-//     protein:
-//       (food.protein_per_100g / 100) *
-//       grams,
-
-//     carbs:
-//       (food.carbs_per_100g / 100) *
-//       grams,
-
-//     fats:
-//       (food.fats_per_100g / 100) *
-//       grams,
-//   };
-// };
 
 /**
  * 🔥 STEP 2: SAVE TO DB (TRANSACTION SAFE)

@@ -241,7 +241,10 @@ import pool from "../db/connection.js";
 import { parseFoodWithAI } from "./ai/foodParser.service.js";
 import { matchFood } from "./foodMatcher.service.js";
 import { estimateNutrition } from "./ai/nutritionEstimator.service.js";
-import { convertToServing } from "../utils/unitConverter.js";
+// import { convertToServing } from "../utils/unitConverter.js";
+import { convertToGrams } from "../utils/convertToGrams.js";
+
+import { calculateNutritionFromGrams } from "../utils/nutritionCalculator.js";
 
 import { getEmbedding } from "./ai/embedding.service.js";
 import { getServingsForFood , createDefaultServings } from "./foodServing.service.js";
@@ -443,76 +446,42 @@ export const addMealService = async ({ userId, input, mealType }) => {
 
     let match = await matchFood(normalizedFood);
 
-    const servingQty = convertToServing(
-      item.quantity,
-      item.unit,
-      normalizedFood
-    );
+    // const servingQty = convertToServing(
+    //   item.quantity,
+    //   item.unit,
+    //   normalizedFood
+    // );
 
     let nutrition;
     let source = "AI";
     let confidence = 0.6;
 
-// if (match) {
-//   const f = match.food;
 
-//   const servings = await getServingsForFood(f.id);
-
-//   nutrition = {
-//     calories: f.calories * servingQty,
-//     protein: f.protein * servingQty,
-//     carbs: f.carbs * servingQty,
-//     fats: f.fats * servingQty,
-//   };
-
-//   source = match.source;
-//   confidence = match.confidence;
-
-//   item.servings = servings;
-
-//   item.selectedServing =
-//     servings.find((s) => s.is_default) ||
-//     servings[0] ||
-//     null;
-// } else {
-//       // 🔥 AI CALL
-//       try {
-//         const aiData = await estimateNutrition(normalizedFood, servingQty);
-
-//         nutrition = aiData;
-
-//         // 🔥 VERY IMPORTANT: Save PER SERVING (not total)
-//         await saveFoodToDB(normalizedFood, {
-//           calories: aiData.calories / servingQty,
-//           protein: aiData.protein / servingQty,
-//           carbs: aiData.carbs / servingQty,
-//           fats: aiData.fats / servingQty,
-//         });
-
-//       } catch {
-//         nutrition = {
-//           calories: 0,
-//           protein: 0,
-//           carbs: 0,
-//           fats: 0,
-//         };
-
-//         source = "UNKNOWN";
-//         confidence = 0.3;
-//       }
-//     }
 
 if (match) {
   const f = match.food;
 
   const servings = await getServingsForFood(f.id);
 
-  nutrition = {
-    calories: f.calories * servingQty,
-    protein: f.protein * servingQty,
-    carbs: f.carbs * servingQty,
-    fats: f.fats * servingQty,
-  };
+  // nutrition = {
+  //   calories: f.calories * servingQty,
+  //   protein: f.protein * servingQty,
+  //   carbs: f.carbs * servingQty,
+  //   fats: f.fats * servingQty,
+  // };
+
+const grams =
+  convertToGrams(
+    item.quantity,
+    item.unit,
+    f.typical_serving_weight
+  );
+
+nutrition =
+  calculateNutritionFromGrams(
+    f,
+    grams
+  );
 
   source = match.source;
   confidence = match.confidence;
@@ -526,15 +495,21 @@ if (match) {
 
 } else {
   try {
+
+
     const aiData = await estimateNutrition(
-      normalizedFood,
-      servingQty
-    );
+  normalizedFood
+);
+
+    
 
     // Calculate nutrition using per100g values
-    const grams =
-      aiData.typicalServingWeight *
-      servingQty;
+const grams =
+  convertToGrams(
+    item.quantity,
+    item.unit,
+    aiData.typicalServingWeight
+  );
 
     nutrition = {
       calories:
@@ -616,6 +591,34 @@ if (match) {
   return {
     parsedItems: enrichedItems,
     total,
+  };
+};
+
+/**
+ * Helper function for above service
+
+ */
+
+const calculateNutritionFromGrams = (
+  food,
+  grams
+) => {
+  return {
+    calories:
+      (food.calories_per_100g / 100) *
+      grams,
+
+    protein:
+      (food.protein_per_100g / 100) *
+      grams,
+
+    carbs:
+      (food.carbs_per_100g / 100) *
+      grams,
+
+    fats:
+      (food.fats_per_100g / 100) *
+      grams,
   };
 };
 

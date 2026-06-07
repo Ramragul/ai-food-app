@@ -70,8 +70,7 @@ const client = new OpenAI({
 });
 
 export const estimateNutrition = async (
-  food,
-  quantity
+  food
 ) => {
   const prompt = `
 You are a nutrition database API.

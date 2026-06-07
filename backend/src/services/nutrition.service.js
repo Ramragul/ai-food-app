@@ -253,14 +253,29 @@ import { getServingsForFood , createDefaultServings } from "./foodServing.servic
 /**
  * 🔥 Normalize food names (improves consistency)
  */
+// const normalizeFood = (name) => {
+//   const lower = name.toLowerCase().trim();
+
+//   if (lower.includes("chicken")) return "chicken curry";
+//   if (lower.includes("paneer")) return "paneer curry";
+//   if (lower.includes("tea")) return "milk tea";
+
+//   return lower;
+// };
+
 const normalizeFood = (name) => {
-  const lower = name.toLowerCase().trim();
+  const normalized = name
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, " ");
 
-  if (lower.includes("chicken")) return "chicken curry";
-  if (lower.includes("paneer")) return "paneer curry";
-  if (lower.includes("tea")) return "milk tea";
+  const aliases = {
+    idly: "idli",
+    chappati: "chapathi",
+    chapati: "chapathi"
+  };
 
-  return lower;
+  return aliases[normalized] || normalized;
 };
 
 /**

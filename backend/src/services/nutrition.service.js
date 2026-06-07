@@ -361,10 +361,7 @@ const saveFoodToDB = async (
         name,
         unit,
 
-        calories,
-        protein,
-        carbs,
-        fats,
+
 
         calories_per_100g,
         protein_per_100g,
@@ -386,9 +383,9 @@ const saveFoodToDB = async (
 
         $7,$8,$9,$10,
 
-        $11,$12,
+        $11,
 
-        $13,$14,$15
+        
       )
       RETURNING id
       `,
@@ -398,11 +395,7 @@ const saveFoodToDB = async (
         // legacy column
         "100g",
 
-        // keep legacy values for backward compatibility
-        nutritionData.caloriesPer100g,
-        nutritionData.proteinPer100g,
-        nutritionData.carbsPer100g,
-        nutritionData.fatsPer100g,
+
 
         // new source of truth
         nutritionData.caloriesPer100g,

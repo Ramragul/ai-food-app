@@ -25,7 +25,13 @@ export const createDefaultServings = async (
   foodId,
   foodType
 ) => {
+  try {
   let values = [];
+  console.log(
+  "🔥 Creating servings",
+  foodId,
+  foodType
+);
 
   switch (foodType) {
 
@@ -126,6 +132,7 @@ export const createDefaultServings = async (
   }
 
   for (const row of values) {
+    console.log("Serving row:", row);
     await pool.query(
       `
       INSERT INTO food_servings
@@ -142,6 +149,12 @@ export const createDefaultServings = async (
       ($1,$2,$3,$4,$5,$6,$7)
       `,
       row
+    );
+  }
+} catch (err) {
+    console.error(
+      "❌ createDefaultServings failed",
+      err
     );
   }
 };

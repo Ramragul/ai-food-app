@@ -21,29 +21,127 @@ export const getServingsForFood = async (foodId) => {
   return result.rows;
 };
 
-export const createDefaultServings = async (foodId) => {
-  try {
+export const createDefaultServings = async (
+  foodId,
+  foodType
+) => {
+  let values = [];
+
+  switch (foodType) {
+
+    case "COUNTABLE":
+      values = [
+        [
+          foodId,
+          "1 Piece",
+          "PIECE",
+          40,
+          null,
+          1,
+          true
+        ],
+        [
+          foodId,
+          "2 Pieces",
+          "PIECE",
+          80,
+          null,
+          2,
+          false
+        ],
+        [
+          foodId,
+          "100g",
+          "WEIGHT",
+          100,
+          null,
+          null,
+          false
+        ]
+      ];
+      break;
+
+    case "VOLUME_BASED":
+      values = [
+        [
+          foodId,
+          "100ml",
+          "VOLUME",
+          null,
+          100,
+          null,
+          true
+        ],
+        [
+          foodId,
+          "250ml",
+          "VOLUME",
+          null,
+          250,
+          null,
+          false
+        ],
+        [
+          foodId,
+          "500ml",
+          "VOLUME",
+          null,
+          500,
+          null,
+          false
+        ]
+      ];
+      break;
+
+    default:
+      values = [
+        [
+          foodId,
+          "100g",
+          "WEIGHT",
+          100,
+          null,
+          null,
+          true
+        ],
+        [
+          foodId,
+          "150g",
+          "WEIGHT",
+          150,
+          null,
+          null,
+          false
+        ],
+        [
+          foodId,
+          "200g",
+          "WEIGHT",
+          200,
+          null,
+          null,
+          false
+        ]
+      ];
+  }
+
+  for (const row of values) {
     await pool.query(
       `
       INSERT INTO food_servings
       (
         food_id,
         serving_name,
+        serving_type,
         grams,
-        multiplier,
+        ml,
+        piece_count,
         is_default
       )
       VALUES
-      ($1,'Small',75,0.75,false),
-      ($1,'Medium',100,1.0,true),
-      ($1,'Large',150,1.5,false)
+      ($1,$2,$3,$4,$5,$6,$7)
       `,
-      [foodId]
-    );
-  } catch (err) {
-    console.error(
-      "❌ Create Servings Failed:",
-      err.message
+      row
     );
   }
 };

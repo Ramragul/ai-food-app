@@ -71,6 +71,11 @@ const [foodSource, setFoodSource] =
 const [servingId, setServingId] =
   useState("");
 
+  
+
+  if (!food) return null;
+
+
   const selectedServing =
   food.servings?.find(
     (s:any) =>
@@ -107,8 +112,6 @@ const fats =
   totalGrams *
   food.fatsPer100g
 ) / 100;
-
-  if (!food) return null;
 
   return (
     <Drawer

@@ -21,9 +21,11 @@ interface FoodItem {
   source: string;
 }
 
+
+
 interface Props {
   onSelectFood: (
-    food: string
+    food: FoodItem
   ) => void;
 }
 
@@ -128,9 +130,8 @@ const FoodSearchInput = ({
                     bg: "brand.50",
                   }}
                   onClick={() => {
-                    onSelectFood(
-                      food.name
-                    );
+             
+                    onSelectFood(food);
 
                     setQuery("");
 

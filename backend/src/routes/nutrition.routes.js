@@ -47,6 +47,10 @@ import {
   searchFood
 } from "../controllers/foodSearch.controller.js";
 
+import {
+  getFoodDetailsById
+} from "../controllers/foodDetails.controller.js";
+
 
 
 
@@ -59,6 +63,11 @@ router.get("/dashboard-summary", getDashboard);
 router.get(
   "/search-food",
   searchFood
+);
+
+router.get(
+  "/food-details/:id",
+  getFoodDetailsById
 );
 
 export default router;

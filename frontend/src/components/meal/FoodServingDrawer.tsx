@@ -71,6 +71,43 @@ const [foodSource, setFoodSource] =
 const [servingId, setServingId] =
   useState("");
 
+  const selectedServing =
+  food.servings?.find(
+    (s:any) =>
+      String(s.id) ===
+      servingId
+  );
+
+  const grams =
+  selectedServing?.grams || 0;
+
+  const totalGrams =
+  grams * quantity;
+
+  const calories =
+(
+  totalGrams *
+  food.caloriesPer100g
+) / 100;
+
+const protein =
+(
+  totalGrams *
+  food.proteinPer100g
+) / 100;
+
+const carbs =
+(
+  totalGrams *
+  food.carbsPer100g
+) / 100;
+
+const fats =
+(
+  totalGrams *
+  food.fatsPer100g
+) / 100;
+
   if (!food) return null;
 
   return (
@@ -204,7 +241,34 @@ const [servingId, setServingId] =
             </Box>
 
 
+<Box
+  bg="brand.50"
+  p={4}
+  borderRadius="xl"
+>
+  <Text
+    fontWeight="700"
+    mb={2}
+  >
+    Nutrition Preview
+  </Text>
 
+  <Text>
+    🔥 {calories.toFixed(0)} kcal
+  </Text>
+
+  <Text>
+    🥩 {protein.toFixed(1)}g
+  </Text>
+
+  <Text>
+    🍚 {carbs.toFixed(1)}g
+  </Text>
+
+  <Text>
+    🥑 {fats.toFixed(1)}g
+  </Text>
+</Box>
           </VStack>
         </DrawerBody>
 

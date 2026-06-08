@@ -77,6 +77,29 @@ export const getFoodDetails = async (
   const food =
     result.rows[0];
 
+    const nutrition =
+  await pool.query(
+    `
+    SELECT
+      calories_per_100g,
+      protein_per_100g,
+      carbs_per_100g,
+      fats_per_100g
+    FROM food_master
+    WHERE LOWER(name)=LOWER($1)
+    LIMIT 1
+    `,
+    [food.food_name]
+  );
+
+  const nutritionRow =
+  nutrition.rows[0] || {
+    calories_per_100g: 0,
+    protein_per_100g: 0,
+    carbs_per_100g: 0,
+    fats_per_100g: 0
+  };
+
   let servings = [];
 
   switch (
@@ -169,21 +192,51 @@ export const getFoodDetails = async (
       ];
   }
 
+//   return {
+//     id: food.id,
+
+//     name:
+//       food.food_name,
+
+//     foodType:
+//       food.food_type,
+
+//     typicalServingWeight:
+//       food.typical_serving_weight,
+
+//     referenceUnit:
+//       food.reference_unit,
+
+//     servings
+//   };
+
   return {
-    id: food.id,
+  id: food.id,
 
-    name:
-      food.food_name,
+  name:
+    food.food_name,
 
-    foodType:
-      food.food_type,
+  foodType:
+    food.food_type,
 
-    typicalServingWeight:
-      food.typical_serving_weight,
+  typicalServingWeight:
+    food.typical_serving_weight,
 
-    referenceUnit:
-      food.reference_unit,
+  referenceUnit:
+    food.reference_unit,
 
-    servings
-  };
+  servings,
+
+  caloriesPer100g:
+    nutritionRow.calories_per_100g,
+
+  proteinPer100g:
+    nutritionRow.protein_per_100g,
+
+  carbsPer100g:
+    nutritionRow.carbs_per_100g,
+
+  fatsPer100g:
+    nutritionRow.fats_per_100g
+};
 };

@@ -43,11 +43,23 @@ import {
 
 import { getDashboard } from "../controllers/dashboard.controller.js";
 
+import {
+  searchFood
+} from "../controllers/foodSearch.controller.js";
+
+import FoodSearchInput
+from "../components/meal/FoodSearchInput";
+
+
 const router = express.Router();
 
 router.post("/add-meal", addMeal);          // AI parse + preview
 router.post("/confirm-meal", confirmMeal);  // Save to DB
 
 router.get("/dashboard-summary", getDashboard);
+router.get(
+  "/search-food",
+  searchFood
+);
 
 export default router;

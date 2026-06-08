@@ -486,6 +486,174 @@
 
 // Version 2 
 
+// import {
+//   Box,
+//   Text,
+//   VStack,
+//   Spinner,
+//   useToast
+// } from "@chakra-ui/react";
+
+// import { useState } from "react";
+
+// import MealHero from "../components/meal/MealHero";
+// import MealTypeSelector from "../components/meal/MealTypeSelector";
+// import FoodSearchInput from "../components/meal/FoodSearchInput";
+// import SelectedFoodsSection from "../components/meal/SelectedFoodsSection";
+// import MealComposer from "../components/meal/MealComposer";
+
+// const AddMeal = () => {
+//   const toast = useToast();
+
+//   const [mealType, setMealType] =
+//     useState("BREAKFAST");
+
+
+
+//   const [selectedFoods,setSelectedFoods] =
+//   useState<any[]>([]);
+
+//   const [loading, setLoading] =
+//     useState(false);
+
+
+
+//   const handleFoodSelect =
+// (food:any) => {
+
+//   setSelectedFoods(
+//     (prev) => {
+
+//       const exists =
+//         prev.some(
+//           (f) =>
+//             f.id ===
+//             food.id
+//         );
+
+//       if (exists)
+//         return prev;
+
+//       return [
+//         ...prev,
+//         food
+//       ];
+//     }
+//   );
+//       toast({
+//       title: `${food} added`,
+//       status: "success",
+//       duration: 1200,
+//       isClosable: true
+//     });
+// };
+
+//   const handleAnalyze =
+//   async () => {
+
+//     console.log(
+//       selectedFoods
+//     );
+
+//   };
+
+
+
+// const handleFoodRemove =
+// (foodId:number) => {
+
+//   setSelectedFoods(
+//     (prev) =>
+//       prev.filter(
+//         (food) =>
+//           food.id !==
+//           foodId
+//       )
+//   );
+// };
+
+//   return (
+//     <Box
+//       minH="100vh"
+//       bg="linear-gradient(
+//         180deg,
+//         #ffffff 0%,
+//         #f4f9ff 100%
+//       )"
+//     >
+//       <Box
+//         maxW="420px"
+//         mx="auto"
+//         px={5}
+//         pt={8}
+//         pb="180px"
+//       >
+//         <MealHero />
+
+//         <MealTypeSelector
+//           mealType={mealType}
+//           setMealType={
+//             setMealType
+//           }
+//         />
+
+//         <VStack
+//           align="stretch"
+//           spacing={3}
+//           mt={2}
+//         >
+//           <Text
+//             fontWeight="700"
+//             fontSize="lg"
+//           >
+//             Search Food
+//           </Text>
+
+//           <FoodSearchInput
+//             onSelectFood={
+//               handleFoodSelect
+//             }
+//           />
+//         </VStack>
+//         <SelectedFoodsSection
+//         foods={selectedFoods}
+//         onRemove={
+//           handleFoodRemove
+//         }
+//       />
+//       <MealComposer
+//   foods={selectedFoods}
+//   loading={loading}
+//   onAnalyze={
+//     handleAnalyze
+//   }
+// />
+
+//         {loading && (
+//           <Box
+//             mt={8}
+//             textAlign="center"
+//           >
+//             <Spinner
+//               size="lg"
+//               color="brand.500"
+//             />
+
+//             <Text mt={3}>
+//               Loading...
+//             </Text>
+//           </Box>
+//         )}
+//       </Box>
+//     </Box>
+//   );
+// };
+
+// export default AddMeal;
+
+
+// Version 3 : Clone of 2
+
 import {
   Box,
   Text,
@@ -496,11 +664,14 @@ import {
 
 import { useState } from "react";
 
+import api from "../utils/api";
+
 import MealHero from "../components/meal/MealHero";
 import MealTypeSelector from "../components/meal/MealTypeSelector";
 import FoodSearchInput from "../components/meal/FoodSearchInput";
 import SelectedFoodsSection from "../components/meal/SelectedFoodsSection";
 import MealComposer from "../components/meal/MealComposer";
+import FoodServingDrawer from "../components/meal/FoodServingDrawer";
 
 const AddMeal = () => {
   const toast = useToast();
@@ -508,69 +679,128 @@ const AddMeal = () => {
   const [mealType, setMealType] =
     useState("BREAKFAST");
 
-
-
-  const [selectedFoods,setSelectedFoods] =
-  useState<any[]>([]);
+  const [selectedFoods, setSelectedFoods] =
+    useState<any[]>([]);
 
   const [loading, setLoading] =
     useState(false);
 
+  const [drawerOpen, setDrawerOpen] =
+    useState(false);
 
+  const [selectedFood, setSelectedFood] =
+    useState<any>(null);
 
   const handleFoodSelect =
-(food:any) => {
+    async (food: any) => {
 
-  setSelectedFoods(
-    (prev) => {
+      try {
 
-      const exists =
-        prev.some(
-          (f) =>
-            f.id ===
-            food.id
+        const res =
+          await api.get(
+            `/nutrition/food-details/${food.id}`
+          );
+
+        setSelectedFood(
+          res.data
         );
 
-      if (exists)
-        return prev;
+        setDrawerOpen(
+          true
+        );
 
-      return [
-        ...prev,
-        food
-      ];
-    }
-  );
+      } catch (err) {
+
+        console.error(err);
+
+        toast({
+          title:
+            "Failed to load food details",
+          status: "error",
+          duration: 2000,
+          isClosable: true
+        });
+      }
+    };
+
+  const handleFoodSave =
+    (foodSelection: any) => {
+
+      const exists =
+        selectedFoods.some(
+          (f) =>
+            f.foodId ===
+            foodSelection.foodId
+        );
+
+      if (exists) {
+        toast({
+          title:
+            "Food already added",
+          status: "info",
+          duration: 1500,
+          isClosable: true
+        });
+
+        return;
+      }
+
+      setSelectedFoods(
+        (prev) => [
+          ...prev,
+          foodSelection
+        ]
+      );
+
+      setDrawerOpen(
+        false
+      );
+
       toast({
-      title: `${food} added`,
-      status: "success",
-      duration: 1200,
-      isClosable: true
-    });
-};
+        title:
+          `${foodSelection.name} added`,
+        status: "success",
+        duration: 1200,
+        isClosable: true
+      });
+    };
 
   const handleAnalyze =
-  async () => {
+    async () => {
 
-    console.log(
-      selectedFoods
-    );
+      console.log(
+        selectedFoods
+      );
 
-  };
+      /*
+      Future payload:
 
+      [
+        {
+          foodId: 1,
+          name: "idli",
+          serving: {
+            grams: 55
+          },
+          quantity: 2,
+          preparationStyle: "REGULAR"
+        }
+      ]
+      */
+    };
 
+  const handleFoodRemove =
+    (foodId: number) => {
 
-const handleFoodRemove =
-(foodId:number) => {
-
-  setSelectedFoods(
-    (prev) =>
-      prev.filter(
-        (food) =>
-          food.id !==
-          foodId
-      )
-  );
-};
+      setSelectedFoods(
+        (prev) =>
+          prev.filter(
+            (food) =>
+              food.foodId !==
+              foodId
+          )
+      );
+    };
 
   return (
     <Box
@@ -615,19 +845,21 @@ const handleFoodRemove =
             }
           />
         </VStack>
+
         <SelectedFoodsSection
-        foods={selectedFoods}
-        onRemove={
-          handleFoodRemove
-        }
-      />
-      <MealComposer
-  foods={selectedFoods}
-  loading={loading}
-  onAnalyze={
-    handleAnalyze
-  }
-/>
+          foods={selectedFoods}
+          onRemove={
+            handleFoodRemove
+          }
+        />
+
+        <MealComposer
+          foods={selectedFoods}
+          loading={loading}
+          onAnalyze={
+            handleAnalyze
+          }
+        />
 
         {loading && (
           <Box
@@ -645,6 +877,23 @@ const handleFoodRemove =
           </Box>
         )}
       </Box>
+
+      <FoodServingDrawer
+        isOpen={
+          drawerOpen
+        }
+        onClose={() =>
+          setDrawerOpen(
+            false
+          )
+        }
+        food={
+          selectedFood
+        }
+        onSave={
+          handleFoodSave
+        }
+      />
     </Box>
   );
 };

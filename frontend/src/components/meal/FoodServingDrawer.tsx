@@ -14,7 +14,7 @@ import {
   Box
 } from "@chakra-ui/react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {PREPARATION_STYLES} from "../../constants/preparationStyles";
 
@@ -35,6 +35,30 @@ const FoodServingDrawer = ({
   food,
   onSave
 }: Props) => {
+
+    useEffect(() => {
+
+  if (
+    food?.servings?.length
+  ) {
+    setServingId(
+      String(
+        food.servings[0].id
+      )
+    );
+  }
+
+}, [food]);
+
+useEffect(() => {
+
+  setQuantity(1);
+
+  setFoodSource(
+    "REGULAR"
+  );
+
+}, [food]);
 
 
 
@@ -97,7 +121,12 @@ const [servingId, setServingId] =
                           )
                         }
                       >
+                        
                         {s.serving_name}
+{" "}
+(
+{s.grams}g
+)
                       </Radio>
                     )
                   )}
@@ -174,33 +203,7 @@ const [servingId, setServingId] =
               </HStack>
             </Box>
 
-            <Box>
-              <Text
-                mb={2}
-                fontWeight="600"
-              >
-                Prepared At
-              </Text>
 
-              <RadioGroup
-                value={foodSource}
-                onChange={
-                  setFoodSource
-                }
-              >
-                <VStack
-                  align="stretch"
-                >
-                  <Radio value="HOME">
-                    Home Made
-                  </Radio>
-
-                  <Radio value="RESTAURANT">
-                    Restaurant
-                  </Radio>
-                </VStack>
-              </RadioGroup>
-            </Box>
 
           </VStack>
         </DrawerBody>

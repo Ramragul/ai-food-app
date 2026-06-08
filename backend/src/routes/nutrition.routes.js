@@ -47,8 +47,7 @@ import {
   searchFood
 } from "../controllers/foodSearch.controller.js";
 
-import FoodSearchInput
-from "../components/meal/FoodSearchInput";
+
 
 
 const router = express.Router();

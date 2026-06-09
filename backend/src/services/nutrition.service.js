@@ -329,7 +329,7 @@ const buildAliases = (food) => {
 };
 
 
-const saveFoodToDB = async (
+export const saveFoodToDB = async (
   food,
   nutritionData
 ) => {

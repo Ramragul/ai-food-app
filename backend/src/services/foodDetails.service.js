@@ -77,19 +77,20 @@ export const getFoodDetails = async (
   const food =
     result.rows[0];
 
-    const nutrition =
+const nutrition =
   await pool.query(
     `
     SELECT
-      calories_per_100g,
-      protein_per_100g,
-      carbs_per_100g,
-      fats_per_100g
-    FROM food_master
-    WHERE LOWER(name)=LOWER($1)
-    LIMIT 1
+      fm.calories_per_100g,
+      fm.protein_per_100g,
+      fm.carbs_per_100g,
+      fm.fats_per_100g
+    FROM food_reference fr
+    INNER JOIN food_master fm
+    ON fm.id = fr.food_master_id
+    WHERE fr.id = $1
     `,
-    [food.food_name]
+    [foodId]
   );
 
   const nutritionRow =

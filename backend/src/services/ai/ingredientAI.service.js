@@ -77,8 +77,20 @@ Ingredient: ${ingredientName}
       type: parsed.type || null
     };
 
-  } catch (err) {
-    console.error("❌ AI Error:", err.message);
-    return fallbackNutrition();
-  }
+  // } catch (err) {
+  //   console.error("❌ AI Error:", err.message);
+  //   return fallbackNutrition();
+  // }
+
+  }catch (err) {
+
+  console.error(
+    "❌ AI Error:",
+    err.message
+  );
+
+  throw err;
+}
+
+  
 };

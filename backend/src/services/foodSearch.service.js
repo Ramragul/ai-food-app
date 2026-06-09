@@ -29,14 +29,7 @@ export const searchFoods = async (query) => {
       ON fa.food_reference_id = fr.id
       WHERE LOWER(fa.alias) LIKE $1
 
-      // UNION ALL
 
-      // SELECT
-      //   fm.id,
-      //   fm.name,
-      //   'CACHE' AS source
-      // FROM food_master fm
-      // WHERE LOWER(fm.name) LIKE $1
     ) foods
     ORDER BY name
     LIMIT 10

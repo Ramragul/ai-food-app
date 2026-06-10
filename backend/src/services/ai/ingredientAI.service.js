@@ -34,7 +34,7 @@ const fallbackNutrition = () => ({
  * 🔥 AI CALL
  */
 export const getNutritionFromAI = async (ingredientName) => {
-  const prompt = `
+const prompt = `
 You are a nutrition API.
 
 Return nutrition per 100g in STRICT JSON format.
@@ -44,9 +44,41 @@ Return nutrition per 100g in STRICT JSON format.
   "protein": number,
   "carbs": number,
   "fat": number,
-  "fibre": number
-  "type" : string (eg : veg / non-veg / vegan)
+  "fibre": number,
+  "type": string,
+  "foodType": string,
+  "typicalServingWeight": number,
+  "referenceUnit": string
 }
+
+Rules:
+
+foodType must be one of:
+- COUNTABLE
+- WEIGHT_BASED
+- VOLUME_BASED
+
+Examples:
+
+Idli -> COUNTABLE
+Dosa -> COUNTABLE
+Egg -> COUNTABLE
+
+Chicken Breast -> WEIGHT_BASED
+Paneer -> WEIGHT_BASED
+Rice -> WEIGHT_BASED
+
+Milk -> VOLUME_BASED
+Lassi -> VOLUME_BASED
+Smoothie -> VOLUME_BASED
+Protein Shake -> VOLUME_BASED
+Juices -> VOLUME_BASED
+
+referenceUnit must be:
+- g for COUNTABLE and WEIGHT_BASED
+- ml for VOLUME_BASED
+
+typicalServingWeight should represent a realistic single serving.
 
 Ingredient: ${ingredientName}
 `;
@@ -68,14 +100,38 @@ Ingredient: ${ingredientName}
 
     if (!parsed) throw new Error("Invalid AI response");
 
-    return {
-      calories: Number(parsed.calories) || 0,
-      protein: Number(parsed.protein) || 0,
-      carbs: Number(parsed.carbs) || 0,
-      fat: Number(parsed.fat) || 0,
-      fibre: Number(parsed.fibre) || 0,
-      type: parsed.type || null
-    };
+ return {
+  calories:
+    Number(parsed.calories) || 0,
+
+  protein:
+    Number(parsed.protein) || 0,
+
+  carbs:
+    Number(parsed.carbs) || 0,
+
+  fat:
+    Number(parsed.fat) || 0,
+
+  fibre:
+    Number(parsed.fibre) || 0,
+
+  type:
+    parsed.type || null,
+
+  foodType:
+    parsed.foodType ||
+    "COUNTABLE",
+
+  typicalServingWeight:
+    Number(
+      parsed.typicalServingWeight
+    ) || 100,
+
+  referenceUnit:
+    parsed.referenceUnit ||
+    "g"
+};
 
   // } catch (err) {
   //   console.error("❌ AI Error:", err.message);

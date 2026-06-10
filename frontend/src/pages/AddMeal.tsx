@@ -672,7 +672,7 @@ import FoodSearchInput from "../components/meal/FoodSearchInput";
 import SelectedFoodsSection from "../components/meal/SelectedFoodsSection";
 import MealComposer from "../components/meal/MealComposer";
 import FoodServingDrawer from "../components/meal/FoodServingDrawer";
-import AIFoodReviewDrawer from "../components/AIFoodReviewDrawer";
+import AIFoodReviewDrawer from "../components/meal/AIFoodReviewDrawer";
 
 const AddMeal = () => {
   const toast = useToast();

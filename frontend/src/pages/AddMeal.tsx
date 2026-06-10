@@ -802,6 +802,135 @@ const AddMeal = () => {
       );
     };
 
+    const handleQuantityUpdate =
+(
+  foodId:number,
+  change:number
+) => {
+
+  setSelectedFoods(
+    prev =>
+      prev.map(
+        food => {
+
+          if(
+            food.foodId !==
+            foodId
+          ){
+            return food;
+          }
+
+          const newQuantity =
+            Math.max(
+              1,
+              food.quantity +
+              change
+            );
+
+          const ratio =
+            newQuantity /
+            food.quantity;
+
+          return {
+
+            ...food,
+
+            quantity:
+              newQuantity,
+
+            grams:
+              Math.round(
+                food.grams *
+                ratio
+              ),
+
+            calories:
+              Math.round(
+                food.calories *
+                ratio
+              ),
+
+            protein:
+              Number(
+                (
+                  food.protein *
+                  ratio
+                ).toFixed(1)
+              ),
+
+            carbs:
+              Number(
+                (
+                  food.carbs *
+                  ratio
+                ).toFixed(1)
+              ),
+
+            fats:
+              Number(
+                (
+                  food.fats *
+                  ratio
+                ).toFixed(1)
+              )
+          };
+        }
+      )
+  );
+};
+
+    const mealTotals =
+selectedFoods.reduce(
+  (acc, food) => {
+
+    acc.calories +=
+      food.calories || 0;
+
+    acc.protein +=
+      food.protein || 0;
+
+    acc.carbs +=
+      food.carbs || 0;
+
+    acc.fats +=
+      food.fats || 0;
+
+    return acc;
+
+  },
+  {
+    calories: 0,
+    protein: 0,
+    carbs: 0,
+    fats: 0
+  }
+);
+
+const handleGenerateFood =
+async (
+  foodName:string
+) => {
+
+  try {
+
+    const res =
+      await api.post(
+        "/nutrition/generate-food",
+        {
+          foodName
+        }
+      );
+
+    console.log(
+      res.data
+    );
+
+  } catch(err){
+
+    console.error(err);
+  }
+};
+
   return (
     <Box
       minH="100vh"
@@ -843,23 +972,35 @@ const AddMeal = () => {
             onSelectFood={
               handleFoodSelect
             }
+            onGenerateFood={
+            handleGenerateFood
+           }
           />
         </VStack>
-
+{/* 
         <SelectedFoodsSection
           foods={selectedFoods}
           onRemove={
             handleFoodRemove
           }
-        />
+        /> */}
 
-        <MealComposer
-          foods={selectedFoods}
-          loading={loading}
-          onAnalyze={
-            handleAnalyze
-          }
-        />
+        <SelectedFoodsSection
+  foods={selectedFoods}
+  onRemove={
+    handleFoodRemove
+  }
+  onQuantityUpdate={
+    handleQuantityUpdate
+  }
+/>
+
+<MealComposer
+  foods={selectedFoods}
+  totals={mealTotals}
+  loading={loading}
+  onAnalyze={handleAnalyze}
+/>
 
         {loading && (
           <Box

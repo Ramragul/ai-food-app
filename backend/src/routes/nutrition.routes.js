@@ -70,4 +70,9 @@ router.get(
   getFoodDetailsById
 );
 
+router.post(
+  "/generate-food",
+  generateFood
+);
+
 export default router;

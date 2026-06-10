@@ -71,7 +71,7 @@ const [foodSource, setFoodSource] =
 const [servingId, setServingId] =
   useState("");
 
-  
+  console.log(foodSource);
 
   if (!food) return null;
 
@@ -89,10 +89,18 @@ const [servingId, setServingId] =
   const totalGrams =
   grams * quantity;
 
-  const calories =
+  const styleMultiplier =
+  foodSource === "LIGHT"
+    ? 0.9
+    : foodSource === "RICH"
+    ? 1.2
+    : 1;
+
+const calories =
 (
   totalGrams *
-  food.caloriesPer100g
+  food.caloriesPer100g *
+  styleMultiplier
 ) / 100;
 
 const protein =
@@ -110,7 +118,8 @@ const carbs =
 const fats =
 (
   totalGrams *
-  food.fatsPer100g
+  food.fatsPer100g *
+  styleMultiplier
 ) / 100;
 
   return (
@@ -256,7 +265,7 @@ const fats =
     Nutrition Preview
   </Text>
 
-  <Text>
+  {/* <Text>
     🔥 {calories.toFixed(0)} kcal
   </Text>
 
@@ -270,7 +279,89 @@ const fats =
 
   <Text>
     🥑 {fats.toFixed(1)}g
-  </Text>
+  </Text> */}
+  <Text
+  fontSize="sm"
+  color="gray.500"
+  mb={3}
+>
+  {totalGrams} g selected
+</Text>
+
+<HStack spacing={3}>
+  <Box
+    flex={1}
+    bg="white"
+    p={3}
+    borderRadius="lg"
+  >
+    <Text fontSize="xs">
+      Calories
+    </Text>
+
+    <Text
+      fontWeight="700"
+    >
+      {calories.toFixed(0)}
+    </Text>
+  </Box>
+
+  <Box
+    flex={1}
+    bg="white"
+    p={3}
+    borderRadius="lg"
+  >
+    <Text fontSize="xs">
+      Protein
+    </Text>
+
+    <Text
+      fontWeight="700"
+    >
+      {protein.toFixed(1)}g
+    </Text>
+  </Box>
+</HStack>
+
+<HStack
+  spacing={3}
+  mt={3}
+>
+  <Box
+    flex={1}
+    bg="white"
+    p={3}
+    borderRadius="lg"
+  >
+    <Text fontSize="xs">
+      Carbs
+    </Text>
+
+    <Text
+      fontWeight="700"
+    >
+      {carbs.toFixed(1)}g
+    </Text>
+  </Box>
+
+  <Box
+    flex={1}
+    bg="white"
+    p={3}
+    borderRadius="lg"
+  >
+    <Text fontSize="xs">
+      Fat
+    </Text>
+
+    <Text
+      fontWeight="700"
+    >
+      {fats.toFixed(1)}g
+    </Text>
+  </Box>
+</HStack>
 </Box>
           </VStack>
         </DrawerBody>
@@ -291,19 +382,54 @@ const fats =
                     servingId
                 );
 
-onSave({
-  foodId:
-    food.id,
+// onSave({
+//   foodId:
+//     food.id,
 
-  name:
-    food.name,
+//   name:
+//     food.name,
+
+//   serving,
+
+//   quantity,
+
+//   preparationStyle:
+//     foodSource
+// });
+
+onSave({
+  foodId: food.id,
+  name: food.name,
 
   serving,
 
   quantity,
 
   preparationStyle:
-    foodSource
+    foodSource,
+
+  grams:
+    totalGrams,
+
+  calories:
+    Number(
+      calories.toFixed(0)
+    ),
+
+  protein:
+    Number(
+      protein.toFixed(1)
+    ),
+
+  carbs:
+    Number(
+      carbs.toFixed(1)
+    ),
+
+  fats:
+    Number(
+      fats.toFixed(1)
+    )
 });
 
               onClose();

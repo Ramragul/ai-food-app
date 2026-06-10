@@ -805,7 +805,7 @@ async () => {
         mealTotals.fats,
       
       fiber:
-        mealTotals.fiber
+        mealTotals.fiber || 0
 
     };
 
@@ -956,6 +956,14 @@ async () => {
               Number(
                 (
                   food.fats *
+                  ratio
+                ).toFixed(1)
+              ),
+
+            fiber:
+              Number(
+                (
+                  food.fiber *
                   ratio
                 ).toFixed(1)
               )

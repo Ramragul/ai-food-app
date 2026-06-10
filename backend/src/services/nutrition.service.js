@@ -845,7 +845,7 @@ export const confirmMealService = async ({
         protein = daily_nutrition.protein + $3,
         carbs = daily_nutrition.carbs + $4,
         fats = daily_nutrition.fats + $5,
-        fiber = daily_nutrition.fiber + $6`
+        fiber = daily_nutrition.fiber + $6`,
       [userId, total.calories, total.protein, total.carbs, total.fats, total.fiber]
     );
 

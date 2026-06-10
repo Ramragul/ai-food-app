@@ -20,6 +20,14 @@ import {
   confirmMealService
 } from "../services/nutrition.service.js";
 
+import {
+  saveGeneratedFood
+} from "../services/saveGeneratedFood.service.js";
+
+import {
+  generateFoodEstimate
+} from "../services/generateFood.service.js";
+
 // 🔥 Step 1: Parse + Preview
 export const addMeal = async (req, res) => {
   try {
@@ -39,5 +47,70 @@ export const confirmMeal = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to save meal" });
+  }
+};
+
+
+export const createFood =
+async (
+  req,
+  res
+) => {
+
+  try {
+
+    const result =
+      await saveGeneratedFood(
+        req.body
+      );
+
+    return res
+      .status(200)
+      .json(result);
+
+  } catch (err) {
+
+    console.error(err);
+
+    return res
+      .status(500)
+      .json({
+        message:
+          "Failed to save food"
+      });
+
+  }
+};
+
+
+
+export const generateFood =
+async (req,res) => {
+
+  try {
+
+    const {
+      foodName
+    } = req.body;
+
+    const result =
+      await generateFoodEstimate(
+        foodName
+      );
+
+    return res
+      .status(200)
+      .json(result);
+
+  } catch(err){
+
+    console.error(err);
+
+    return res
+      .status(500)
+      .json({
+        message:
+          "Failed to generate food"
+      });
   }
 };

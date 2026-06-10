@@ -672,6 +672,7 @@ import FoodSearchInput from "../components/meal/FoodSearchInput";
 import SelectedFoodsSection from "../components/meal/SelectedFoodsSection";
 import MealComposer from "../components/meal/MealComposer";
 import FoodServingDrawer from "../components/meal/FoodServingDrawer";
+import AIFoodReviewDrawer from "../components/AIFoodReviewDrawer";
 
 const AddMeal = () => {
   const toast = useToast();
@@ -690,6 +691,13 @@ const AddMeal = () => {
 
   const [selectedFood, setSelectedFood] =
     useState<any>(null);
+
+    const [aiFood,setAiFood] =
+  useState(null);
+
+const [aiDrawerOpen,
+  setAiDrawerOpen] =
+  useState(false);
 
   const handleFoodSelect =
     async (food: any) => {
@@ -906,6 +914,8 @@ selectedFoods.reduce(
   }
 );
 
+
+
 const handleGenerateFood =
 async (
   foodName:string
@@ -921,9 +931,52 @@ async (
         }
       );
 
+    setAiFood(
+      res.data
+    );
+
+    setAiDrawerOpen(
+      true
+    );
+
+  } catch(err){
+
+    console.error(err);
+  }
+};
+
+const handleSaveAIFood =
+async (
+  food:any
+) => {
+
+  try {
+
+    const res =
+      await api.post(
+        "/nutrition/create-food",
+        food
+      );
+
     console.log(
       res.data
     );
+    const foodDetails =
+await api.get(
+  `/nutrition/food-details/${res.data.foodReferenceId}`
+);
+
+setAiDrawerOpen(
+  false
+);
+
+setSelectedFood(
+  foodDetails.data
+);
+
+setDrawerOpen(
+  true
+);
 
   } catch(err){
 
@@ -1035,6 +1088,21 @@ async (
           handleFoodSave
         }
       />
+
+      <AIFoodReviewDrawer
+  isOpen={
+    aiDrawerOpen
+  }
+  onClose={() =>
+    setAiDrawerOpen(
+      false
+    )
+  }
+  food={aiFood}
+    onSave={
+    handleSaveAIFood
+  }
+/>
     </Box>
   );
 };

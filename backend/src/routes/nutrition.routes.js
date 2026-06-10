@@ -38,7 +38,9 @@
 import express from "express";
 import {
   addMeal,
-  confirmMeal
+  confirmMeal,
+  createFood,
+  generateFood
 } from "../controllers/nutrition.controller.js";
 
 import { getDashboard } from "../controllers/dashboard.controller.js";
@@ -51,9 +53,7 @@ import {
   getFoodDetailsById
 } from "../controllers/foodDetails.controller.js";
 
-import {
-  generateFood 
-} from "../controllers/generateFood.controller.js"
+
 
 
 
@@ -77,6 +77,11 @@ router.get(
 router.post(
   "/generate-food",
   generateFood
+);
+
+router.post(
+  "/create-food",
+  createFood
 );
 
 export default router;

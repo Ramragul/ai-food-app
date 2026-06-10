@@ -802,7 +802,10 @@ async () => {
         mealTotals.carbs,
 
       fats:
-        mealTotals.fats
+        mealTotals.fats,
+      
+      fiber:
+        mealTotals.fiber
 
     };
 

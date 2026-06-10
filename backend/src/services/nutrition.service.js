@@ -837,15 +837,16 @@ export const confirmMealService = async ({
 
     await client.query(
       `INSERT INTO daily_nutrition 
-      (user_id, date, total_calories, protein, carbs, fats)
-      VALUES ($1, CURRENT_DATE, $2, $3, $4, $5)
+      (user_id, date, total_calories, protein, carbs, fats, fiber)
+      VALUES ($1, (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Kolkata')::DATE, $2, $3, $4, $5, $6)
       ON CONFLICT (user_id, date)
       DO UPDATE SET
         total_calories = daily_nutrition.total_calories + $2,
         protein = daily_nutrition.protein + $3,
         carbs = daily_nutrition.carbs + $4,
-        fats = daily_nutrition.fats + $5`,
-      [userId, total.calories, total.protein, total.carbs, total.fats]
+        fats = daily_nutrition.fats + $5,
+        fiber = daily_nutrition.fiber + $6`
+      [userId, total.calories, total.protein, total.carbs, total.fats, total.fiber]
     );
 
     await client.query("COMMIT");

@@ -51,6 +51,10 @@ import {
   getFoodDetailsById
 } from "../controllers/foodDetails.controller.js";
 
+import {
+  generateFood 
+} from "../controllers/generateFood.controller.js"
+
 
 
 

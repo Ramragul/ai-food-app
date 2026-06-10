@@ -59,13 +59,26 @@ async (food) => {
           fats_per_100g,
           typical_serving_weight
         )
+          INSERT INTO food_master (
+            name,
+            unit,
+            fiber,
+            food_type,
+            calories_per_100g,
+            protein_per_100g,
+            carbs_per_100g,
+            fats_per_100g,
+            typical_serving_weight
+            )
         VALUES (
-          $1,$2,$3,$4,$5,$6,$7
+          $1,$2,$3,$4,$5,$6,$7,$8,$9
         )
         RETURNING id
         `,
         [
           food.name,
+          food.referenceUnit,
+          food.fibre,
           food.foodType,
           food.caloriesPer100g,
           food.proteinPer100g,

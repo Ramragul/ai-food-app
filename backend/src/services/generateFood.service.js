@@ -32,15 +32,21 @@
 //       nutrition.fat,
 
 //     foodType:
+//       nutrition.foodType ||
 //       "COUNTABLE",
 
 //     typicalServingWeight:
-//       100
+//       nutrition.typicalServingWeight ||
+//       100,
+
+//     referenceUnit:
+//       nutrition.referenceUnit ||
+//       "g"
 //   };
-// }
+// };
 
 
-// Version 2 
+// Version 2
 
 import {
   getNutritionFromAI
@@ -72,6 +78,9 @@ async (
 
     fatsPer100g:
       nutrition.fat,
+
+    fibre:
+      nutrition.fibre,
 
     foodType:
       nutrition.foodType ||

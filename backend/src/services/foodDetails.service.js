@@ -84,7 +84,8 @@ const nutrition =
       fm.calories_per_100g,
       fm.protein_per_100g,
       fm.carbs_per_100g,
-      fm.fats_per_100g
+      fm.fats_per_100g,
+      fm.fiber
     FROM food_reference fr
     INNER JOIN food_master fm
     ON fm.id = fr.food_master_id
@@ -98,7 +99,8 @@ const nutrition =
     calories_per_100g: 0,
     protein_per_100g: 0,
     carbs_per_100g: 0,
-    fats_per_100g: 0
+    fats_per_100g: 0,
+    fiber:0,
   };
 
   let servings = [];

@@ -981,6 +981,9 @@ selectedFoods.reduce(
     acc.fats +=
       food.fats || 0;
 
+        acc.fiber +=
+      food.fiber || 0;
+
     return acc;
 
   },

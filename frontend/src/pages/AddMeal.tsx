@@ -673,8 +673,15 @@ import SelectedFoodsSection from "../components/meal/SelectedFoodsSection";
 import MealComposer from "../components/meal/MealComposer";
 import FoodServingDrawer from "../components/meal/FoodServingDrawer";
 import AIFoodReviewDrawer from "../components/meal/AIFoodReviewDrawer";
+import { useAuth } from "../context/AuthContext";
+
+
+
 
 const AddMeal = () => {
+
+    const { user } = useAuth();
+  const userId = user.id;
   const toast = useToast();
 
   const [mealType, setMealType] =
@@ -773,30 +780,98 @@ const [aiDrawerOpen,
       });
     };
 
-  const handleAnalyze =
-    async () => {
 
-      console.log(
-        selectedFoods
-      );
+const handleSaveMeal =
+async () => {
 
-      /*
-      Future payload:
+  try {
 
-      [
-        {
-          foodId: 1,
-          name: "idli",
-          serving: {
-            grams: 55
-          },
-          quantity: 2,
-          preparationStyle: "REGULAR"
-        }
-      ]
-      */
+    setLoading(
+      true
+    );
+
+    const total = {
+
+      calories:
+        mealTotals.calories,
+
+      protein:
+        mealTotals.protein,
+
+      carbs:
+        mealTotals.carbs,
+
+      fats:
+        mealTotals.fats
+
     };
 
+    await api.post(
+      "/nutrition/confirm-meal",
+      {
+
+        userId,
+
+        mealType,
+
+        items:
+          selectedFoods,
+
+        total
+
+      }
+    );
+
+    toast({
+
+      title:
+        "Meal saved successfully",
+
+      status:
+        "success",
+
+      duration:
+        2000,
+
+      isClosable:
+        true
+
+    });
+
+    setSelectedFoods(
+      []
+    );
+
+  } catch (err) {
+
+    console.error(
+      err
+    );
+
+    toast({
+
+      title:
+        "Failed to save meal",
+
+      status:
+        "error",
+
+      duration:
+        2000,
+
+      isClosable:
+        true
+
+    });
+
+  } finally {
+
+    setLoading(
+      false
+    );
+
+  }
+};
   const handleFoodRemove =
     (foodId: number) => {
 
@@ -1052,7 +1127,7 @@ setDrawerOpen(
   foods={selectedFoods}
   totals={mealTotals}
   loading={loading}
-  onAnalyze={handleAnalyze}
+  onSave={handleSaveMeal}
 />
 
         {loading && (

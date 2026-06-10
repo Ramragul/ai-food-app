@@ -212,7 +212,7 @@ const seedFoods =
           FROM food_reference
           WHERE food_master_id IS NULL
           ORDER BY id
-          LIMIT 10
+          LIMIT 5
           `
         );
 

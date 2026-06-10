@@ -11,6 +11,8 @@ import {
 //   loading?: boolean;
 // }
 
+
+
 interface Props {
   foods: any[];
 
@@ -21,7 +23,7 @@ interface Props {
     fats: number;
   };
 
-  onAnalyze: () => void;
+  onSave: () => void;
 
   loading?: boolean;
 }
@@ -29,7 +31,7 @@ interface Props {
 const MealComposer = ({
   foods,
   totals,
-  onAnalyze,
+  onSave,
   loading
 }: Props) => {
   if (
@@ -203,18 +205,18 @@ borderColor="rgba(34,197,94,0.25)"
 
       </Box>
 
-      <Button
-        h="60px"
-        fontSize="md"
-        fontWeight="700"
- bg="brand.500"
-color="white"
-        borderRadius="18px"
-        isLoading={loading}
-        onClick={onAnalyze}
-      >
-        ✨ Analyze Meal
-      </Button>
+<Button
+  h="60px"
+  fontSize="md"
+  fontWeight="700"
+  bg="brand.500"
+  color="white"
+  borderRadius="18px"
+  isLoading={loading}
+  onClick={onSave}
+>
+  🍽 Save Meal
+</Button>
 
     </VStack>
   </Box>

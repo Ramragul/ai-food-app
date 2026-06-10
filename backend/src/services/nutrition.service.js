@@ -821,8 +821,8 @@ export const confirmMealService = async ({
 
     await client.query(
       `INSERT INTO meal_entries 
-      (user_id, meal_type, food_items, calories, protein, carbs, fats)
-      VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+      (user_id, meal_type, food_items, calories, protein, carbs, fats, fiber)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
       [
         userId,
         mealType,
@@ -831,6 +831,7 @@ export const confirmMealService = async ({
         total.protein,
         total.carbs,
         total.fats,
+        total.fiber,
       ]
     );
 

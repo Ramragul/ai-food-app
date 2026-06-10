@@ -240,6 +240,8 @@ const nutrition =
     nutritionRow.carbs_per_100g,
 
   fatsPer100g:
-    nutritionRow.fats_per_100g
+    nutritionRow.fats_per_100g,
+
+  fiberPer100g: nutritionRow.fiber
 };
 };

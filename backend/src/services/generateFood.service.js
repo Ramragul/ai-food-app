@@ -62,36 +62,33 @@ async (
       foodName
     );
 
-  return {
+return {
 
-    name:
-      foodName,
+  name:
+    foodName,
 
-    caloriesPer100g:
-      nutrition.calories,
+  caloriesPer100g:
+    nutrition.calories,
 
-    proteinPer100g:
-      nutrition.protein,
+  proteinPer100g:
+    nutrition.protein,
 
-    carbsPer100g:
-      nutrition.carbs,
+  carbsPer100g:
+    nutrition.carbs,
 
-    fatsPer100g:
-      nutrition.fat,
+  fatsPer100g:
+    nutrition.fat,
 
-    fibre:
-      nutrition.fibre,
+  fibre:
+    nutrition.fibre,
 
-    foodType:
-      nutrition.foodType ||
-      "COUNTABLE",
+  foodType:
+    nutrition.foodType,
 
-    typicalServingWeight:
-      nutrition.typicalServingWeight ||
-      100,
+  typicalServingWeight:
+    nutrition.typicalServingWeight,
 
-    referenceUnit:
-      nutrition.referenceUnit ||
-      "g"
-  };
+  referenceUnit:
+    nutrition.referenceUnit
+};
 };

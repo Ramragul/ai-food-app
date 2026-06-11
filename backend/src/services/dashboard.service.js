@@ -207,16 +207,7 @@ export const getDashboardService = async (userId, type = "DAY") => {
     let targets = null;
     let goalInfo = null;
 
-    let status =
-  "ON_TRACK";
 
-if (
-  hasProfile &&
-  consumed > target
-) {
-  status =
-    "OVER_TARGET";
-}
 
     if (hasProfile) {
 
@@ -369,6 +360,17 @@ const fiber =
   Number(
     data.fiber || 0
   );
+
+      let status =
+  "ON_TRACK";
+
+if (
+  hasProfile &&
+  consumed > target
+) {
+  status =
+    "OVER_TARGET";
+}
 
   /* ---------------- MEAL SPLIT ---------------- */
 

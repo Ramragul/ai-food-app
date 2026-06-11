@@ -495,7 +495,11 @@ mealSplit = meals.rows.map(
     SELECT COUNT(*) as streak
     FROM daily_nutrition
     WHERE user_id=$1 
-      AND date >= CURRENT_DATE - INTERVAL '7 days'
+      AND date >= (
+            CURRENT_TIMESTAMP
+            AT TIME ZONE
+            'Asia/Kolkata'
+            )::DATE - INTERVAL '7 days'
       AND total_calories > 0
     `,
     [userId]
@@ -575,5 +579,7 @@ return {
 
   type
 
-}; 
-};
+}
+
+} 
+}

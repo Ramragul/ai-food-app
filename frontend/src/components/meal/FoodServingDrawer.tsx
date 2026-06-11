@@ -122,6 +122,13 @@ const fats =
   styleMultiplier
 ) / 100;
 
+const fiber =
+(
+  totalGrams *
+  food.fiberPer100g *
+  styleMultiplier
+) / 100;
+
   return (
     <Drawer
       placement="bottom"
@@ -429,6 +436,11 @@ onSave({
   fats:
     Number(
       fats.toFixed(1)
+    )
+
+      fiber:
+    Number(
+      fiber.toFixed(1)
     )
 });
 

@@ -143,6 +143,7 @@ Return ONLY valid JSON.
   "proteinPer100g": 0,
   "carbsPer100g": 0,
   "fatsPer100g": 0,
+  "fiberPer100g":0,
 
   "typicalServingWeight": 0
 }
@@ -196,6 +197,8 @@ Return ONLY valid JSON.
       typeof parsed.carbsPer100g !==
         "number" ||
       typeof parsed.fatsPer100g !==
+        "number" || 
+      typeof parsed.fiberPer100g !==
         "number" ||
       typeof parsed.typicalServingWeight !==
         "number"

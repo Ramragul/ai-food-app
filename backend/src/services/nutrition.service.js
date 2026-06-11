@@ -329,130 +329,7 @@ const buildAliases = (food) => {
 };
 
 
-// export const saveFoodToDB = async (
-//   food,
-//   nutritionData
-// ) => {
-//   try {
-//     // ✅ Prevent duplicates
-//     const existing = await matchFood(food);
 
-//     if (existing) {
-//       console.log(
-//         `✅ Food already exists: ${existing.food.name}`
-//       );
-
-//       return existing.food.id;
-//     }
-
-//     const referenceFood =
-//   await findReferenceFood(food);
-
-// if (referenceFood) {
-//   nutritionData.foodType =
-//     referenceFood.food_type;
-
-//   nutritionData.typicalServingWeight =
-//     referenceFood.typical_serving_weight;
-
-//   console.log(
-//     `✅ Using reference data for ${food}`
-//   );
-// }
-
-//     const embedding =
-//       await getEmbedding(food);
-
-//     const formattedEmbedding = `[${embedding
-//       .map((n) => Number(n))
-//       .join(",")}]`;
-
-//     const aliases =
-//       buildAliases(food);
-
-//     const result = await pool.query(
-//       `
-//       INSERT INTO food_master
-//       (
-//         name,
-//         unit,
-
-
-
-//         calories_per_100g,
-//         protein_per_100g,
-//         carbs_per_100g,
-//         fats_per_100g,
-
-//         food_type,
-//         typical_serving_weight,
-
-//         aliases,
-//         category,
-//         embedding
-//       )
-//       VALUES
-//       (
-//         $1,$2,
-
-//         $3,$4,$5,$6,
-
-//         $7,$8,$9,$10,
-
-//         $11
-
-        
-//       )
-//       RETURNING id
-//       `,
-//       [
-//         food.toLowerCase().trim(),
-
-//         // legacy column
-//         "100g",
-
-
-
-//         // new source of truth
-//         nutritionData.caloriesPer100g,
-//         nutritionData.proteinPer100g,
-//         nutritionData.carbsPer100g,
-//         nutritionData.fatsPer100g,
-
-//         nutritionData.foodType,
-//         nutritionData.typicalServingWeight,
-
-//         aliases,
-//         "AI_GENERATED",
-//         formattedEmbedding,
-//       ]
-//     );
-
-//     const foodId =
-//       result.rows[0]?.id;
-
-//     if (foodId) {
-//       await createDefaultServings(
-//         foodId,
-//         nutritionData.foodType,
-//         nutritionData.typicalServingWeight
-//       );
-//     }
-
-//     console.log(
-//       `✅ New food saved: ${food} (${foodId})`
-//     );
-
-//     return foodId;
-//   } catch (err) {
-//     console.error(
-//       "❌ DB Save Failed:",
-//       err.message
-//     );
-
-//     return null;
-//   }
-// };
 
 
 export const saveFoodToDB = async (
@@ -730,6 +607,10 @@ if (referenceFood) {
       fats:
         (aiData.fatsPer100g / 100) *
         grams,
+      
+      fiber:
+      (aiData.fiberPer100g / 100) *
+        grams,
     };
 
     const foodId =
@@ -762,6 +643,7 @@ if (referenceFood) {
       protein: 0,
       carbs: 0,
       fats: 0,
+      fiber: 0,
     };
 
     source = "UNKNOWN";
@@ -773,6 +655,7 @@ if (referenceFood) {
     total.protein += nutrition.protein;
     total.carbs += nutrition.carbs;
     total.fats += nutrition.fats;
+    total.fiber += nutrition.fiber;
 
 
 

@@ -716,6 +716,8 @@ const [aiDrawerOpen,
             `/nutrition/food-details/${food.id}`
           );
 
+          console.log("Response Data stored in selectedfoods is : " +JSON.stringify(res.data))
+
         setSelectedFood(
           res.data
         );

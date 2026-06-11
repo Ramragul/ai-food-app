@@ -293,6 +293,27 @@ import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import api from "../utils/api";
 
+import DashboardHero
+from "../components/dashboard/DashboardHero";
+
+import GoalCard
+from "../components/dashboard/GoalCard";
+
+import MealTimeline
+from "../components/dashboard/MealTimeline";
+
+import CoachCard
+from "../components/dashboard/CoachCard";
+
+import StreakCard
+from "../components/dashboard/StreakCard";
+
+import MacroSection
+from "../components/dashboard/MacroSection";
+
+import TrendCard
+from "../components/dashboard/TrendCard";
+
 const MotionBox = motion(Box);
 
 const TABS = ["DAY", "WEEK", "MONTH"];
@@ -324,6 +345,67 @@ const Dashboard = () => {
   return (
     <Box bg="linear-gradient(180deg,#f8fbff,#eef5fb)" minH="100vh" p={6}>
 
+<Box
+  mb={6}
+  bg="linear-gradient(
+    135deg,
+    #3b82f6,
+    #60a5fa
+  )"
+  borderRadius="3xl"
+  p={6}
+  color="white"
+  boxShadow="
+    0 15px 40px
+    rgba(59,130,246,0.25)
+  "
+>
+  <Text
+    fontSize="sm"
+    opacity={0.9}
+    mb={1}
+  >
+    Welcome back
+  </Text>
+
+  <Text
+    fontSize="3xl"
+    fontWeight="900"
+    lineHeight="1.1"
+  >
+    👋 Good {
+      new Date().getHours() < 12
+        ? "Morning"
+        : new Date().getHours() < 17
+        ? "Afternoon"
+        : "Evening"
+    }
+  </Text>
+
+  <Text
+    fontSize="xl"
+    fontWeight="700"
+    mt={1}
+  >
+    {user?.nickname || user?.name}
+  </Text>
+
+  <Text
+    mt={3}
+    fontSize="sm"
+    opacity={0.9}
+  >
+    Let's crush today's nutrition goals 💪
+  </Text>
+</Box>
+
+<Text
+  color="gray.500"
+  mb={6}
+>
+  Let's crush today's goals
+</Text>
+
       {/* 🔥 HEADER */}
       <HStack justify="space-between" mb={4}>
         <Text fontSize="2xl" fontWeight="bold">
@@ -347,8 +429,32 @@ const Dashboard = () => {
         ))}
       </HStack>
 
+      <DashboardHero
+  consumed={data.consumed}
+  target={data.target}
+  remaining={
+    data.remaining
+      ?.calories || 0
+  }
+  status={data.status}
+/>
+
+<GoalCard
+  goalInfo={
+    data.goalInfo
+  }
+/>
+
+<StreakCard
+  streak={data.streak}
+/>
+
+<MacroSection
+  data={data}
+/>
+
       {/* 🔥 MACROS */}
-      <Box bg="white" borderRadius="2xl" p={5} mb={6}>
+      {/* <Box bg="white" borderRadius="2xl" p={5} mb={6}>
         <Text mb={4}>Macros</Text>
 
         <HStack justify="space-around">
@@ -381,8 +487,14 @@ const Dashboard = () => {
         </HStack>
       </Box>
 
+      <MealTimeline
+  meals={
+    data.mealSplit || []
+  }
+/> */}
+
       {/* 🔥 CALORIES */}
-      <MotionBox
+      {/* <MotionBox
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
         bg="linear-gradient(135deg,#eaf6ff,#d6efff)"
@@ -405,10 +517,12 @@ const Dashboard = () => {
           <MacroMini label="Carbs" value={data.carbs} />
           <MacroMini label="Fats" value={data.fats} />
         </HStack>
-      </MotionBox>
+      </MotionBox> */}
+
+
 
       {/* 🔥 MEALS */}
-      <VStack spacing={3}>
+      {/* <VStack spacing={3}>
         {data.mealSplit.map((m: any) => (
           <MotionBox
             key={m.meal_type}
@@ -437,10 +551,10 @@ const Dashboard = () => {
             )}
           </MotionBox>
         ))}
-      </VStack>
+      </VStack> */}
 
       {/* 🔥 AI COACH */}
-      <Box
+      {/* <Box
         mt={6}
         p={4}
         bg="linear-gradient(135deg,#b9e2fd,#63bdf4)"
@@ -454,7 +568,23 @@ const Dashboard = () => {
               : "You're doing great 💙"
             : "Set your goal to unlock smart insights 💡"}
         </Text>
-      </Box>
+      </Box> */}
+
+      <CoachCard
+      data={data}
+    />
+
+    {
+  (
+    view === "WEEK" ||
+    view === "MONTH"
+  ) && (
+    <TrendCard
+      trend={data.trend}
+    />
+  )
+}
+
     </Box>
   );
 };

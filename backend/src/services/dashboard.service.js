@@ -441,6 +441,8 @@ mealSplit = meals.rows.map(
   })
 );
 
+}
+
   /* ---------------- TREND ---------------- */
 
   let trend = [];
@@ -579,7 +581,7 @@ return {
 
   type
 
-}
+};
 
-} 
-}
+}; 
+

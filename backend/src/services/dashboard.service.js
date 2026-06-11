@@ -429,9 +429,17 @@ const meals =
     [userId]
   );
 
-mealSplit =
-  meals.rows;
-  }
+// mealSplit =
+//   meals.rows;
+//   }
+
+mealSplit = meals.rows.map(
+  meal => ({
+    ...meal,
+    foods:
+      meal.foods?.flat() || []
+  })
+);
 
   /* ---------------- TREND ---------------- */
 
@@ -445,7 +453,13 @@ mealSplit =
         total_calories as calories
       FROM daily_nutrition
       WHERE user_id = $1
-        AND date >= CURRENT_DATE - INTERVAL '6 days'
+        AND date >= (
+            CURRENT_TIMESTAMP
+            AT TIME ZONE
+            'Asia/Kolkata'
+            )::DATE
+            - INTERVAL '6 days'
+        
       ORDER BY date ASC
       `,
       [userId]
@@ -462,7 +476,11 @@ mealSplit =
         total_calories as calories
       FROM daily_nutrition
       WHERE user_id = $1
-        AND date >= CURRENT_DATE - INTERVAL '30 days'
+        AND date >= (
+            CURRENT_TIMESTAMP
+            AT TIME ZONE
+            'Asia/Kolkata'
+            )::DATE - INTERVAL '30 days'
       ORDER BY date ASC
       `,
       [userId]
@@ -557,5 +575,5 @@ return {
 
   type
 
-};
+}; 
 };

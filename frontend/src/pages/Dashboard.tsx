@@ -342,6 +342,44 @@ const Dashboard = () => {
 
   if (!data) return <Text>Loading...</Text>;
 
+  const targetMultiplier =
+  view === "WEEK"
+    ? 7
+    : view === "MONTH"
+    ? 30
+    : 1;
+
+    const adjustedTargets = {
+
+  calories:
+    (data.targets?.calories || 0)
+    * targetMultiplier,
+
+  protein:
+    (data.targets?.protein || 0)
+    * targetMultiplier,
+
+  carbs:
+    (data.targets?.carbs || 0)
+    * targetMultiplier,
+
+  fats:
+    (data.targets?.fats || 0)
+    * targetMultiplier
+
+};
+
+      const adjustedCalorieTarget =
+  (data.target || 0) *
+  targetMultiplier;
+
+const adjustedRemainingCalories =
+  Math.max(
+    0,
+    adjustedCalorieTarget -
+    data.consumed
+  );
+
   return (
     <Box bg="linear-gradient(180deg,#f8fbff,#eef5fb)" minH="100vh" p={6}>
 
@@ -429,7 +467,11 @@ const Dashboard = () => {
         ))}
       </HStack>
 
-      <DashboardHero
+
+
+
+
+      {/* <DashboardHero
   consumed={data.consumed}
   target={data.target}
   remaining={
@@ -437,7 +479,16 @@ const Dashboard = () => {
       ?.calories || 0
   }
   status={data.status}
+/> */}
+
+<DashboardHero
+  consumed={data.consumed}
+  target={data.target}
+  remaining={data.remaining.calories}
+  status={data.status}
 />
+
+
 
 <GoalCard
   goalInfo={

@@ -297,6 +297,16 @@ export const getDashboardService = async (userId, type = "DAY") => {
     interval = "CURRENT_DATE - INTERVAL '30 days'";
   }
 
+let multiplier = 1;
+
+if (type === "WEEK") {
+  multiplier = 7;
+}
+
+if (type === "MONTH") {
+  multiplier = 30;
+}
+
   /* ---------------- NUTRITION DATA ---------------- */
 
   let nutritionQuery;
@@ -361,12 +371,37 @@ const fiber =
     data.fiber || 0
   );
 
-      let status =
+const adjustedTarget =
+  target * multiplier;
+
+const adjustedTargets =
+  targets
+    ? {
+        calories:
+          targets.calories *
+          multiplier,
+
+        protein:
+          targets.protein *
+          multiplier,
+
+        carbs:
+          targets.carbs *
+          multiplier,
+
+        fats:
+          targets.fats *
+          multiplier
+      }
+    : null;
+
+let status =
   "ON_TRACK";
 
 if (
   hasProfile &&
-  consumed > target
+  consumed >
+    adjustedTarget
 ) {
   status =
     "OVER_TARGET";
@@ -513,19 +548,21 @@ mealSplit = meals.rows.map(
   /* ---------------- REMAINING SECTION ------------- */
 
 
-  const remaining = {
+const remaining = {
 
   calories:
     Math.max(
       0,
-      target - consumed
+      adjustedTarget -
+      consumed
     ),
 
   protein:
     Math.max(
       0,
       (
-        targets?.protein || 0
+        adjustedTargets
+          ?.protein || 0
       ) - protein
     ),
 
@@ -533,7 +570,8 @@ mealSplit = meals.rows.map(
     Math.max(
       0,
       (
-        targets?.carbs || 0
+        adjustedTargets
+          ?.carbs || 0
       ) - carbs
     ),
 
@@ -541,7 +579,8 @@ mealSplit = meals.rows.map(
     Math.max(
       0,
       (
-        targets?.fats || 0
+        adjustedTargets
+          ?.fats || 0
       ) - fats
     )
 
@@ -563,9 +602,11 @@ return {
 
   fiber,
 
-  target,
+target:
+  adjustedTarget,
 
-  targets,
+targets:
+  adjustedTargets,
 
   goalInfo,
 

@@ -436,7 +436,7 @@ onSave({
   fats:
     Number(
       fats.toFixed(1)
-    )
+    ),
 
       fiber:
     Number(

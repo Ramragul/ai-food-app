@@ -4,9 +4,21 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const generateToken = (user) => {
+  
+  // return jwt.sign(
+  //   { id: user.id },
+  //   process.env.JWT_SECRET,
+  //   { expiresIn: "100y" }
+  // );
+
   return jwt.sign(
-    { id: user.id },
-    process.env.JWT_SECRET,
-    { expiresIn: "7d" }
-  );
+  {
+    id: user.id,
+    mobile: user.mobile
+  },
+  process.env.JWT_SECRET,
+  {
+    expiresIn: "100y"
+  }
+);
 };

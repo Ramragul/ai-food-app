@@ -10,6 +10,9 @@ import authRoutes from "./routes/auth.routes.js";
 import { redis } from "./utils/redisClient.js"; // adjust path if needed
 import userRoutes from "./routes/user.routes.js";
 import mealPlanRoutes from "./routes/mealPlan.routes.js";
+import fitnessRoutes from "./routes/fitness.routes.js";
+
+
 
 
 
@@ -35,11 +38,14 @@ app.use("/api/user", userRoutes);
 
 app.use("/api/meal-plan", mealPlanRoutes);
 
+app.use("/api/fitness", fitnessRoutes);
+
 
 
 app.get("/", (req, res) => {
   res.send("AI Food API running...");
 });
+
 
 
 // temporary api for clearing redis cache

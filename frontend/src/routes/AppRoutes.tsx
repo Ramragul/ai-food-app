@@ -243,6 +243,9 @@ import DeleteAccount from "../pages/DeleteAccount";
 import BMICalculator from "../pages/BMICalculator";
 import MealPlanDetailPage from "../pages/MealPlanDetailPage";
 import MealPlanPage from "../pages/MealPlanPage";
+import FitnessPage from "../pages/fitness/FitnessPage";
+import FitnessCategoryPage from "../pages/fitness/FitnessCategoryPage";
+import FitnessGuideDetailPage from "../pages/fitness/FitnessGuideDetailPage";
 
 
 
@@ -292,6 +295,11 @@ const AppRoutes: React.FC = () => {
         <Route path="/tc" element={<TermsConditionsPage/>} />
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
         <Route path="/delete-account" element={<DeleteAccount/>} />
+
+
+        <Route path="/fitness" element={<FitnessPage />} />
+        <Route path="/fitness/:category" element={ <FitnessCategoryPage />}/>
+        <Route path="/fitness/guide/:id" element={<FitnessGuideDetailPage />}/>
 
        
       

@@ -314,6 +314,13 @@ from "../components/dashboard/MacroSection";
 import TrendCard
 from "../components/dashboard/TrendCard";
 
+import AddMealCTA from
+"../components/dashboard/AddMealCTA";
+
+import DashboardHeader from "../components/dashboard/DashboardHeader";
+
+
+
 const MotionBox = motion(Box);
 
 const TABS = ["DAY", "WEEK", "MONTH"];
@@ -349,41 +356,14 @@ const Dashboard = () => {
     ? 30
     : 1;
 
-    const adjustedTargets = {
+  
 
-  calories:
-    (data.targets?.calories || 0)
-    * targetMultiplier,
 
-  protein:
-    (data.targets?.protein || 0)
-    * targetMultiplier,
-
-  carbs:
-    (data.targets?.carbs || 0)
-    * targetMultiplier,
-
-  fats:
-    (data.targets?.fats || 0)
-    * targetMultiplier
-
-};
-
-      const adjustedCalorieTarget =
-  (data.target || 0) *
-  targetMultiplier;
-
-const adjustedRemainingCalories =
-  Math.max(
-    0,
-    adjustedCalorieTarget -
-    data.consumed
-  );
 
   return (
     <Box bg="linear-gradient(180deg,#f8fbff,#eef5fb)" minH="100vh" p={6}>
 
-<Box
+{/* <Box
   mb={6}
   bg="linear-gradient(
     135deg,
@@ -435,14 +415,121 @@ const adjustedRemainingCalories =
   >
     Let's crush today's nutrition goals 💪
   </Text>
-</Box>
+</Box> */}
 
-<Text
+{/* Hero Section */}
+
+{/* <Box
+  mb={6}
+  position="relative"
+  overflow="hidden"
+  bg="linear-gradient(
+    135deg,
+    #2563eb 0%,
+    #3b82f6 35%,
+    #60a5fa 100%
+  )"
+  borderRadius="32px"
+  p={6}
+  color="white"
+  boxShadow="
+    0 20px 50px
+    rgba(37,99,235,0.35)
+  "
+> */}
+
+  {/* Glow */}
+  {/* <Box
+    position="absolute"
+    top="-40px"
+    right="-40px"
+    w="140px"
+    h="140px"
+    borderRadius="full"
+    bg="rgba(255,255,255,0.15)"
+  />
+
+  <Box
+    position="absolute"
+    bottom="-30px"
+    left="-30px"
+    w="100px"
+    h="100px"
+    borderRadius="full"
+    bg="rgba(255,255,255,0.08)"
+  />
+
+  <Text
+    fontSize="xs"
+    fontWeight="600"
+    letterSpacing="1px"
+    textTransform="uppercase"
+    opacity={0.9}
+  >
+    Welcome Back
+  </Text>
+
+  <Text
+    mt={3}
+    fontSize="4xl"
+    fontWeight="900"
+    lineHeight="1"
+  >
+    {user?.nickname || user?.name}
+  </Text>
+
+  <Text
+    mt={2}
+    fontSize="lg"
+    fontWeight="600"
+    opacity={0.95}
+  >
+    👋 Good {
+      new Date().getHours() < 12
+        ? "Morning"
+        : new Date().getHours() < 17
+        ? "Afternoon"
+        : "Evening"
+    }
+  </Text>
+
+  <Text
+    mt={4}
+    fontSize="sm"
+    opacity={0.9}
+  >
+    💪 Let's crush today's nutrition goals
+  </Text>
+
+</Box> */}
+
+
+{/* Hero Section Ends */}
+
+<DashboardHeader
+  user={user}
+  goalInfo={
+    data.goalInfo
+  }
+  target={
+    data.target
+  }
+/>
+
+<AddMealCTA
+  mealCount={
+    data.mealSplit?.length || 0
+  }
+/>
+
+{/* <Text
   color="gray.500"
   mb={6}
 >
   Let's crush today's goals
-</Text>
+</Text> */}
+
+
 
       {/* 🔥 HEADER */}
       <HStack justify="space-between" mb={4}>
@@ -489,7 +576,6 @@ const adjustedRemainingCalories =
 />
 
 
-
 <GoalCard
   goalInfo={
     data.goalInfo
@@ -502,6 +588,12 @@ const adjustedRemainingCalories =
 
 <MacroSection
   data={data}
+/>
+
+      <MealTimeline
+  meals={
+    data.mealSplit || []
+  }
 />
 
       {/* 🔥 MACROS */}
@@ -538,11 +630,7 @@ const adjustedRemainingCalories =
         </HStack>
       </Box>
 
-      <MealTimeline
-  meals={
-    data.mealSplit || []
-  }
-/> */}
+ */}
 
       {/* 🔥 CALORIES */}
       {/* <MotionBox

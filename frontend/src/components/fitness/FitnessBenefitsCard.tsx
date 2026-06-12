@@ -13,12 +13,16 @@ const FitnessBenefitsCard = ({
   }
 
   return (
-
-    <Box
-      bg="green.50"
-      borderRadius="3xl"
-      p={5}
-    >
+<Box
+  bg="
+  linear-gradient(
+  135deg,
+  #ecfdf5,
+  #d1fae5
+  )"
+  p={5}
+  borderRadius="3xl"
+>
 
       <Text
         fontWeight="800"

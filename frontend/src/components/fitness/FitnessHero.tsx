@@ -1,39 +1,86 @@
 import {
+  Badge,
   Box,
-  Text
+  HStack,
+  Text,
+  Image
 } from "@chakra-ui/react";
 
-const FitnessHero = () => {
+interface Props {
+  guide: any;
+}
+
+const FitnessHero = ({
+  guide
+}: Props) => {
+
+  if (!guide) {
+    return null;
+  }
 
   return (
     <Box
-      mb={6}
-      bg="
-      linear-gradient(
-      135deg,
-      #2563eb,
-      #60a5fa
-      )"
-      borderRadius="3xl"
-      p={6}
-      color="white"
+      position="relative"
+      borderRadius="32px"
+      overflow="hidden"
+      h="320px"
     >
 
-      <Text
-        fontSize="3xl"
-        fontWeight="900"
-      >
-        💪 NEKA Fitness
-      </Text>
+      <Image
+        src={guide.image_url}
+        w="100%"
+        h="100%"
+        objectFit="cover"
+      />
 
-      <Text
-        mt={2}
-        opacity={0.9}
+      <Box
+        position="absolute"
+        inset={0}
+        bg="
+          linear-gradient(
+            to top,
+            rgba(0,0,0,0.75),
+            rgba(0,0,0,0.2)
+          )
+        "
+      />
+
+      <Box
+        position="absolute"
+        bottom={0}
+        left={0}
+        right={0}
+        p={6}
+        color="white"
       >
-        Home workouts for
-        strength, fat loss
-        and overall fitness.
-      </Text>
+
+        <Badge
+          colorScheme="green"
+          borderRadius="full"
+          px={3}
+        >
+          {guide.difficulty}
+        </Badge>
+
+        <Text
+          mt={3}
+          fontSize="3xl"
+          fontWeight="900"
+        >
+          {guide.title}
+        </Text>
+
+        <HStack mt={3}>
+          <Text>
+            ⏱️ {guide.duration_minutes} mins
+          </Text>
+
+          <Text>
+            🏠 {guide.equipment_required}
+          </Text>
+        </HStack>
+
+      </Box>
 
     </Box>
   );

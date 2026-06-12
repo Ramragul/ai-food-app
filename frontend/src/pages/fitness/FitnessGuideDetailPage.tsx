@@ -1,6 +1,8 @@
 import {
   Box,
-  Spinner
+  Button,
+  Spinner,
+  useToast
 } from "@chakra-ui/react";
 
 import {
@@ -29,6 +31,20 @@ from "../../components/fitness/FitnessStepsCard";
 import FitnessTipsCard
 from "../../components/fitness/FitnessTipsCard";
 
+import {
+  IconButton,
+  HStack,
+  Text
+} from "@chakra-ui/react";
+
+import {
+  ArrowBackIcon
+} from "@chakra-ui/icons";
+
+import {
+  useNavigate
+} from "react-router-dom";
+
 const FitnessGuideDetailPage = () => {
 
   const { id } =
@@ -37,6 +53,12 @@ const FitnessGuideDetailPage = () => {
   const [guide,
     setGuide] =
     useState<any>();
+
+    const navigate =
+  useNavigate();
+
+    const toast =
+  useToast();
 
   useEffect(() => {
 
@@ -56,10 +78,22 @@ const FitnessGuideDetailPage = () => {
         res.data
       );
     };
-
-  if (!guide) {
-    return <Spinner />;
-  }
+if (!guide) {
+  return (
+    <Box
+      h="100vh"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+    >
+      <Spinner
+        size="xl"
+        color="brand.500"
+        thickness="4px"
+      />
+    </Box>
+  );
+}
 
   return (
 
@@ -68,6 +102,29 @@ const FitnessGuideDetailPage = () => {
       bg="#f8fafc"
       minH="100vh"
     >
+
+        <HStack
+  mb={5}
+  spacing={3}
+>
+
+  <IconButton
+    aria-label="Back"
+    icon={<ArrowBackIcon />}
+    borderRadius="full"
+    onClick={() =>
+      navigate(-1)
+    }
+  />
+
+  <Text
+    fontWeight="800"
+    fontSize="lg"
+  >
+    Workout Guide
+  </Text>
+
+</HStack>
 
       <FitnessGuideHero
         guide={guide}
@@ -102,6 +159,47 @@ const FitnessGuideDetailPage = () => {
       <FitnessTipsCard
         tips={guide.tips}
       />
+
+      <Button
+  position="fixed"
+  bottom="90px"
+  left="20px"
+  right="20px"
+  h="60px"
+  borderRadius="full"
+  bg="brand.500"
+  color="white"
+  fontWeight="800"
+  boxShadow="
+    0 15px 40px
+    rgba(59,130,246,0.35)
+  "
+  _hover={{
+    bg: "brand.600"
+  }}
+  onClick={() => {
+
+    toast({
+      title:
+        "Workout Started 💪",
+
+      description:
+        "Follow the workout steps above.",
+
+      status:
+        "success",
+
+      duration:
+        3000,
+
+      isClosable:
+        true
+    });
+
+  }}
+>
+  🚀 Start Workout
+</Button>
 
     </Box>
 

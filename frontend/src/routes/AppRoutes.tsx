@@ -246,6 +246,7 @@ import MealPlanPage from "../pages/MealPlanPage";
 import FitnessPage from "../pages/fitness/FitnessPage";
 import FitnessCategoryPage from "../pages/fitness/FitnessCategoryPage";
 import FitnessGuideDetailPage from "../pages/fitness/FitnessGuideDetailPage";
+import LegalPage from "../pages/LegalPage";
 
 
 
@@ -294,6 +295,7 @@ const AppRoutes: React.FC = () => {
            <Route path="/contactus" element={<ContactUsPage />} />
         <Route path="/tc" element={<TermsConditionsPage/>} />
         <Route path="/privacy" element={<PrivacyPolicyPage />} />
+        <Route path="/legal" element={<LegalPage />} />
         <Route path="/delete-account" element={<DeleteAccount/>} />
 
 

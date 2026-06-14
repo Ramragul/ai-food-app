@@ -1,8 +1,6 @@
 import {
   Box,
-  Button,
-  Spinner,
-  useToast
+  Spinner
 } from "@chakra-ui/react";
 
 import {
@@ -57,8 +55,8 @@ const FitnessGuideDetailPage = () => {
     const navigate =
   useNavigate();
 
-    const toast =
-  useToast();
+//     const toast =
+//   useToast();
 
   useEffect(() => {
 
@@ -159,7 +157,7 @@ if (!guide) {
       <FitnessTipsCard
         tips={guide.tips}
       />
-
+{/* 
       <Button
   position="fixed"
   bottom="90px"
@@ -199,7 +197,7 @@ if (!guide) {
   }}
 >
   🚀 Start Workout
-</Button>
+</Button> */}
 
     </Box>
 

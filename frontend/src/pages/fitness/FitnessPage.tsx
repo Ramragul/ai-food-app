@@ -50,7 +50,7 @@ const FitnessPage = () => {
 
     <Box p={5}>
 
-      <FitnessHero />
+      <FitnessHero guide={""} />
 
       <SimpleGrid
         columns={2}

@@ -1,7 +1,6 @@
 import {
   Box,
-  Text,
-  VStack
+  Text
 } from "@chakra-ui/react";
 
 const FitnessBenefitsCard = ({

@@ -1,8 +1,7 @@
 import {
   Box,
   HStack,
-  Text,
-  VStack
+  Text
 } from "@chakra-ui/react";
 
 const FitnessStatsCard = ({

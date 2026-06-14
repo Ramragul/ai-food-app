@@ -1,7 +1,7 @@
 export const PREPARATION_STYLES = [
   {
     id: "LIGHT",
-    label: "Light Oil"
+    label: "Light"
   },
 
   {

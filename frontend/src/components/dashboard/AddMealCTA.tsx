@@ -2,8 +2,7 @@ import {
   Box,
   Text,
   Button,
-  HStack,
-  VStack
+  HStack
 } from "@chakra-ui/react";
 
 import {
@@ -15,50 +14,50 @@ interface Props {
 }
 
 const AddMealCTA = ({
-  mealCount
+  // mealCount
 }: Props) => {
 
   const navigate =
     useNavigate();
 
-  let title =
-    "🍽️ Ready to Log a Meal?";
+  // let title =
+  //   "🍽️ Ready to Log a Meal?";
 
-  let subtitle =
-    "Every meal tracked helps NEKA provide smarter nutrition insights.";
+  // let subtitle =
+  //   "Every meal tracked helps NEKA provide smarter nutrition insights.";
 
-  if (
-    mealCount === 0
-  ) {
+  // if (
+  //   mealCount === 0
+  // ) {
 
-    title =
-      "🌅 Start Your Day";
+  //   title =
+  //     "🌅 Start Your Day";
 
-    subtitle =
-      "Track your first meal and begin building your nutrition journey.";
-  }
+  //   subtitle =
+  //     "Track your first meal and begin building your nutrition journey.";
+  // }
 
-  else if (
-    mealCount === 1
-  ) {
+  // else if (
+  //   mealCount === 1
+  // ) {
 
-    title =
-      "🥗 Keep The Momentum";
+  //   title =
+  //     "🥗 Keep The Momentum";
 
-    subtitle =
-      "You've logged one meal. Let's stay consistent today.";
-  }
+  //   subtitle =
+  //     "You've logged one meal. Let's stay consistent today.";
+  // }
 
-  else if (
-    mealCount >= 3
-  ) {
+  // else if (
+  //   mealCount >= 3
+  // ) {
 
-    title =
-      "🏆 Excellent Progress";
+  //   title =
+  //     "🏆 Excellent Progress";
 
-    subtitle =
-      "You're doing great today. Keep tracking for better insights.";
-  }
+  //   subtitle =
+  //     "You're doing great today. Keep tracking for better insights.";
+  // }
 
   return (
 <Box

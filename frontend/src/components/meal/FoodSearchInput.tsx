@@ -272,7 +272,6 @@ import {
   Text,
   VStack,
   Spinner,
-  Button,
   HStack
 } from "@chakra-ui/react";
 
@@ -332,8 +331,8 @@ const FoodSearchInput = ({
   const [loading, setLoading] =
     useState(false);
 
-  const [searched, setSearched] =
-  useState(false);
+  // const [searched, setSearched] =
+  // useState(false);
   
 
   const [generating,
@@ -352,9 +351,9 @@ const FoodSearchInput = ({
 
           setResults([]);
 
-          setSearched(
-            false
-          );
+          // setSearched(
+          //   false
+          // );
 
           return;
         }
@@ -518,7 +517,7 @@ if (
                     setQuery("");
 
                     setResults([]);
-                    setSearched(false);
+                    // setSearched(false);
                   }}
                 >
                   <Text

@@ -1735,11 +1735,14 @@ const Navbar: React.FC = () => {
              <MenuItem icon={<Text fontSize="lg">⚖️</Text>} onClick={() => navigate("/bmi-calculator")}>
               BMI Calculator
             </MenuItem>
-            <MenuItem icon={<Text fontSize="lg">📜</Text>} onClick={() => navigate("/tc")}>
+            {/* <MenuItem icon={<Text fontSize="lg">📜</Text>} onClick={() => navigate("/tc")}>
               Terms & Conditions
             </MenuItem>
             <MenuItem icon={<Text fontSize="lg">🔒</Text>} onClick={() => navigate("/privacy")}>
               Privacy Policy
+            </MenuItem> */}
+            <MenuItem icon={<Text fontSize="lg">🔒</Text>} onClick={() => navigate("/legal")}>
+              Terms, Privacy & Disclaimer
             </MenuItem>
 
             <MenuItem

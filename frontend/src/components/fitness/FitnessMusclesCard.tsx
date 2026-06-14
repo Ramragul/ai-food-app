@@ -6,14 +6,14 @@ import {
 } from "@chakra-ui/react";
 
 interface Props {
-  muscles: string;
+  muscles: string[];
 }
 
 const FitnessMusclesCard = ({
   muscles
 }: Props) => {
 
-  if (!muscles) {
+  if (!muscles?.length) {
     return null;
   }
 
@@ -41,9 +41,8 @@ const FitnessMusclesCard = ({
         spacing={3}
       >
 
-        {muscles
-          .split(",")
-          .map((muscle: string) => (
+        {muscles.map(
+          (muscle) => (
 
             <Badge
               key={muscle}
@@ -53,10 +52,11 @@ const FitnessMusclesCard = ({
               py={1}
               fontSize="sm"
             >
-              💪 {muscle.trim()}
+              💪 {muscle}
             </Badge>
 
-        ))}
+          )
+        )}
 
       </HStack>
 

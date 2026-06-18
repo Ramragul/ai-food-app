@@ -1,4 +1,4 @@
-// Version 1
+// Version 1 : Working Version
 
 // import {
 //   Box,
@@ -69,6 +69,18 @@
 //   const [loading, setLoading] = useState(true);
 //   const [goal, setGoal] = useState<any>(null);
 //   const [showForm, setShowForm] = useState(false);
+//   const [savingGoal, setSavingGoal] = useState(false);
+
+// const [goalSaved, setGoalSaved] = useState(false);
+// const [goalSaveError, setGoalSaveError] = useState(false);
+
+// //   const loadingMessages = [
+// //   "🔍 Analysing body metrics...",
+// //   "⚡ Calculating calorie targets...",
+// //   "💪 Optimizing protein intake...",
+// //   "🥗 Creating macro plan...",
+// //   "🎯 Finalizing your goal..."
+// // ];
 
 
 
@@ -103,7 +115,11 @@
 //     toast({ title: "Goal removed", status: "success" });
 //   };
 
-//   const handleSubmit = async () => {
+// const handleSubmit = async () => {
+//   try {
+//     setSavingGoal(true);
+//     setGoalSaveError(false);
+
 //     await api.post("/profile", {
 //       height_cm: Number(form.height),
 //       weight_kg: Number(form.weight),
@@ -116,13 +132,20 @@
 //     });
 
 //     await fetchGoal();
-//     setShowForm(false);
 
-//     toast({
-//       title: "Goal saved successfully",
-//       status: "success",
-//     });
-//   };
+//     setGoalSaved(true);
+
+//     setTimeout(() => {
+//       setGoalSaved(false);
+//       setShowForm(false);
+//     }, 2000);
+
+//   } catch (err) {
+//     setGoalSaveError(true);
+//   } finally {
+//     setSavingGoal(false);
+//   }
+// };
 
 //   const proteinPreview = useMemo(() => {
 //     const weight = Number(form.weight || 0);
@@ -167,7 +190,154 @@
 // };
 
 //   return (
+//     <>
+
+
+
 //     <Box minH="100vh" bg="gray.50" p={4}>
+
+// {savingGoal && (
+//   <Center
+//     position="fixed"
+//     top={0}
+//     left={0}
+//     w="100vw"
+//     h="100vh"
+//     bg="rgba(0,0,0,0.55)"
+//     backdropFilter="blur(10px)"
+//     zIndex={9999}
+//   >
+//     <Box
+//       bg="white"
+//       p={8}
+//       borderRadius="3xl"
+//       textAlign="center"
+//       w="90%"
+//       maxW="350px"
+//       boxShadow="2xl"
+//     >
+//       <Text fontSize="5xl">
+//         💪
+//       </Text>
+
+//       <Text
+//         fontSize="xl"
+//         fontWeight="bold"
+//         mt={3}
+//       >
+//         Building Your Nutrition Plan
+//       </Text>
+
+//       <Text
+//         mt={3}
+//         color="gray.600"
+//       >
+//         Calculating calories, macros and protein targets...
+//       </Text>
+
+//       <Spinner
+//         size="xl"
+//         mt={6}
+//       />
+//     </Box>
+//   </Center>
+// )}
+
+// {goalSaved && (
+//   <Center
+//     position="fixed"
+//     top={0}
+//     left={0}
+//     w="100vw"
+//     h="100vh"
+//     bg="rgba(0,0,0,0.45)"
+//     backdropFilter="blur(10px)"
+//     zIndex={9999}
+//   >
+//     <Box
+//       bg="white"
+//       p={8}
+//       borderRadius="3xl"
+//       textAlign="center"
+//       w="90%"
+//       maxW="350px"
+//     >
+//       <Text fontSize="5xl">
+//         ✅
+//       </Text>
+
+//       <Text
+//         mt={3}
+//         fontWeight="bold"
+//         fontSize="xl"
+//       >
+//         Goal Created Successfully
+//       </Text>
+
+//       <Text mt={3}>
+//         Calories Target Ready
+//       </Text>
+
+//       <Text>
+//         Protein Target Ready
+//       </Text>
+
+//       <Text>
+//         Personalized Nutrition Plan Ready
+//       </Text>
+//     </Box>
+//   </Center>
+// )}
+
+// {goalSaveError && (
+//   <Center
+//     position="fixed"
+//     top={0}
+//     left={0}
+//     w="100vw"
+//     h="100vh"
+//     bg="rgba(0,0,0,0.45)"
+//     backdropFilter="blur(10px)"
+//     zIndex={9999}
+//   >
+//     <Box
+//       bg="white"
+//       p={8}
+//       borderRadius="3xl"
+//       textAlign="center"
+//       w="90%"
+//       maxW="350px"
+//     >
+//       <Text fontSize="5xl">
+//         ❌
+//       </Text>
+
+//       <Text
+//         mt={3}
+//         fontWeight="bold"
+//         fontSize="xl"
+//       >
+//         Unable To Save Goal, Make sure you have filled all the required fields
+//       </Text>
+
+//       <Text
+//         mt={3}
+//         color="gray.600"
+//       >
+//         Please try again
+//       </Text>
+
+//       <Button
+//         mt={5}
+//         colorScheme="blue"
+//         onClick={() => setGoalSaveError(false)}
+//       >
+//         Close
+//       </Button>
+//     </Box>
+//   </Center>
+// )}
+
 //       <VStack maxW="800px" mx="auto" spacing={6}>
 
 //         <Box
@@ -471,26 +641,47 @@
 //               </Text>
 //             </Box>
 
-//             <Button
-//               mt={6}
-//               w="100%"
-//               colorScheme="blue"
-//               size="lg"
-//               onClick={handleSubmit}
-//             >
-//               Save Goal 🚀
-//             </Button>
+//             {savingGoal && (
+//   <Box
+//     mt={4}
+//     p={4}
+//     bg="green.50"
+//     borderRadius="xl"
+//     textAlign="center"
+//   >
+//     <Spinner size="sm" mr={2} />
+//     <Text fontWeight="bold">
+//       Calculating your calories, macros & protein targets...
+//     </Text>
+//   </Box>
+// )}
+
+//         <Button
+//           mt={6}
+//           w="100%"
+//           colorScheme="blue"
+//           size="lg"
+//           onClick={handleSubmit}
+//           // isLoading={savingGoal}
+//           // loadingText="Creating your plan..."
+//           isDisabled={savingGoal}
+//         >
+//           Save Goal 🚀
+//         </Button>
 //           </Box>
 //         )}
 //       </VStack>
 //     </Box>
+//     </>
 //   );
 // };
 
 // export default GoalSetup;
 
 
-// Version 2
+
+
+// Version 2 : Enhancement from v1 : Food Preference field addition
 
 import {
   Box,
@@ -554,6 +745,31 @@ const ACTIVITIES = [
   },
 ];
 
+
+const FOOD_PREFERENCES = [
+  {
+    id: "veg",
+    icon: "🥗",
+    title: "Vegetarian",
+    description:
+      "Receive only vegetarian meal recommendations",
+  },
+  {
+    id: "eggetarian",
+    icon: "🥚",
+    title: "Eggetarian",
+    description:
+      "Receive vegetarian and egg-based meal recommendations",
+  },
+  {
+    id: "nonveg",
+    icon: "🍗",
+    title: "Non-Vegetarian",
+    description:
+      "Receive vegetarian, egg and non-vegetarian meal recommendations",
+  },
+];
+
 const GoalSetup = () => {
   const { user } = useAuth();
   const toast = useToast();
@@ -581,6 +797,7 @@ const [goalSaveError, setGoalSaveError] = useState(false);
     weight: "",
     gender: "male",
     goal: "lean_muscle_gain",
+    foodPreference: "eggetarian",
     activity: "moderate",
     targetWeight: "",
     duration: "",
@@ -617,6 +834,7 @@ const handleSubmit = async () => {
       weight_kg: Number(form.weight),
       gender: form.gender,
       goal_type: form.goal,
+      food_preference: form.foodPreference,
       activity_level: form.activity,
       target_weight: Number(form.targetWeight) || null,
       duration_days: Number(form.duration) || null,
@@ -1090,6 +1308,61 @@ const handleSubmit = async () => {
 
     </Box>
 
+  ))}
+</SimpleGrid>
+
+<Text fontWeight="bold" mt={6} mb={3}>
+  Food Preference
+</Text>
+
+<SimpleGrid columns={[1, 3]} spacing={3}>
+  {FOOD_PREFERENCES.map((food) => (
+    <Box
+      key={food.id}
+      p={4}
+      borderRadius="2xl"
+      cursor="pointer"
+      bg={
+        form.foodPreference === food.id
+          ? "blue.50"
+          : "white"
+      }
+      border={
+        form.foodPreference === food.id
+          ? "2px solid"
+          : "1px solid"
+      }
+      borderColor={
+        form.foodPreference === food.id
+          ? "blue.400"
+          : "gray.200"
+      }
+      onClick={() =>
+        setForm((p:any) => ({
+          ...p,
+          foodPreference: food.id
+        }))
+      }
+    >
+      <Text fontSize="2xl">
+        {food.icon}
+      </Text>
+
+      <Text
+        fontWeight="bold"
+        mt={2}
+      >
+        {food.title}
+      </Text>
+
+      <Text
+        mt={2}
+        fontSize="xs"
+        color="gray.500"
+      >
+        {food.description}
+      </Text>
+    </Box>
   ))}
 </SimpleGrid>
 

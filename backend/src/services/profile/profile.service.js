@@ -238,6 +238,7 @@ export const createProfileService = async ({
   weight_kg,
   gender,
   goal_type,
+  food_preference,
   activity_level,
   target_weight,
   duration_days
@@ -271,9 +272,9 @@ export const createProfileService = async ({
       INSERT INTO user_profile 
       (user_id, height_cm, weight_kg, gender, goal_type, activity_level,
        target_weight, duration_days,
-       target_calories, protein_target, carbs_target, fats_target,
+       target_calories, protein_target, carbs_target, fats_target,food_preference,
        is_active)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,true)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,true)
       RETURNING *
       `,
       [
@@ -288,7 +289,8 @@ export const createProfileService = async ({
         targets.calories,
         targets.protein,
         targets.carbs,
-        targets.fats
+        targets.fats,
+        food_preference
       ]
     );
 

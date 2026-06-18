@@ -258,7 +258,10 @@ const seedFoods =
                   nutrition.carbs,
 
                 fatsPer100g:
-                  nutrition.fat
+                  nutrition.fat,
+                  
+                  fiber:
+                  nutrition.fibre
               }
             );
 

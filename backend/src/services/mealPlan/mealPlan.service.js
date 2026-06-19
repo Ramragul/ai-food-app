@@ -798,7 +798,6 @@ const shuffleArray = (array) => {
 
 
 
-
 const getMealOptions = async (
   mealCategory,
   target,
@@ -832,7 +831,7 @@ const getMealOptions = async (
       ABS(mn.protein - $4),
       ABS(mn.calories - $5)
 
-    LIMIT $6
+    LIMIT 25
     `,
     [
       mealCategory,
@@ -840,7 +839,6 @@ const getMealOptions = async (
       goalType,
       target.protein,
       target.calories,
-      limit
     ]
   );
 
@@ -859,6 +857,7 @@ const getMealOptions = async (
 
   return meals;
 };
+
 /*
 |--------------------------------------------------------------------------
 | GENERATE MEAL PLAN
@@ -881,7 +880,7 @@ export const generateMealPlanService = async (userId) => {
   targets.breakfast,
   allowedFoodTypes,
   profile.goal_type,
-  20
+  5
 );
 
 const lunch = await getMealOptions(
@@ -889,7 +888,7 @@ const lunch = await getMealOptions(
   targets.lunch,
   allowedFoodTypes,
   profile.goal_type,
-  20
+  5
 );
 
 const snack = await getMealOptions(
@@ -897,7 +896,7 @@ const snack = await getMealOptions(
   targets.snack,
   allowedFoodTypes,
   profile.goal_type,
-  20
+  5
 );
 
 const dinner = await getMealOptions(
@@ -905,7 +904,7 @@ const dinner = await getMealOptions(
   targets.dinner,
   allowedFoodTypes,
   profile.goal_type,
-  20
+  5
 );
 
 return {

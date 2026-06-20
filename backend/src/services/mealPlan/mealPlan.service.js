@@ -463,6 +463,52 @@
 
 import pool from "../../db/connection.js";
 
+import seedrandom from "seedrandom";
+
+/*
+|--------------------------------------------------------------------------
+| Daily Meal Generation 
+|--------------------------------------------------------------------------
+*/
+
+const dailyShuffle = (
+  array,
+  seed
+) => {
+
+  const arr = [...array];
+
+  const rng =
+    seedrandom(seed);
+
+  for (
+    let i = arr.length - 1;
+    i > 0;
+    i--
+  ) {
+
+    const j = Math.floor(
+      rng() * (i + 1)
+    );
+
+    [arr[i], arr[j]] =
+      [arr[j], arr[i]];
+  }
+
+  return arr;
+};
+
+const today =
+  new Date()
+    .toISOString()
+    .split("T")[0];
+
+// const seed =
+//   `${mealCategory}-${today}`;
+
+  const seed =
+ `${userId}-${mealCategory}-${today}`;
+
 /*
 |--------------------------------------------------------------------------
 | MEAL DISTRIBUTION
@@ -577,19 +623,19 @@ const isMealWithinTargets = (
 
   const proteinOk =
     meal.finalMacros.protein <=
-    target.protein * 1.25;
+    target.protein * 1.40;
 
   const caloriesOk =
     meal.finalMacros.calories <=
-    target.calories * 1.20;
+    target.calories * 1.30;
 
   const carbsOk =
     meal.finalMacros.carbs <=
-    target.carbs * 1.30;
+    target.carbs * 1.40;
 
   const fatsOk =
     meal.finalMacros.fats <=
-    target.fats * 1.30;
+    target.fats * 1.40;
 
   return (
     proteinOk &&
@@ -777,7 +823,8 @@ const getMealOptions = async (
   target,
   allowedFoodTypes,
   goalType,
-  limit
+  limit,
+  userId
 ) => {
 
   const result = await pool.query(
@@ -811,7 +858,7 @@ ORDER BY
   + ABS(mn.fats - $7) * 2
 )
 
-    LIMIT 25
+    LIMIT 100
     `,
     [
       mealCategory,
@@ -824,21 +871,44 @@ ORDER BY
     ]
   );
 
-  const selectedMeals =
-    shuffleArray(result.rows)
-      .slice(0, limit);
+//   const selectedMeals =
+//     shuffleArray(result.rows)
+//       .slice(0, limit);
 
-  // const meals = await Promise.all(
-  //   selectedMeals.map((meal) =>
-  //     calculateScaledMeal(
-  //       meal.id,
-  //       target.calories
-  //     )
-  //   )
-  // );
 
-  const meals = await Promise.all(
-  selectedMeals.map((meal) =>
+      
+
+//   const meals = await Promise.all(
+//   selectedMeals.map((meal) =>
+//     calculateScaledMeal(
+//       meal.id,
+//       target.calories
+//     )
+//   )
+// );
+
+// const filteredMeals =
+//   meals.filter((meal) =>
+//     isMealWithinTargets(
+//       meal,
+//       target
+//     )
+//   );
+
+// return filteredMeals.slice(0, limit);
+
+  // return meals;
+
+
+  const candidateMeals =
+  // shuffleArray(result.rows);
+  dailyShuffle(
+  result.rows,
+  `${mealCategory}-${today}`
+)
+
+const meals = await Promise.all(
+  candidateMeals.map((meal) =>
     calculateScaledMeal(
       meal.id,
       target.calories
@@ -855,8 +925,6 @@ const filteredMeals =
   );
 
 return filteredMeals.slice(0, limit);
-
-  return meals;
 };
 
 /*
@@ -881,7 +949,8 @@ export const generateMealPlanService = async (userId) => {
   targets.breakfast,
   allowedFoodTypes,
   profile.goal_type,
-  5
+  5,
+  userId
 );
 
 const lunch = await getMealOptions(
@@ -889,7 +958,8 @@ const lunch = await getMealOptions(
   targets.lunch,
   allowedFoodTypes,
   profile.goal_type,
-  5
+  5,
+  userId
 );
 
 const snack = await getMealOptions(
@@ -897,7 +967,8 @@ const snack = await getMealOptions(
   targets.snack,
   allowedFoodTypes,
   profile.goal_type,
-  5
+  5,
+  userId
 );
 
 const dinner = await getMealOptions(

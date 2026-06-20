@@ -570,6 +570,36 @@ const getAllowedFoodTypes = (foodPreference) => {
 };
 
 
+const isMealWithinTargets = (
+  meal,
+  target
+) => {
+
+  const proteinOk =
+    meal.finalMacros.protein <=
+    target.protein * 1.25;
+
+  const caloriesOk =
+    meal.finalMacros.calories <=
+    target.calories * 1.20;
+
+  const carbsOk =
+    meal.finalMacros.carbs <=
+    target.carbs * 1.30;
+
+  const fatsOk =
+    meal.finalMacros.fats <=
+    target.fats * 1.30;
+
+  return (
+    proteinOk &&
+    caloriesOk &&
+    carbsOk &&
+    fatsOk
+  );
+};
+
+
 
 
 const calculateScaledMeal = async (
@@ -716,63 +746,7 @@ const calculateScaledMeal = async (
       meal.preparation_steps || []
   };
 };
-/*
-|--------------------------------------------------------------------------
-| GET MEAL OPTIONS
-|--------------------------------------------------------------------------
-*/
 
-// const getMealOptions = async (
-//   mealCategory,
-//   target,
-//   allowedFoodTypes,
-//   limit
-// ) => {
-
-//   const result = await pool.query(
-//     `
-//     SELECT
-//       m.id,
-//       mn.calories,
-//       mn.protein
-
-//     FROM meals m
-
-//     JOIN meal_nutrition mn
-//       ON mn.meal_id = m.id
-
-//     WHERE
-//       m.meal_category = $1
-//       AND m.food_type = ANY($2)
-//       AND m.is_active = true
-
-//     ORDER BY
-//       ABS(mn.protein - $3),
-//       ABS(mn.calories - $4)
-
-//     LIMIT $5
-//     `,
-//     [
-//       mealCategory,
-//       allowedFoodTypes,
-//       target.protein,
-//       target.calories,
-//       limit
-//     ]
-//   );
-
-//   const meals =
-//     await Promise.all(
-//       result.rows.map((meal) =>
-//         calculateScaledMeal(
-//           meal.id,
-//           target.calories
-//         )
-//       )
-//     );
-
-//   return meals;
-// };
 
 
 
@@ -811,7 +785,9 @@ const getMealOptions = async (
     SELECT
       m.id,
       mn.calories,
-      mn.protein
+      mn.protein,
+      mn.carbs,
+      mn.fats
 
     FROM meals m
 
@@ -827,9 +803,13 @@ const getMealOptions = async (
         OR $3 = ANY(m.goal_tags)
       )
 
-    ORDER BY
-      ABS(mn.protein - $4),
-      ABS(mn.calories - $5)
+ORDER BY
+(
+  ABS(mn.calories - $5)
+  + ABS(mn.protein - $4) * 4
+  + ABS(mn.carbs - $6) * 2
+  + ABS(mn.fats - $7) * 2
+)
 
     LIMIT 25
     `,
@@ -839,6 +819,8 @@ const getMealOptions = async (
       goalType,
       target.protein,
       target.calories,
+      target.carbs,
+      target.fats
     ]
   );
 
@@ -846,14 +828,33 @@ const getMealOptions = async (
     shuffleArray(result.rows)
       .slice(0, limit);
 
+  // const meals = await Promise.all(
+  //   selectedMeals.map((meal) =>
+  //     calculateScaledMeal(
+  //       meal.id,
+  //       target.calories
+  //     )
+  //   )
+  // );
+
   const meals = await Promise.all(
-    selectedMeals.map((meal) =>
-      calculateScaledMeal(
-        meal.id,
-        target.calories
-      )
+  selectedMeals.map((meal) =>
+    calculateScaledMeal(
+      meal.id,
+      target.calories
+    )
+  )
+);
+
+const filteredMeals =
+  meals.filter((meal) =>
+    isMealWithinTargets(
+      meal,
+      target
     )
   );
+
+return filteredMeals.slice(0, limit);
 
   return meals;
 };

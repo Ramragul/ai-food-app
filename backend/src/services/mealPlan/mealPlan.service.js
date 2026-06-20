@@ -934,6 +934,8 @@ return filteredMeals.slice(0, limit);
 */
 
 export const generateMealPlanService = async (userId) => {
+
+  const userId = userId;
   const profile = await getActiveUserProfile(userId);
 
   const targets = calculateMealTargets(profile);

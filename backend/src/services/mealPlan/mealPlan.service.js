@@ -498,16 +498,7 @@ const dailyShuffle = (
   return arr;
 };
 
-const today =
-  new Date()
-    .toISOString()
-    .split("T")[0];
 
-// const seed =
-//   `${mealCategory}-${today}`;
-
-  const seed =
- `${userId}-${mealCategory}-${today}`;
 
 /*
 |--------------------------------------------------------------------------
@@ -871,6 +862,14 @@ ORDER BY
     ]
   );
 
+  const today =
+  new Date()
+    .toISOString()
+    .split("T")[0];
+
+const seed =
+  `${userId}-${mealCategory}-${today}`;
+
 //   const selectedMeals =
 //     shuffleArray(result.rows)
 //       .slice(0, limit);
@@ -935,7 +934,7 @@ return filteredMeals.slice(0, limit);
 
 export const generateMealPlanService = async (userId) => {
 
-  const userId = userId;
+  
   const profile = await getActiveUserProfile(userId);
 
   const targets = calculateMealTargets(profile);

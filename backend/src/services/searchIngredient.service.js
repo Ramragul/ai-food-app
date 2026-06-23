@@ -3,38 +3,14 @@ import pool from "../db/connection.js";
 export const searchIngredient =
 async (query) => {
 
-//   const result =
-//     await pool.query(
-//       `
-//       SELECT
-//         i.id,
-//         i.name,
-//         i.type,
-//         i.category,
+  const words =
+    query
+      .toLowerCase()
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
 
-//         n.calories,
-//         n.protein,
-//         n.carbs,
-//         n.fat,
-//         n.fibre
-
-//       FROM ingredients i
-
-//       INNER JOIN nutrition_per_100g n
-//       ON n.ingredient_id = i.id
-
-//       WHERE
-//       LOWER(i.name)
-//       LIKE LOWER($1)
-
-//       LIMIT 1
-//       `,
-//       [`%${query}%`]
-//     );
-
-const result =
-  await pool.query(
-    `
+  let sql = `
     SELECT
       i.id,
       i.name,
@@ -48,21 +24,39 @@ const result =
     FROM ingredients i
     INNER JOIN nutrition_per_100g n
       ON n.ingredient_id = i.id
-    WHERE
-    (
-      i.name ILIKE $1
-      OR LOWER($2) = ANY(i.aliases)
-    )
-    LIMIT 1
-    `,
-    [
-      `%${query}%`,
-      query.toLowerCase()
-    ]
+    WHERE 1=1
+  `;
+
+  const params = [];
+
+  words.forEach(
+    (word, index) => {
+
+      sql += `
+        AND LOWER(i.name)
+        LIKE $${index + 1}
+      `;
+
+      params.push(
+        `%${word}%`
+      );
+
+    }
   );
 
+  sql += `
+    LIMIT 1
+  `;
+
+  const result =
+    await pool.query(
+      sql,
+      params
+    );
+
   return (
-    result.rows[0] || null
+    result.rows[0] ||
+    null
   );
 
 };

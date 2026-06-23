@@ -212,7 +212,7 @@ const seedFoods =
           FROM food_reference
           WHERE food_master_id IS NULL
           ORDER BY id
-          LIMIT 5
+          
           `
         );
 
@@ -260,7 +260,7 @@ const seedFoods =
                 fatsPer100g:
                   nutrition.fat,
                   
-                  fiber:
+                  fibre:
                   nutrition.fibre
               }
             );

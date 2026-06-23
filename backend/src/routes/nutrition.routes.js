@@ -53,6 +53,11 @@ import {
   getFoodDetailsById
 } from "../controllers/foodDetails.controller.js";
 
+import {
+  lookupNutrition
+}
+from "../controllers/nutritionLookup.controller.js";
+
 
 
 
@@ -82,6 +87,11 @@ router.post(
 router.post(
   "/create-food",
   createFood
+);
+
+router.post(
+  "/lookup",
+  lookupNutrition
 );
 
 export default router;

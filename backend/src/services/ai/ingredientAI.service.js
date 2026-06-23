@@ -40,6 +40,7 @@ You are a nutrition API.
 Return nutrition per 100g in STRICT JSON format.
 
 {
+  "entityType": string,
   "calories": number,
   "protein": number,
   "carbs": number,
@@ -52,6 +53,25 @@ Return nutrition per 100g in STRICT JSON format.
 }
 
 Rules:
+
+entityType must be one of:
+
+INGREDIENT
+FOOD
+
+Examples:
+
+Egg -> INGREDIENT
+Milk -> INGREDIENT
+Paneer -> INGREDIENT
+Rice -> INGREDIENT
+Chicken Breast -> INGREDIENT
+
+Chicken 65 -> FOOD
+Chicken Biryani -> FOOD
+Milk Tea -> FOOD
+Masala Dosa -> FOOD
+Paneer Butter Masala -> FOOD
 
 foodType must be one of:
 - COUNTABLE
@@ -101,6 +121,11 @@ Ingredient: ${ingredientName}
     if (!parsed) throw new Error("Invalid AI response");
 
  return {
+
+  entityType:
+    parsed.entityType ||
+    "FOOD",
+
   calories:
     Number(parsed.calories) || 0,
 

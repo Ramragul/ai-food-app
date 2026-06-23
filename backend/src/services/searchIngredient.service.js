@@ -3,14 +3,11 @@ import pool from "../db/connection.js";
 export const searchIngredient =
 async (query) => {
 
-  const words =
-    query
-      .toLowerCase()
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean);
 
-  let sql = `
+
+const result =
+  await pool.query(
+    `
     SELECT
       i.id,
       i.name,
@@ -24,39 +21,21 @@ async (query) => {
     FROM ingredients i
     INNER JOIN nutrition_per_100g n
       ON n.ingredient_id = i.id
-    WHERE 1=1
-  `;
-
-  const params = [];
-
-  words.forEach(
-    (word, index) => {
-
-      sql += `
-        AND LOWER(i.name)
-        LIKE $${index + 1}
-      `;
-
-      params.push(
-        `%${word}%`
-      );
-
-    }
+    WHERE
+    (
+      i.name ILIKE $1
+      OR LOWER($2) = ANY(i.aliases)
+    )
+    LIMIT 1
+    `,
+    [
+      `%${query}%`,
+      query.toLowerCase()
+    ]
   );
 
-  sql += `
-    LIMIT 1
-  `;
-
-  const result =
-    await pool.query(
-      sql,
-      params
-    );
-
   return (
-    result.rows[0] ||
-    null
+    result.rows[0] || null
   );
 
 };

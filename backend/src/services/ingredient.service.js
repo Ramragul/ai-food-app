@@ -153,6 +153,7 @@ export const findIngredientByName = async (name) => {
 export const insertIngredient = async (data) => {
   const {
     name,
+    aliases,
     calories,
     protein,
     carbs,
@@ -167,14 +168,15 @@ export const insertIngredient = async (data) => {
     await client.query("BEGIN");
 
     const insertIngredientQuery = `
-      INSERT INTO ingredients (name, type, is_home_available, is_restaurant_available)
-      VALUES ($1, $2, true, false)
+      INSERT INTO ingredients (name,aliases, type, is_home_available, is_restaurant_available)
+      VALUES ($1, $2, $3, true, false)
       RETURNING id
     `;
 
     // const result = await client.query(insertIngredientQuery, [name]);
     const result = await client.query(insertIngredientQuery, [
       name,
+      aliases,
       type,
     ]);
     const ingredientId = result.rows[0].id;

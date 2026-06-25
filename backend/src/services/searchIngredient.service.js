@@ -21,11 +21,15 @@ const result =
     FROM ingredients i
     INNER JOIN nutrition_per_100g n
       ON n.ingredient_id = i.id
-    WHERE
-    (
-      i.name ILIKE $1
-      OR LOWER($2) = ANY(i.aliases)
+WHERE
+(
+    i.name ILIKE $1
+    OR EXISTS (
+        SELECT 1
+        FROM unnest(i.aliases) alias
+        WHERE LOWER(alias) = LOWER($2)
     )
+)
     LIMIT 1
     `,
     [

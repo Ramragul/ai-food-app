@@ -123,6 +123,9 @@ async (query) => {
 
         name:
           query,
+          
+        aliases:
+          ai.aliases,
 
         calories:
           ai.calories,

@@ -33,7 +33,7 @@ const fallbackNutrition = () => ({
 /**
  * 🔥 AI CALL
  */
-export const getNutritionFromAI = async (ingredientName) => {
+export const getNutritionFromAI = async (itemName) => {
 const prompt = `
 You are a nutrition API.
 
@@ -41,6 +41,7 @@ Return nutrition per 100g in STRICT JSON format.
 
 {
   "entityType": string,
+  "aliases": string[],
   "calories": number,
   "protein": number,
   "carbs": number,
@@ -73,6 +74,39 @@ Milk Tea -> FOOD
 Masala Dosa -> FOOD
 Paneer Butter Masala -> FOOD
 
+aliases must contain ONLY genuine alternative names, spelling variations, abbreviations and reversed word order.
+
+Do not invent aliases.
+
+Do not include unrelated foods.
+
+Examples
+
+Chicken Breast
+
+[
+"breast chicken",
+"boneless chicken breast",
+"skinless chicken breast",
+"chicken fillet"
+]
+
+Milk
+
+[
+"cow milk",
+"whole milk",
+"full cream milk"
+]
+
+Dragon Fruit
+
+[
+"pitaya"
+]
+Maximum 5 aliases.
+
+
 foodType must be one of:
 - COUNTABLE
 - WEIGHT_BASED
@@ -100,7 +134,7 @@ referenceUnit must be:
 
 typicalServingWeight should represent a realistic single serving.
 
-Ingredient: ${ingredientName}
+Item: ${itemName}
 `;
 
   try {
@@ -116,15 +150,45 @@ Ingredient: ${ingredientName}
 
     text = text.replace(/```json/g, "").replace(/```/g, "").trim();
 
-    const parsed = extractJSON(text);
+const parsed = extractJSON(text);
 
-    if (!parsed) throw new Error("Invalid AI response");
+if (!parsed)
+  throw new Error("Invalid AI response");
+
+const aliases = [
+
+  itemName
+    .toLowerCase()
+    .trim(),
+
+  ...(parsed.aliases || [])
+
+];
+
+const uniqueAliases = [
+
+  ...new Set(
+
+    aliases
+      .map(alias =>
+        alias
+          .toLowerCase()
+          .trim()
+      )
+      .filter(Boolean)
+
+  )
+
+].slice(0, 5);
 
  return {
 
   entityType:
     parsed.entityType ||
     "FOOD",
+
+    aliases:
+    uniqueAliases,
 
   calories:
     Number(parsed.calories) || 0,

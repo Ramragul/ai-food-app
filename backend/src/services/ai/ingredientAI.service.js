@@ -472,18 +472,28 @@ const uniqueAliases = [
 
   } catch (err) {
 
+  console.log("========== GEMINI ERROR ==========");
+
   console.log(
     "Status:",
     err.response?.status
   );
 
   console.log(
+    "Data:",
     JSON.stringify(
       err.response?.data,
       null,
       2
     )
   );
+
+  console.log(
+    "Message:",
+    err.message
+  );
+
+  console.log("==============================");
 
   throw err;
 }

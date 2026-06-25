@@ -443,6 +443,8 @@ return {
       query
     );
 
+    console.log("Response From AIIIIII777" + JSON.stringify(ai));
+
   /*
   ----------------------------------
   INGREDIENT

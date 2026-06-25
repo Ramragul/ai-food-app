@@ -363,6 +363,8 @@ return {
 
 };
 
+  }
+
   /*
   ----------------------------------
   STEP 2
@@ -457,7 +459,7 @@ return {
 
         name:
           query,
-
+          
         aliases:
           ai.aliases,
 
@@ -481,55 +483,58 @@ return {
 
       });
 
-    return {
+return {
 
-      found: true,
+  found: true,
 
-      generated: true,
+  generated: true,
 
-      saved: true,
+  saved: true,
 
-      source:
-        "AI",
+  source: "AI",
 
-      entityType:
-        "INGREDIENT",
+  entityType: "INGREDIENT",
 
-      data: {
+  data: {
 
-        id:
-          saved.id,
+    id:
+      ingredient.id,
 
-        name:
-          query,
+    name:
+      ingredient.name,
 
-        calories:
-          ai.calories,
+    calories:
+      ingredient.calories,
 
-        protein:
-          ai.protein,
+    protein:
+      ingredient.protein,
 
-        carbs:
-          ai.carbs,
+    carbs:
+      ingredient.carbs,
 
-        fat:
-          ai.fat,
+    fat:
+      ingredient.fat,
 
-        fibre:
-          ai.fibre,
+    fiber:
+      ingredient.fibre,
 
-        foodType:
-          ai.foodType,
+    unit:
+      "100g",
 
-        typicalServingWeight:
-          ai.typicalServingWeight,
+    foodType:
+      "WEIGHT_BASED",
 
-        referenceUnit:
-          ai.referenceUnit
+    referenceUnit:
+      "g",
 
-      }
+    typicalServingWeight:
+      100,
 
-    };
+    servings: []
+
+  }
+
+};
 
   }
 
@@ -576,23 +581,46 @@ return {
       saveResult.foodReferenceId
     );
 
-  return {
+return {
 
-    found: true,
+  found: true,
 
-    generated: true,
+  generated: true,
 
-    saved: true,
+  saved: true,
 
-    source:
-      "AI",
+  source: "AI",
 
-    entityType:
-      "FOOD",
+  entityType: "FOOD",
 
-    data:
-      details
+  data: {
 
-  };
+    id: details.id,
+
+    name: details.name,
+
+    calories: details.caloriesPer100g,
+
+    protein: details.proteinPer100g,
+
+    carbs: details.carbsPer100g,
+
+    fat: details.fatsPer100g,
+
+    fiber: details.fiberPer100g,
+
+    unit: "100g",
+
+    foodType: details.foodType,
+
+    referenceUnit: details.referenceUnit,
+
+    typicalServingWeight: details.typicalServingWeight,
+
+    servings: details.servings
+
+  }
+
+};
 
 };

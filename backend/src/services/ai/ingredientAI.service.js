@@ -490,7 +490,7 @@ const uniqueAliases = [
 
   console.log(
     "Message:",
-    err.message
+    JSON.stringify(err.message)
   );
 
   console.log("==============================");

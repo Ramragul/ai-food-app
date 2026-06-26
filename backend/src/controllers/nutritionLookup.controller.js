@@ -38,7 +38,9 @@ async (
 
   } catch(err){
 
-    console.error(err);
+   console.error(
+  err.response?.data || err.message
+);
 
     return res
       .status(500)

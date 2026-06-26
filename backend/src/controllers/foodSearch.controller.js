@@ -1,5 +1,5 @@
 import { searchFoods }
-from "../services/foodSearch.service.js";
+from "../services/searchFoodExact.service.js";
 
 export const searchFood = async (
   req,

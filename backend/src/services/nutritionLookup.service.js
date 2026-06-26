@@ -664,7 +664,7 @@ import {
 
 import {
   searchFoodPartial
-} from "./foodSearch.service.js";
+} from "./searchFoodPartial.service.js";
 
 import {
   searchIngredientExact
@@ -672,7 +672,7 @@ import {
 
 import {
   searchIngredientPartial
-} from "./searchIngredient.service.js";
+} from "./searchIngredientPartial.service.js";
 
 import {
   getFoodDetails

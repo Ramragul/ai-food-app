@@ -1,5 +1,5 @@
 import { searchFoodPartial }
-from "../services/searchFoodExact.service.js";
+from "../services/searchFoodPartial.service.js";
 
 export const searchFood = async (
   req,

@@ -404,7 +404,7 @@ return {
       ingredient.name,
 
     imageUrl:
-      ingredient.imageUrl,
+      ingredient.image_url,
 
     calories:
       ingredient.calories,

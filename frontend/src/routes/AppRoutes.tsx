@@ -247,6 +247,7 @@ import FitnessPage from "../pages/fitness/FitnessPage";
 import FitnessCategoryPage from "../pages/fitness/FitnessCategoryPage";
 import FitnessGuideDetailPage from "../pages/fitness/FitnessGuideDetailPage";
 import LegalPage from "../pages/LegalPage";
+import NutritonSearch from "../pages/NutritionSearch";
 
 
 
@@ -302,6 +303,8 @@ const AppRoutes: React.FC = () => {
         <Route path="/fitness" element={<FitnessPage />} />
         <Route path="/fitness/:category" element={ <FitnessCategoryPage />}/>
         <Route path="/fitness/guide/:id" element={<FitnessGuideDetailPage />}/>
+
+        <Route path="/nutrition" element={<NutritonSearch />} />
 
        
       

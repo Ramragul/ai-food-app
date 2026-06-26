@@ -1,6 +1,6 @@
 import pool from "../db/connection.js";
 
-export const searchIngredient =
+export const searchIngredientPartial =
 async (query) => {
 
 

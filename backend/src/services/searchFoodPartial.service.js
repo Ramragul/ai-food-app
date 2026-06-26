@@ -48,7 +48,7 @@
 
 import pool from "../db/connection.js";
 
-export const searchFoods = async (query) => {
+export const searchFoodPartial = async (query) => {
 
   if (!query?.trim()) {
     return [];

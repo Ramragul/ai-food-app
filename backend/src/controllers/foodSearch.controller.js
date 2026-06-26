@@ -1,4 +1,4 @@
-import { searchFoods }
+import { searchFoodPartial }
 from "../services/searchFoodExact.service.js";
 
 export const searchFood = async (

@@ -9,7 +9,7 @@ export const searchFood = async (
     const { q } = req.query;
 
     const foods =
-      await searchFoods(q);
+      await searchFoodPartial(q);
 
     res.status(200).json(foods);
 

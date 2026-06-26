@@ -660,7 +660,7 @@
 // VERSION 3 
 import {
   searchFoodExact
-} from "./foodSearchExact.service.js";
+} from "./searchFoodExact.service.js";
 
 import {
   searchFoodPartial

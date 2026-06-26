@@ -330,6 +330,8 @@ return {
 
     name: details.name,
 
+    imageUrl: details.imageUrl,
+
     calories:
       details.caloriesPer100g,
 
@@ -400,6 +402,9 @@ return {
 
     name:
       ingredient.name,
+
+    imageUrl:
+      ingredient.imageUrl,
 
     calories:
       ingredient.calories,
@@ -513,6 +518,9 @@ return {
     name:
       ingredient.name,
 
+    imageUrl:
+      ingredient.imageUrl,
+
     calories:
       ingredient.calories,
 
@@ -613,6 +621,8 @@ return {
     id: details.id,
 
     name: details.name,
+
+    imageUrl:details.imageUrl,
 
     calories: details.caloriesPer100g,
 

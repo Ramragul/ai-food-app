@@ -13,6 +13,7 @@ const result =
       i.name,
       i.type,
       i.category,
+      i.image_url,
       n.calories,
       n.protein,
       n.carbs,

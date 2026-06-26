@@ -81,6 +81,7 @@ const nutrition =
   await pool.query(
     `
     SELECT
+      fm.image_url,
       fm.calories_per_100g,
       fm.protein_per_100g,
       fm.carbs_per_100g,
@@ -229,6 +230,9 @@ const nutrition =
     food.reference_unit,
 
   servings,
+
+    imageUrl:
+    nutritionRow.image_url,
 
   caloriesPer100g:
     nutritionRow.calories_per_100g,

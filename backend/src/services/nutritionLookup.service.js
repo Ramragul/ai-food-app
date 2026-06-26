@@ -345,7 +345,11 @@ return {
     fiber:
       details.fiberPer100g,
 
-    unit: "100g",
+    // unit: "100g",
+    unit:
+  details.referenceUnit === "ml"
+    ? "100ml"
+    : "100g",
 
     foodType:
       details.foodType,
@@ -412,7 +416,11 @@ return {
     fiber:
       ingredient.fibre,
 
-    unit: "100g",
+    // unit: "100g",
+    unit:
+  ingredient.referenceUnit === "ml"
+    ? "100ml"
+    : "100g",
 
     foodType:
       "WEIGHT_BASED",
@@ -520,8 +528,13 @@ return {
     fiber:
       ingredient.fibre,
 
+    // unit:
+    //   "100g",
+
     unit:
-      "100g",
+    ingredient.referenceUnit === "ml"
+    ? "100ml"
+    : "100g",
 
     foodType:
       "WEIGHT_BASED",
@@ -611,7 +624,11 @@ return {
 
     fiber: details.fiberPer100g,
 
-    unit: "100g",
+    // unit: "100g",
+    unit:
+  details.referenceUnit === "ml"
+    ? "100ml"
+    : "100g",
 
     foodType: details.foodType,
 

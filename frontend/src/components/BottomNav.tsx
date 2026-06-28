@@ -275,7 +275,7 @@ type Tab = {
 const tabs: Tab[] = [
   //{ name: "Track", icon: "📊🥗🍔🍳🧑🏻‍🍳", path: "/home" },
   { name: "Home", icon: "🏠", path: "/home" },
-  { name: "Add Meal", icon: "➕", path: "/add-meal" },
+  // { name: "Add Meal", icon: "➕", path: "/add-meal" },
   { name: "Goal", icon: "🎯", path: "/goal-setup" },
   // { name: "Fitness Club", icon: "🎯", path: "/fitness" },
   { name: "Smart Diet", icon: "🍱", path: "/meal-plan" },

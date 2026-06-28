@@ -762,6 +762,8 @@ if (food) {
   const details =
     await getFoodDetails(food.id);
 
+    console.log("Image URL Details :" +details.imageUrl);
+
   return {
 
     found: true,
@@ -776,7 +778,7 @@ if (food) {
 
       name: details.name,
 
-      imageUrl: details.image_url,
+      imageUrl: details.imageUrl,
 
       calories: details.caloriesPer100g,
 

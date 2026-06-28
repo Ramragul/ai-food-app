@@ -17,10 +17,13 @@ SELECT
 
 fr.id,
 
-fr.food_name AS name
+fr.food_name AS name,
+fm.image_url
 
 FROM food_reference fr
 
+LEFT JOIN food_master fm
+ON fm.id = fr.food_master_id
 WHERE
 LOWER(fr.food_name)=
 LOWER($1)

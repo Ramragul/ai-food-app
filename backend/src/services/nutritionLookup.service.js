@@ -885,7 +885,7 @@ if (partialFoods.length) {
 
   return {
 
-    found: "Partial true",
+    found: true,
 
     entityType: "FOOD",
 

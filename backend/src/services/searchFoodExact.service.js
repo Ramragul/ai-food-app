@@ -31,7 +31,10 @@ SELECT
 
 fr.id,
 
-fr.food_name AS name
+fr.food_name AS name,
+
+fm.image_url
+
 
 FROM food_reference fr
 
@@ -41,7 +44,8 @@ food_reference_aliases fa
 ON
 fa.food_reference_id=
 fr.id
-
+LEFT JOIN food_master fm
+ON fm.food_reference_id = fr.id
 WHERE
 LOWER(fa.alias)=
 LOWER($1)

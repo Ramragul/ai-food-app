@@ -45,7 +45,7 @@ ON
 fa.food_reference_id=
 fr.id
 LEFT JOIN food_master fm
-ON fm.food_reference_id = fr.id
+ON fm.id = fr.food_master_id
 WHERE
 LOWER(fa.alias)=
 LOWER($1)

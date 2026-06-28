@@ -776,7 +776,7 @@ if (food) {
 
       name: details.name,
 
-      imageUrl: details.imageUrl,
+      imageUrl: details.image_url,
 
       calories: details.caloriesPer100g,
 

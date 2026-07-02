@@ -550,6 +550,14 @@ const calculateMealTargets = (profile) => {
   const totalCarbs = Number(profile.carbs_target);
   const totalFats = Number(profile.fats_target);
 
+
+  console.log("Profile Calories" + profile.target_calories)
+
+  console.log("Total Calories:", totalCalories);
+  console.log("Total Protein:", totalProtein);
+  console.log("Total Carbs:", totalCarbs);
+  console.log("Total Fats:", totalFats);
+
   return {
     breakfast: {
       calories: Math.round(totalCalories * MEAL_DISTRIBUTION.breakfast),

@@ -388,7 +388,7 @@ if (goal_mode === "SMART") {
        target_calories, protein_target, carbs_target, fats_target,food_preference,goal_mode,
 target_source,
        is_active)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,true)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,true)
       RETURNING *
       `,
       [

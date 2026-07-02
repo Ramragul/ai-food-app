@@ -103,6 +103,7 @@ const nutrition =
     carbs_per_100g: 0,
     fats_per_100g: 0,
     fiber:0,
+    density:1
   };
 
   let servings = [];
@@ -248,6 +249,6 @@ const nutrition =
     nutritionRow.fats_per_100g,
 
   fiberPer100g: nutritionRow.fiber,
-  density: nutrition.density
+  density: nutritionRow.density
 };
 };

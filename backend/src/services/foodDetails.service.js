@@ -114,31 +114,29 @@ const nutrition =
 
     case "COUNTABLE":
 
-      servings = [
-        {
-          id: 1,
-          serving_name: "Small",
-          grams: Math.round(
-            food.typical_serving_weight *
-            0.8
-          )
-        },
-        {
-          id: 2,
-          serving_name: "Regular",
-          grams: Math.round(
-            food.typical_serving_weight
-          )
-        },
-        {
-          id: 3,
-          serving_name: "Large",
-          grams: Math.round(
-            food.typical_serving_weight *
-            1.3
-          )
-        }
-      ];
+servings = [
+  {
+    id: 1,
+    value: "Small",
+    unit: "",
+    label: "Small",
+    grams: Math.round(food.typical_serving_weight * 0.8)
+  },
+  {
+    id: 2,
+    value: "Regular",
+    unit: "",
+    label: "Regular",
+    grams: Math.round(food.typical_serving_weight)
+  },
+  {
+    id: 3,
+    value: "Large",
+    unit: "",
+    label: "Large",
+    grams: Math.round(food.typical_serving_weight * 1.3)
+  }
+];
 
       break;
 
@@ -184,36 +182,29 @@ const nutrition =
 
     case "WEIGHT_BASED":
 
-      servings = [
-        {
-          id: 1,
-          serving_name: "100 g",
-          grams: 100
-        },
-        {
-          id: 2,
-          serving_name: "150 g",
-          grams: 150
-        },
-        {
-          id: 3,
-          serving_name: "200 g",
-          grams: 200
-        }
-      ];
+const servingValues = [100, 150, 200];
+
+servings = servingValues.map((value, index) => ({
+  id: index + 1,
+  value,
+  unit: "g",
+  label: `${value} g`,
+  grams: value
+}));
 
       break;
 
     default:
 
-      servings = [
-        {
-          id: 1,
-          serving_name: "Regular",
-          grams:
-            food.typical_serving_weight
-        }
-      ];
+servings = [
+  {
+    id: 1,
+    value: "Regular",
+    unit: "",
+    label: "Regular",
+    grams: food.typical_serving_weight
+  }
+];
   }
 
 //   return {

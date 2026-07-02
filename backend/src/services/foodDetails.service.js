@@ -142,27 +142,45 @@ const nutrition =
 
       break;
 
-    case "VOLUME_BASED":
+    // case "VOLUME_BASED":
 
-      servings = [
-        {
-          id: 1,
-          serving_name: "100 ml",
-          grams: 100
-        },
-        {
-          id: 2,
-          serving_name: "250 ml",
-          grams: 250
-        },
-        {
-          id: 3,
-          serving_name: "500 ml",
-          grams: 500
-        }
-      ];
+    //   servings = [
+    //     {
+    //       id: 1,
+    //       serving_name: "100 ml",
+    //       grams: 100
+    //     },
+    //     {
+    //       id: 2,
+    //       serving_name: "250 ml",
+    //       grams: 250
+    //     },
+    //     {
+    //       id: 3,
+    //       serving_name: "500 ml",
+    //       grams: 500
+    //     }
+    //   ];
 
-      break;
+    //   break;
+
+    case "VOLUME_BASED": {
+
+  const density = food.density ?? 1;
+  const referenceUnit = food.referenceUnit ?? "ml";
+
+  const servingValues = [100, 250, 500];
+
+  servings = servingValues.map((value, index) => ({
+    id: index + 1,
+    value,
+    unit: referenceUnit,
+    label: `${value} ${referenceUnit}`,
+    grams: Number((value * density).toFixed(1))
+  }));
+
+  break;
+}
 
     case "WEIGHT_BASED":
 

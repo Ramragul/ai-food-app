@@ -491,6 +491,10 @@ import { convertToGrams } from "../../services/measurement.service";
 import ExactServing from "../FoodServingDrawer/ExactServing";
 import { VOLUME_UNITS, WEIGHT_UNITS } from "../../constants/measurementUnits";
 
+import {
+    DrawerCloseButton,
+} from "@chakra-ui/react";
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -509,30 +513,63 @@ const FoodServingDrawer = ({
   onSave
 }: Props) => {
 
-    useEffect(() => {
+//     useEffect(() => {
 
-  if (
-    food?.servings?.length
-  ) {
-    setServingId(
-      String(
-        food.servings[0].id
-      )
-    );
-  }
+//   if (
+//     food?.servings?.length
+//   ) {
+//     setServingId(
+//       String(
+//         food.servings[0].id
+//       )
+//     );
+//   }
 
-}, [food]);
+// }, [food]);
+
+
+
+// useEffect(() => {
+
+//     setQuantity(1);
+
+//     setFoodSource("REGULAR");
+
+//     setCustomAmount("");
+
+//     setSelectionMode("PRESET");
+
+//     setCustomUnit(
+//         food.foodType === "VOLUME_BASED"
+//             ? "ml"
+//             : "g"
+//     );
+
+// }, [food]);
+
 
 useEffect(() => {
 
-  setQuantity(1);
+  if (!food) return;
 
-  setFoodSource(
-    "REGULAR"
+  if (food.servings?.length) {
+    setServingId(String(food.servings[0].id));
+  } else {
+    setServingId("");
+  }
+
+  setQuantity(1);
+  setFoodSource("REGULAR");
+  setCustomAmount("");
+  setSelectionMode("PRESET");
+
+  setCustomUnit(
+    food.foodType === "VOLUME_BASED"
+      ? "ml"
+      : "g"
   );
 
 }, [food]);
-
 
 
 const [quantity, setQuantity] =
@@ -593,17 +630,7 @@ const availableUnits =
         ? VOLUME_UNITS
         : WEIGHT_UNITS;
 
-// const equivalentGrams=
 
-// convertToGrams(
-
-// customAmount,
-
-// customUnit,
-
-// food.density || 1
-
-// );
 
 const equivalentGrams = convertToGrams(
     Number(customAmount || 0),
@@ -621,24 +648,7 @@ const equivalentGrams = convertToGrams(
   const grams =
   selectedServing?.grams || 0;
 
-// const totalGrams=
 
-// servingId==="CUSTOM"
-
-// ?
-
-// equivalentGrams
-
-// :
-
-// grams*quantity;
-
-// const totalGrams =
-// showExactServing
-// ?
-// equivalentGrams
-// :
-// grams * quantity;
 
 const usingCustom =
     selectionMode === "CUSTOM" &&
@@ -688,6 +698,14 @@ const fiber =
   styleMultiplier
 ) / 100;
 
+
+const isCustomActive =
+selectionMode==="CUSTOM";
+
+
+
+
+
   return (
     <Drawer
       placement="bottom"
@@ -699,9 +717,29 @@ const fiber =
       <DrawerContent
         borderTopRadius="28px"
       >
-        <DrawerHeader>
+        {/* <DrawerHeader>
           {food.name}
-        </DrawerHeader>
+          <DrawerCloseButton/>
+        </DrawerHeader> */}
+        <DrawerHeader>
+
+    <Text
+        fontSize="sm"
+        color="gray.500"
+    >
+        Choose Serving
+    </Text>
+
+    <Text
+        fontSize="2xl"
+        fontWeight="700"
+    >
+        {food.name}
+    </Text>
+
+    <DrawerCloseButton />
+
+</DrawerHeader>
 
         <DrawerBody>
           <VStack
@@ -774,6 +812,7 @@ onUnitChange={setCustomUnit}
 
 <Box opacity={selectionMode === "CUSTOM" ? 1 : 0.5}>
 <ExactServing
+    
     amount={customAmount}
     unit={customUnit}
     units={availableUnits}

@@ -1,3 +1,467 @@
+// Version 1
+
+// import {
+//   Drawer,
+//   DrawerOverlay,
+//   DrawerContent,
+//   DrawerHeader,
+//   DrawerBody,
+//   DrawerFooter,
+//   Button,
+//   VStack,
+//   Text,
+//   RadioGroup,
+//   Radio,
+//   HStack,
+//   Box
+// } from "@chakra-ui/react";
+
+// import { useState, useEffect } from "react";
+
+// import {PREPARATION_STYLES} from "../../constants/preparationStyles";
+
+// interface Props {
+//   isOpen: boolean;
+//   onClose: () => void;
+
+//   food: any;
+
+//   onSave: (
+//     selection: any
+//   ) => void;
+// }
+
+// const FoodServingDrawer = ({
+//   isOpen,
+//   onClose,
+//   food,
+//   onSave
+// }: Props) => {
+
+//     useEffect(() => {
+
+//   if (
+//     food?.servings?.length
+//   ) {
+//     setServingId(
+//       String(
+//         food.servings[0].id
+//       )
+//     );
+//   }
+
+// }, [food]);
+
+// useEffect(() => {
+
+//   setQuantity(1);
+
+//   setFoodSource(
+//     "REGULAR"
+//   );
+
+// }, [food]);
+
+
+
+// const [quantity, setQuantity] =
+//   useState(1);
+
+// const [foodSource, setFoodSource] =
+//   useState("REGULAR");
+
+// const [servingId, setServingId] =
+//   useState("");
+
+//   console.log(foodSource);
+
+//   if (!food) return null;
+
+
+//   const selectedServing =
+//   food.servings?.find(
+//     (s:any) =>
+//       String(s.id) ===
+//       servingId
+//   );
+
+//   const grams =
+//   selectedServing?.grams || 0;
+
+//   const totalGrams =
+//   grams * quantity;
+
+//   const styleMultiplier =
+//   foodSource === "LIGHT"
+//     ? 0.9
+//     : foodSource === "RICH"
+//     ? 1.2
+//     : 1;
+
+// const calories =
+// (
+//   totalGrams *
+//   food.caloriesPer100g *
+//   styleMultiplier
+// ) / 100;
+
+// const protein =
+// (
+//   totalGrams *
+//   food.proteinPer100g
+// ) / 100;
+
+// const carbs =
+// (
+//   totalGrams *
+//   food.carbsPer100g
+// ) / 100;
+
+// const fats =
+// (
+//   totalGrams *
+//   food.fatsPer100g *
+//   styleMultiplier
+// ) / 100;
+
+// const fiber =
+// (
+//   totalGrams *
+//   food.fiberPer100g *
+//   styleMultiplier
+// ) / 100;
+
+//   return (
+//     <Drawer
+//       placement="bottom"
+//       onClose={onClose}
+//       isOpen={isOpen}
+//     >
+//       <DrawerOverlay />
+
+//       <DrawerContent
+//         borderTopRadius="28px"
+//       >
+//         <DrawerHeader>
+//           {food.name}
+//         </DrawerHeader>
+
+//         <DrawerBody>
+//           <VStack
+//             align="stretch"
+//             spacing={5}
+//           >
+
+//             <Box>
+//               <Text
+//                 mb={2}
+//                 fontWeight="600"
+//               >
+//                 Serving
+//               </Text>
+
+//               <RadioGroup
+//                 value={servingId}
+//                 onChange={
+//                   setServingId
+//                 }
+//               >
+//                 <VStack
+//                   align="stretch"
+//                 >
+//                   {food.servings?.map(
+//                     (s: any) => (
+//                       <Radio
+//                         key={s.id}
+//                         value={
+//                           String(
+//                             s.id
+//                           )
+//                         }
+//                       >
+                        
+//                         {s.serving_name}
+// {" "}
+// (
+// {s.grams}g
+// )
+//                       </Radio>
+//                     )
+//                   )}
+//                 </VStack>
+//               </RadioGroup>
+//             </Box>
+
+//             <Box>
+//   <Text
+//     mb={2}
+//     fontWeight="600"
+//   >
+//     Preparation Style
+//   </Text>
+
+//   <RadioGroup
+//     value={foodSource}
+//     onChange={
+//       setFoodSource
+//     }
+//   >
+//     <VStack
+//       align="stretch"
+//     >
+//       {PREPARATION_STYLES.map(
+//         (style) => (
+//           <Radio
+//             key={style.id}
+//             value={style.id}
+//           >
+//             {style.label}
+//           </Radio>
+//         )
+//       )}
+//     </VStack>
+//   </RadioGroup>
+// </Box>
+
+//             <Box>
+//               <Text
+//                 mb={2}
+//                 fontWeight="600"
+//               >
+//                 Quantity
+//               </Text>
+
+//               <HStack>
+//                 <Button
+//                   onClick={() =>
+//                     setQuantity(
+//                       Math.max(
+//                         1,
+//                         quantity - 1
+//                       )
+//                     )
+//                   }
+//                 >
+//                   -
+//                 </Button>
+
+//                 <Text>
+//                   {quantity}
+//                 </Text>
+
+//                 <Button
+//                   onClick={() =>
+//                     setQuantity(
+//                       quantity + 1
+//                     )
+//                   }
+//                 >
+//                   +
+//                 </Button>
+//               </HStack>
+//             </Box>
+
+
+// <Box
+//   bg="brand.50"
+//   p={4}
+//   borderRadius="xl"
+// >
+//   <Text
+//     fontWeight="700"
+//     mb={2}
+//   >
+//     Nutrition Preview
+//   </Text>
+
+//   {/* <Text>
+//     🔥 {calories.toFixed(0)} kcal
+//   </Text>
+
+//   <Text>
+//     🥩 {protein.toFixed(1)}g
+//   </Text>
+
+//   <Text>
+//     🍚 {carbs.toFixed(1)}g
+//   </Text>
+
+//   <Text>
+//     🥑 {fats.toFixed(1)}g
+//   </Text> */}
+//   <Text
+//   fontSize="sm"
+//   color="gray.500"
+//   mb={3}
+// >
+//   {totalGrams} g selected
+// </Text>
+
+// <HStack spacing={3}>
+//   <Box
+//     flex={1}
+//     bg="white"
+//     p={3}
+//     borderRadius="lg"
+//   >
+//     <Text fontSize="xs">
+//       Calories
+//     </Text>
+
+//     <Text
+//       fontWeight="700"
+//     >
+//       {calories.toFixed(0)}
+//     </Text>
+//   </Box>
+
+//   <Box
+//     flex={1}
+//     bg="white"
+//     p={3}
+//     borderRadius="lg"
+//   >
+//     <Text fontSize="xs">
+//       Protein
+//     </Text>
+
+//     <Text
+//       fontWeight="700"
+//     >
+//       {protein.toFixed(1)}g
+//     </Text>
+//   </Box>
+// </HStack>
+
+// <HStack
+//   spacing={3}
+//   mt={3}
+// >
+//   <Box
+//     flex={1}
+//     bg="white"
+//     p={3}
+//     borderRadius="lg"
+//   >
+//     <Text fontSize="xs">
+//       Carbs
+//     </Text>
+
+//     <Text
+//       fontWeight="700"
+//     >
+//       {carbs.toFixed(1)}g
+//     </Text>
+//   </Box>
+
+//   <Box
+//     flex={1}
+//     bg="white"
+//     p={3}
+//     borderRadius="lg"
+//   >
+//     <Text fontSize="xs">
+//       Fat
+//     </Text>
+
+//     <Text
+//       fontWeight="700"
+//     >
+//       {fats.toFixed(1)}g
+//     </Text>
+//   </Box>
+// </HStack>
+// </Box>
+//           </VStack>
+//         </DrawerBody>
+
+//         <DrawerFooter>
+//           <Button
+//             w="100%"
+//             bg="black"
+//             color="white"
+//             onClick={() => {
+
+//               const serving =
+//                 food.servings.find(
+//                   (s: any) =>
+//                     String(
+//                       s.id
+//                     ) ===
+//                     servingId
+//                 );
+
+// // onSave({
+// //   foodId:
+// //     food.id,
+
+// //   name:
+// //     food.name,
+
+// //   serving,
+
+// //   quantity,
+
+// //   preparationStyle:
+// //     foodSource
+// // });
+
+// onSave({
+//   foodId: food.id,
+//   name: food.name,
+
+//   serving,
+
+//   quantity,
+
+//   preparationStyle:
+//     foodSource,
+
+//   grams:
+//     totalGrams,
+
+//   calories:
+//     Number(
+//       calories.toFixed(0)
+//     ),
+
+//   protein:
+//     Number(
+//       protein.toFixed(1)
+//     ),
+
+//   carbs:
+//     Number(
+//       carbs.toFixed(1)
+//     ),
+
+//   fats:
+//     Number(
+//       fats.toFixed(1)
+//     ),
+
+//       fiber:
+//     Number(
+//       fiber.toFixed(1)
+//     )
+// });
+
+//               onClose();
+//             }}
+//           >
+//             Add Food
+//           </Button>
+//         </DrawerFooter>
+//       </DrawerContent>
+//     </Drawer>
+//   );
+// };
+
+// export default FoodServingDrawer;
+
+
+// Version 2
+
 import {
   Drawer,
   DrawerOverlay,
@@ -17,6 +481,15 @@ import {
 import { useState, useEffect } from "react";
 
 import {PREPARATION_STYLES} from "../../constants/preparationStyles";
+
+import ServingSelector from "../FoodServingDrawer/ServingSelector";
+import QuantitySelector from "../FoodServingDrawer/QuantitySelector";
+import PreparationSelector from "../FoodServingDrawer/PerparationSelector";
+import NutritionPreview from "../FoodServingDrawer/NutritionPreview";
+import CustomServing from "../FoodServingDrawer/CustomServing";
+import { convertToGrams } from "../../services/measurement.service";
+import ExactServing from "../FoodServingDrawer/ExactServing";
+import { VOLUME_UNITS, WEIGHT_UNITS } from "../../constants/measurementUnits";
 
 interface Props {
   isOpen: boolean;
@@ -68,14 +541,75 @@ const [quantity, setQuantity] =
 const [foodSource, setFoodSource] =
   useState("REGULAR");
 
-const [servingId, setServingId] =
-  useState("");
+// const [servingId, setServingId] =
+//   useState("");
+
+  const [servingId, setServingId] =
+useState<string | null>(null);
+
+const [customAmount,setCustomAmount]=
+useState("");
+
+const [customUnit,setCustomUnit]=
+useState("g");
+
+const [showExactServing,setShowExactServing]=useState(false);
+
+const [selectionMode, setSelectionMode] = useState<"PRESET" | "CUSTOM">("PRESET");
+
+
 
   console.log(foodSource);
 
   if (!food) return null;
 
+// const availableUnits=
 
+// food.foodType==="VOLUME_BASED"
+
+// ?
+
+// [
+//   { code: "ml", label: "mL" },
+//   { code: "l", label: "L" },
+//   { code: "cup", label: "Cup" },
+//   { code: "glass", label: "Glass" },
+//   { code: "tbsp", label: "Tbsp" },
+//   { code: "tsp", label: "Tsp" }
+// ]
+
+// :
+
+// // ["g","kg","oz","lb"];
+// [
+//   { code: "g", label: "g" },
+//   { code: "kg", label: "kg" },
+//   { code: "oz", label: "oz" },
+//   { code: "lb", label: "lb" }
+// ]
+
+const availableUnits =
+    food.foodType === "VOLUME_BASED"
+        ? VOLUME_UNITS
+        : WEIGHT_UNITS;
+
+// const equivalentGrams=
+
+// convertToGrams(
+
+// customAmount,
+
+// customUnit,
+
+// food.density || 1
+
+// );
+
+const equivalentGrams = convertToGrams(
+    Number(customAmount || 0),
+    customUnit,
+    food.density || 1
+);
   const selectedServing =
   food.servings?.find(
     (s:any) =>
@@ -83,11 +617,36 @@ const [servingId, setServingId] =
       servingId
   );
 
+
   const grams =
   selectedServing?.grams || 0;
 
-  const totalGrams =
-  grams * quantity;
+// const totalGrams=
+
+// servingId==="CUSTOM"
+
+// ?
+
+// equivalentGrams
+
+// :
+
+// grams*quantity;
+
+// const totalGrams =
+// showExactServing
+// ?
+// equivalentGrams
+// :
+// grams * quantity;
+
+const usingCustom =
+    selectionMode === "CUSTOM" &&
+    customAmount.trim() !== "";
+
+const totalGrams = usingCustom
+    ? equivalentGrams
+    : (selectedServing?.grams ?? 0) * quantity;
 
   const styleMultiplier =
   foodSource === "LIGHT"
@@ -158,70 +717,86 @@ const fiber =
                 Serving
               </Text>
 
-              <RadioGroup
-                value={servingId}
-                onChange={
-                  setServingId
-                }
-              >
-                <VStack
-                  align="stretch"
-                >
-                  {food.servings?.map(
-                    (s: any) => (
-                      <Radio
-                        key={s.id}
-                        value={
-                          String(
-                            s.id
-                          )
-                        }
-                      >
-                        
-                        {s.serving_name}
-{" "}
-(
-{s.grams}g
+{/* <ServingSelector
+    servings={food.servings}
+    selectedServingId={servingId}
+    onChange={setServingId}
+/> */}
+
+<ServingSelector
+    servings={food.servings}
+    selectedServingId={
+        selectionMode === "PRESET"
+            ? servingId
+            : ""
+    }
+    onChange={(id) => {
+        setServingId(id);
+        setSelectionMode("PRESET");
+    }}
+/>
+
+{/* {
+
+servingId==="CUSTOM"&&(
+
+<CustomServing
+
+amount={customAmount}
+
+unit={customUnit}
+
+units={availableUnits}
+
+equivalentGrams={equivalentGrams}
+
+onAmountChange={setCustomAmount}
+
+onUnitChange={setCustomUnit}
+
+/>
+
 )
-                      </Radio>
-                    )
-                  )}
-                </VStack>
-              </RadioGroup>
+} */}
+
+
+
+);
+
+{/* <ExactServing
+    amount={customAmount}
+    unit={customUnit}
+    units={availableUnits}
+    equivalentGrams={equivalentGrams}
+    onAmountChange={setCustomAmount}
+    onUnitChange={setCustomUnit}
+/> */}
+
+<Box opacity={selectionMode === "CUSTOM" ? 1 : 0.5}>
+<ExactServing
+    amount={customAmount}
+    unit={customUnit}
+    units={availableUnits}
+    equivalentGrams={equivalentGrams}
+    onAmountChange={setCustomAmount}
+    onUnitChange={setCustomUnit}
+    onActivateCustom={() =>
+        setSelectionMode("CUSTOM")
+    }
+/>
+</Box>
+
             </Box>
 
             <Box>
-  <Text
-    mb={2}
-    fontWeight="600"
-  >
-    Preparation Style
-  </Text>
 
-  <RadioGroup
+<PreparationSelector
     value={foodSource}
-    onChange={
-      setFoodSource
-    }
-  >
-    <VStack
-      align="stretch"
-    >
-      {PREPARATION_STYLES.map(
-        (style) => (
-          <Radio
-            key={style.id}
-            value={style.id}
-          >
-            {style.label}
-          </Radio>
-        )
-      )}
-    </VStack>
-  </RadioGroup>
+    onChange={setFoodSource}
+/>
 </Box>
 
-            <Box>
+            {/* <Box>
               <Text
                 mb={2}
                 fontWeight="600"
@@ -257,119 +832,25 @@ const fiber =
                   +
                 </Button>
               </HStack>
-            </Box>
+            </Box> */}
 
 
-<Box
-  bg="brand.50"
-  p={4}
-  borderRadius="xl"
->
-  <Text
-    fontWeight="700"
-    mb={2}
-  >
-    Nutrition Preview
-  </Text>
+            <QuantitySelector
 
-  {/* <Text>
-    🔥 {calories.toFixed(0)} kcal
-  </Text>
+quantity={quantity}
 
-  <Text>
-    🥩 {protein.toFixed(1)}g
-  </Text>
+onChange={setQuantity}
 
-  <Text>
-    🍚 {carbs.toFixed(1)}g
-  </Text>
+/>
 
-  <Text>
-    🥑 {fats.toFixed(1)}g
-  </Text> */}
-  <Text
-  fontSize="sm"
-  color="gray.500"
-  mb={3}
->
-  {totalGrams} g selected
-</Text>
 
-<HStack spacing={3}>
-  <Box
-    flex={1}
-    bg="white"
-    p={3}
-    borderRadius="lg"
-  >
-    <Text fontSize="xs">
-      Calories
-    </Text>
-
-    <Text
-      fontWeight="700"
-    >
-      {calories.toFixed(0)}
-    </Text>
-  </Box>
-
-  <Box
-    flex={1}
-    bg="white"
-    p={3}
-    borderRadius="lg"
-  >
-    <Text fontSize="xs">
-      Protein
-    </Text>
-
-    <Text
-      fontWeight="700"
-    >
-      {protein.toFixed(1)}g
-    </Text>
-  </Box>
-</HStack>
-
-<HStack
-  spacing={3}
-  mt={3}
->
-  <Box
-    flex={1}
-    bg="white"
-    p={3}
-    borderRadius="lg"
-  >
-    <Text fontSize="xs">
-      Carbs
-    </Text>
-
-    <Text
-      fontWeight="700"
-    >
-      {carbs.toFixed(1)}g
-    </Text>
-  </Box>
-
-  <Box
-    flex={1}
-    bg="white"
-    p={3}
-    borderRadius="lg"
-  >
-    <Text fontSize="xs">
-      Fat
-    </Text>
-
-    <Text
-      fontWeight="700"
-    >
-      {fats.toFixed(1)}g
-    </Text>
-  </Box>
-</HStack>
-</Box>
+<NutritionPreview
+    grams={totalGrams}
+    calories={calories}
+    protein={protein}
+    carbs={carbs}
+    fats={fats}
+/>
           </VStack>
         </DrawerBody>
 

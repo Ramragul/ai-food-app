@@ -86,7 +86,8 @@ const nutrition =
       fm.protein_per_100g,
       fm.carbs_per_100g,
       fm.fats_per_100g,
-      fm.fiber
+      fm.fiber,
+      fm.density
     FROM food_reference fr
     INNER JOIN food_master fm
     ON fm.id = fr.food_master_id
@@ -246,6 +247,7 @@ const nutrition =
   fatsPer100g:
     nutritionRow.fats_per_100g,
 
-  fiberPer100g: nutritionRow.fiber
+  fiberPer100g: nutritionRow.fiber,
+  density: nutrition.density
 };
 };

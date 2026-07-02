@@ -11,6 +11,6 @@ export const PREPARATION_STYLES = [
 
   {
     id: "RICH",
-    label: "Restaurant Style"
+    label: "Restaurant"
   }
 ];

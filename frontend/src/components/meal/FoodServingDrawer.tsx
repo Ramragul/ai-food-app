@@ -799,7 +799,7 @@ onUnitChange={setCustomUnit}
 
 
 
-);
+
 
 {/* <ExactServing
     amount={customAmount}

@@ -28,6 +28,7 @@
 //   { id: "athletic_performance", icon: "🏃", title: "Athletic Performance", description: "Improve endurance and recovery" },
 // ];
 
+
 // const ACTIVITIES = [
 //   {
 //     id: "sedentary",
@@ -62,6 +63,31 @@
 //   },
 // ];
 
+
+// const FOOD_PREFERENCES = [
+//   {
+//     id: "veg",
+//     icon: "🥗",
+//     title: "Vegetarian",
+//     description:
+//       "Receive only vegetarian meal recommendations",
+//   },
+//   {
+//     id: "eggetarian",
+//     icon: "🥚",
+//     title: "Eggetarian",
+//     description:
+//       "Receive vegetarian and egg-based meal recommendations",
+//   },
+//   {
+//     id: "nonveg",
+//     icon: "🍗",
+//     title: "Non-Vegetarian",
+//     description:
+//       "Receive vegetarian, egg and non-vegetarian meal recommendations",
+//   },
+// ];
+
 // const GoalSetup = () => {
 //   const { user } = useAuth();
 //   const toast = useToast();
@@ -89,6 +115,7 @@
 //     weight: "",
 //     gender: "male",
 //     goal: "lean_muscle_gain",
+//     foodPreference: "eggetarian",
 //     activity: "moderate",
 //     targetWeight: "",
 //     duration: "",
@@ -125,6 +152,7 @@
 //       weight_kg: Number(form.weight),
 //       gender: form.gender,
 //       goal_type: form.goal,
+//       food_preference: form.foodPreference,
 //       activity_level: form.activity,
 //       target_weight: Number(form.targetWeight) || null,
 //       duration_days: Number(form.duration) || null,
@@ -601,6 +629,61 @@
 //   ))}
 // </SimpleGrid>
 
+// <Text fontWeight="bold" mt={6} mb={3}>
+//   Food Preference
+// </Text>
+
+// <SimpleGrid columns={[1, 3]} spacing={3}>
+//   {FOOD_PREFERENCES.map((food) => (
+//     <Box
+//       key={food.id}
+//       p={4}
+//       borderRadius="2xl"
+//       cursor="pointer"
+//       bg={
+//         form.foodPreference === food.id
+//           ? "blue.50"
+//           : "white"
+//       }
+//       border={
+//         form.foodPreference === food.id
+//           ? "2px solid"
+//           : "1px solid"
+//       }
+//       borderColor={
+//         form.foodPreference === food.id
+//           ? "blue.400"
+//           : "gray.200"
+//       }
+//       onClick={() =>
+//         setForm((p:any) => ({
+//           ...p,
+//           foodPreference: food.id
+//         }))
+//       }
+//     >
+//       <Text fontSize="2xl">
+//         {food.icon}
+//       </Text>
+
+//       <Text
+//         fontWeight="bold"
+//         mt={2}
+//       >
+//         {food.title}
+//       </Text>
+
+//       <Text
+//         mt={2}
+//         fontSize="xs"
+//         color="gray.500"
+//       >
+//         {food.description}
+//       </Text>
+//     </Box>
+//   ))}
+// </SimpleGrid>
+
 //             <SimpleGrid columns={2} spacing={3} mt={6}>
 //               <Input
 //                 placeholder="Height (cm)"
@@ -680,8 +763,7 @@
 
 
 
-
-// Version 2 : Enhancement from v1 : Food Preference field addition
+// Version 2 : Custom Goal Logic Addition
 
 import {
   Box,
@@ -700,6 +782,9 @@ import { useEffect, useMemo, useState } from "react";
 import api from "../utils/api";
 import { useAuth } from "../context/AuthContext";
 
+import GoalModeSelector from "../components/Profile/GoalModeSelector";
+import CustomMacroSection from "../components/Profile/CustomMacroSection";
+
 const GOALS = [
   { id: "fat_loss", icon: "🔥", title: "Fat Loss", description: "Burn body fat while preserving muscle" },
   { id: "weight_loss", icon: "⚖️", title: "Weight Loss", description: "Reduce overall body weight" },
@@ -710,6 +795,7 @@ const GOALS = [
   { id: "healthy_lifestyle", icon: "❤️", title: "Healthy Lifestyle", description: "General wellness" },
   { id: "athletic_performance", icon: "🏃", title: "Athletic Performance", description: "Improve endurance and recovery" },
 ];
+
 
 const ACTIVITIES = [
   {
@@ -782,6 +868,8 @@ const GoalSetup = () => {
 const [goalSaved, setGoalSaved] = useState(false);
 const [goalSaveError, setGoalSaveError] = useState(false);
 
+const [goalMode, setGoalMode] = useState<"SMART" | "CUSTOM">("SMART");
+
 //   const loadingMessages = [
 //   "🔍 Analysing body metrics...",
 //   "⚡ Calculating calorie targets...",
@@ -801,6 +889,10 @@ const [goalSaveError, setGoalSaveError] = useState(false);
     activity: "moderate",
     targetWeight: "",
     duration: "",
+    target_calories:"",
+    protein_target:"",
+    carbs_target:"",
+    fats_target:"",
   });
 
   const fetchGoal = async () => {
@@ -818,6 +910,51 @@ const [goalSaveError, setGoalSaveError] = useState(false);
     fetchGoal();
   }, [user]);
 
+
+  useEffect(() => {
+
+  if (goalMode === "SMART") {
+
+    setForm(prev => ({
+
+      ...prev,
+
+      goal:
+        prev.goal ||
+        "lean_muscle_gain",
+
+      activity:
+        prev.activity ||
+        "moderate",
+
+      target_calories: "",
+
+      protein_target: "",
+
+      carbs_target: "",
+
+      fats_target: ""
+
+    }));
+
+  } else {
+
+    setForm(prev => ({
+
+      ...prev,
+
+      goal: "",
+
+      activity: ""
+
+    }));
+
+  }
+
+}, [goalMode]);
+
+
+
   const handleDeleteGoal = async () => {
     await api.delete("/profile/active");
     setGoal(null);
@@ -826,20 +963,119 @@ const [goalSaveError, setGoalSaveError] = useState(false);
 
 const handleSubmit = async () => {
   try {
+
+    if (goalMode === "CUSTOM") {
+
+  if (
+
+    !form.target_calories ||
+
+    !form.protein_target ||
+
+    !form.carbs_target ||
+
+    !form.fats_target
+
+  ) {
+
+    toast({
+
+      title:
+        "Please enter all nutrition targets.",
+
+      status: "warning"
+
+    });
+
+    return;
+
+  }
+
+}
     setSavingGoal(true);
     setGoalSaveError(false);
 
-    await api.post("/profile", {
-      height_cm: Number(form.height),
-      weight_kg: Number(form.weight),
-      gender: form.gender,
-      goal_type: form.goal,
-      food_preference: form.foodPreference,
-      activity_level: form.activity,
-      target_weight: Number(form.targetWeight) || null,
-      duration_days: Number(form.duration) || null,
-      userId: user.id,
-    });
+    // await api.post("/profile", {
+    //   height_cm: Number(form.height),
+    //   weight_kg: Number(form.weight),
+    //   gender: form.gender,
+    //   goal_type: form.goal,
+    //   food_preference: form.foodPreference,
+    //   activity_level: form.activity,
+    //   target_weight: Number(form.targetWeight) || null,
+    //   duration_days: Number(form.duration) || null,
+    //   userId: user.id,
+    // });
+
+const payload: any = {
+
+  userId: user.id,
+
+  height_cm: Number(form.height),
+
+  weight_kg: Number(form.weight),
+
+  gender: form.gender,
+
+  food_preference: form.foodPreference,
+
+  target_weight:
+    Number(form.targetWeight) || null,
+
+  duration_days:
+    Number(form.duration) || null,
+
+  goal_mode: goalMode,
+
+  target_source:
+    goalMode === "SMART"
+      ? "NEKA"
+      : "USER"
+
+};
+
+if (goalMode === "SMART") {
+
+  payload.goal_type =
+    form.goal;
+
+  payload.activity_level =
+    form.activity;
+
+} else {
+
+  payload.goal_type =
+    "custom";
+
+  payload.activity_level =
+    null;
+
+  payload.target_calories =
+    Number(
+      form.target_calories
+    );
+
+  payload.protein_target =
+    Number(
+      form.protein_target
+    );
+
+  payload.carbs_target =
+    Number(
+      form.carbs_target
+    );
+
+  payload.fats_target =
+    Number(
+      form.fats_target
+    );
+
+}
+
+await api.post(
+  "/profile",
+  payload
+);
 
     await fetchGoal();
 
@@ -976,25 +1212,99 @@ const handleSubmit = async () => {
         ✅
       </Text>
 
-      <Text
+      {/* <Text
         mt={3}
         fontWeight="bold"
         fontSize="xl"
       >
         Goal Created Successfully
+      </Text> */}
+
+      <Text
+mt={3}
+fontWeight="bold"
+fontSize="xl"
+>
+
+{
+
+goalMode==="SMART"
+
+?
+
+"Smart Goal Created"
+
+:
+
+"Custom Goal Created"
+
+}
+
+</Text>
+
+      <Text
+        mt={3}
+        fontWeight="bold"
+        fontSize="xl"
+      >
+        {goalMode === "SMART"
+          ? "Smart Goal Created"
+          : "Custom Goal Created"}
       </Text>
 
-      <Text mt={3}>
-        Calories Target Ready
-      </Text>
+{
 
-      <Text>
-        Protein Target Ready
-      </Text>
+goalMode==="SMART"
 
-      <Text>
-        Personalized Nutrition Plan Ready
-      </Text>
+?
+
+<>
+
+<Text mt={3}>
+
+Calories Target Ready
+
+</Text>
+
+<Text>
+
+Protein Target Ready
+
+</Text>
+
+<Text>
+
+Personalized Nutrition Plan Ready
+
+</Text>
+
+</>
+
+:
+
+<>
+
+<Text mt={3}>
+
+Nutrition Targets Saved
+
+</Text>
+
+<Text>
+
+Meal Planner Updated
+
+</Text>
+
+<Text>
+
+Dashboard Ready
+
+</Text>
+
+</>
+
+}
     </Box>
   </Center>
 )}
@@ -1065,6 +1375,8 @@ const handleSubmit = async () => {
             Personalized nutrition goals powered by NEKA
           </Text>
         </Box>
+
+
 
         <Box
           w="100%"
@@ -1202,6 +1514,12 @@ const handleSubmit = async () => {
         </Button>
 
         {showForm && (
+
+          <>
+                  <GoalModeSelector
+    value={goalMode}
+    onChange={setGoalMode}
+/>
           <Box w="100%" bg="white" p={5} borderRadius="3xl">
             <Text fontWeight="bold" mb={3}>
               Gender
@@ -1225,6 +1543,8 @@ const handleSubmit = async () => {
               </Button>
             </HStack>
 
+            {goalMode === "SMART" && (
+            <>
             <Text fontWeight="bold" mt={6} mb={3}>
               Select Goal
             </Text>
@@ -1248,6 +1568,11 @@ const handleSubmit = async () => {
               ))}
             </SimpleGrid>
 
+            </>
+            )}
+          
+          {goalMode === "SMART" && (
+            <>
             <Text fontWeight="bold" mt={6} mb={3}>
               Activity Level
             </Text>
@@ -1310,6 +1635,8 @@ const handleSubmit = async () => {
 
   ))}
 </SimpleGrid>
+   </>
+ )}
 
 <Text fontWeight="bold" mt={6} mb={3}>
   Food Preference
@@ -1380,7 +1707,7 @@ const handleSubmit = async () => {
               />
             </SimpleGrid>
 
-            {form.goal !== "maintenance" && (
+           {/* {goalMode === "SMART" && form.goal !== "maintenance" && ( */}
               <SimpleGrid columns={2} spacing={3} mt={4}>
                 <Input
                   placeholder="Target Weight"
@@ -1394,8 +1721,49 @@ const handleSubmit = async () => {
                   onChange={(e) => setForm((p) => ({ ...p, duration: e.target.value }))}
                 />
               </SimpleGrid>
-            )}
+            {/* )} */}
 
+{goalMode === "CUSTOM" && (
+
+<CustomMacroSection
+
+values={{
+
+target_calories:
+
+form.target_calories,
+
+protein_target:
+
+form.protein_target,
+
+carbs_target:
+
+form.carbs_target,
+
+fats_target:
+
+form.fats_target
+
+}}
+
+onChange={(field,value)=>
+
+setForm(prev=>({
+
+...prev,
+
+[field]:value
+
+}))
+
+}
+
+/>
+
+)}
+
+            {goalMode === "SMART" && (
             <Box mt={6} p={4} bg="blue.50" borderRadius="2xl">
               <Text fontWeight="bold">
                 Estimated Protein Target
@@ -1405,7 +1773,7 @@ const handleSubmit = async () => {
                 💪 {proteinPreview}g
               </Text>
             </Box>
-
+            )}
             {savingGoal && (
   <Box
     mt={4}
@@ -1431,10 +1799,14 @@ const handleSubmit = async () => {
           // loadingText="Creating your plan..."
           isDisabled={savingGoal}
         >
-          Save Goal 🚀
+         {goalMode==="SMART"
+        ?"Create Smart Goal 🚀"
+        :"Create Custom Goal 🚀"}
         </Button>
           </Box>
+          </>
         )}
+        
       </VStack>
     </Box>
     </>

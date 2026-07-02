@@ -309,6 +309,7 @@ import {
   
   type ActiveProfile = {
     weight_kg: number;
+    height_cm: number;
   };
   
   const ProfilePage: React.FC = () => {
@@ -349,6 +350,7 @@ import {
           age_range: user.age_range || "",
           gender: user.gender || "",
           height_cm: 0
+          
         });
       }
       fetchData();
@@ -509,7 +511,7 @@ import {
                   <Input
                     placeholder="Height"
                     type="number"
-                    value={profile?.height_cm || ""}
+                    value={activeProfile?.height_cm || ""}
                     onChange={(e) =>
                       handleChange(
                         "height_cm",

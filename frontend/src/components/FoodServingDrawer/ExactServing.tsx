@@ -6,14 +6,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 
-// interface Props {
-//   amount: number;
-//   unit: string;
-//   units: string[];
-//   equivalentGrams: number;
-//   onAmountChange: (v: number) => void;
-//   onUnitChange: (v: string) => void;
-// }
+
 
 interface MeasurementUnit {
   code: string;
@@ -58,6 +51,7 @@ const ExactServing = ({
           type="number"
           size="lg"
           borderRadius="xl"
+          onFocus={onActivateCustom}
           onChange={(e) => {
                 onAmountChange(e.target.value);
                 onActivateCustom();
@@ -87,6 +81,7 @@ const ExactServing = ({
 
         <Select
     value={unit}
+    onFocus={onActivateCustom}
     onChange={(e) => onUnitChange(e.target.value)}
 >
     {units.map((u) => (

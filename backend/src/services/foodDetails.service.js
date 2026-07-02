@@ -166,7 +166,7 @@ const nutrition =
 
     case "VOLUME_BASED": {
 
-  const density = food.density ?? 1;
+  const density = nutritionRow.density ?? 1;
   const referenceUnit = food.referenceUnit ?? "ml";
 
   const servingValues = [100, 250, 500];

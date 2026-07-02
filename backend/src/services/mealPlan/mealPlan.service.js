@@ -551,12 +551,9 @@ const calculateMealTargets = (profile) => {
   const totalFats = Number(profile.fats_target);
 
 
-  console.log("Profile Calories" + profile.target_calories)
 
-  console.log("Total Calories:", totalCalories);
-  console.log("Total Protein:", totalProtein);
-  console.log("Total Carbs:", totalCarbs);
-  console.log("Total Fats:", totalFats);
+
+
 
   return {
     breakfast: {
@@ -586,6 +583,7 @@ const calculateMealTargets = (profile) => {
       carbs: Math.round(totalCarbs * MEAL_DISTRIBUTION.dinner),
       fats: Math.round(totalFats * MEAL_DISTRIBUTION.dinner),
     },
+
   };
 };
 
@@ -686,6 +684,9 @@ const calculateScaledMeal = async (
 
   const meal = mealResult.rows[0];
 
+
+ 
+
   if (!meal) {
     throw new Error("Meal not found");
   }
@@ -742,6 +743,8 @@ const calculateScaledMeal = async (
       const scaledQty =
         Number(item.quantity_g) *
         scaleFactor;
+
+
 
       totalCalories +=
         (scaledQty * Number(item.calories)) / 100;
@@ -826,49 +829,122 @@ const getMealOptions = async (
   userId
 ) => {
 
-  const result = await pool.query(
-    `
-    SELECT
-      m.id,
-      mn.calories,
-      mn.protein,
-      mn.carbs,
-      mn.fats
+//   const result = await pool.query(
+//     `
+//     SELECT
+//       m.id,
+//       mn.calories,
+//       mn.protein,
+//       mn.carbs,
+//       mn.fats
 
-    FROM meals m
+//     FROM meals m
 
-    JOIN meal_nutrition mn
-      ON mn.meal_id = m.id
+//     JOIN meal_nutrition mn
+//       ON mn.meal_id = m.id
 
-    WHERE
-      m.meal_category = $1
-      AND m.food_type = ANY($2)
-      AND m.is_active = true
-      AND (
-        m.goal_tags IS NULL
-        OR $3 = ANY(m.goal_tags)
-      )
+//     WHERE
+//       m.meal_category = $1
+//       AND m.food_type = ANY($2)
+//       AND m.is_active = true
+//       AND (
+//         m.goal_tags IS NULL
+//         OR $3 = ANY(m.goal_tags)
+//       )
 
-ORDER BY
-(
-  ABS(mn.calories - $5)
-  + ABS(mn.protein - $4) * 4
-  + ABS(mn.carbs - $6) * 2
-  + ABS(mn.fats - $7) * 2
-)
+// ORDER BY
+// (
+//   ABS(mn.calories - $5)
+//   + ABS(mn.protein - $4) * 4
+//   + ABS(mn.carbs - $6) * 2
+//   + ABS(mn.fats - $7) * 2
+// )
 
-    LIMIT 100
-    `,
-    [
-      mealCategory,
-      allowedFoodTypes,
-      goalType,
-      target.protein,
-      target.calories,
-      target.carbs,
-      target.fats
-    ]
-  );
+//     LIMIT 100
+//     `,
+//     [
+//       mealCategory,
+//       allowedFoodTypes,
+//       goalType,
+//       target.protein,
+//       target.calories,
+//       target.carbs,
+//       target.fats
+//     ]
+//   );
+
+
+let goalFilter = "";
+let params = [
+  mealCategory,
+  allowedFoodTypes
+];
+
+if (goalType !== "custom") {
+
+  goalFilter = `
+    AND (
+      m.goal_tags IS NULL
+      OR $3 = ANY(m.goal_tags)
+    )
+  `;
+
+  params.push(goalType);
+
+}
+
+const proteinIndex =
+  goalType === "custom" ? 3 : 4;
+
+const caloriesIndex =
+  goalType === "custom" ? 4 : 5;
+
+const carbsIndex =
+  goalType === "custom" ? 5 : 6;
+
+const fatsIndex =
+  goalType === "custom" ? 6 : 7;
+
+params.push(
+  target.protein,
+  target.calories,
+  target.carbs,
+  target.fats
+);
+
+const result = await pool.query(
+  `
+  SELECT
+    m.id,
+    mn.calories,
+    mn.protein,
+    mn.carbs,
+    mn.fats
+
+  FROM meals m
+
+  JOIN meal_nutrition mn
+    ON mn.meal_id = m.id
+
+  WHERE
+    m.meal_category = $1
+    AND m.food_type = ANY($2)
+    AND m.is_active = true
+
+    ${goalFilter}
+
+  ORDER BY
+  (
+    ABS(mn.calories - $${caloriesIndex})
+    + ABS(mn.protein - $${proteinIndex}) * 4
+    + ABS(mn.carbs - $${carbsIndex}) * 2
+    + ABS(mn.fats - $${fatsIndex}) * 2
+  )
+
+  LIMIT 100
+  `,
+  params
+);
 
   const today =
   new Date()

@@ -11,6 +11,8 @@ import { redis } from "./utils/redisClient.js"; // adjust path if needed
 import userRoutes from "./routes/user.routes.js";
 import mealPlanRoutes from "./routes/mealPlan.routes.js";
 import fitnessRoutes from "./routes/fitness.routes.js";
+import organizationRoutes from "./routes/organization.routes.js";
+
 
 
 
@@ -39,6 +41,9 @@ app.use("/api/user", userRoutes);
 app.use("/api/meal-plan", mealPlanRoutes);
 
 app.use("/api/fitness", fitnessRoutes);
+
+app.use("/api/organizations",organizationRoutes);
+
 
 
 

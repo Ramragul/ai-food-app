@@ -435,9 +435,12 @@ async (userId) => {
     INNER JOIN organization_roles r
       ON r.id = om.role_id
 
+
+
     WHERE
-      om.user_id = $1
-      AND om.status = 'ACTIVE'
+    om.user_id = $1
+    AND om.status = 'ACTIVE'
+    AND o.status = 'ACTIVE'
 
     ORDER BY
       o.created_at DESC

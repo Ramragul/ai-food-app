@@ -208,6 +208,35 @@ const createActivityLog = async (
 
 };
 
+
+/* ======================================================
+   GET USER
+====================================================== */
+
+const getUser = async (
+  client,
+  userId
+) => {
+
+  const result =
+    await client.query(
+      `
+      SELECT
+        id,
+        name,
+        mobile,
+        email
+      FROM users
+      WHERE id = $1
+      LIMIT 1
+      `,
+      [userId]
+    );
+
+  return result.rows[0] || null;
+
+};
+
 /* ======================================================
    CREATE ORGANIZATION
 ====================================================== */
@@ -824,3 +853,119 @@ export const inviteClientService = async (
 ) => { 
     console.log("To be edited")
 }
+
+
+
+/* ======================================================
+   GET MY INVITATIONS
+====================================================== */
+
+export const getMyInvitationsService =
+async (userId) => {
+
+  const client = await pool.connect();
+
+  try {
+
+    /* ---------------------------------------------
+       GET LOGGED IN USER
+    ---------------------------------------------- */
+
+    const user =
+      await getUser(
+        client,
+        userId
+      );
+
+    if (!user) {
+
+      throw new Error(
+        "User not found."
+      );
+
+    }
+
+    /* ---------------------------------------------
+       GET PENDING INVITATIONS
+    ---------------------------------------------- */
+
+    const result =
+      await client.query(
+        `
+        SELECT
+
+          oi.id,
+
+          oi.invitation_token,
+
+          oi.invitation_type,
+
+          oi.invited_name,
+
+          oi.invited_mobile,
+
+          oi.invited_email,
+
+          oi.status,
+
+          oi.expires_at,
+
+          oi.created_at,
+
+          o.id AS organization_id,
+
+          o.name AS organization_name,
+
+          o.organization_type,
+
+          o.logo_url,
+
+          r.name AS role
+
+        FROM organization_invitations oi
+
+        INNER JOIN organizations o
+          ON o.id = oi.organization_id
+
+        INNER JOIN organization_roles r
+          ON r.id = oi.role_id
+
+        WHERE
+
+        oi.status = 'PENDING'
+
+        AND
+
+        (
+
+          oi.invited_mobile = $1
+
+          OR
+
+          (
+            oi.invited_email IS NOT NULL
+            AND
+            oi.invited_email = $2
+          )
+
+        )
+
+        ORDER BY
+
+          oi.created_at DESC
+        `,
+        [
+          user.mobile,
+          user.email
+        ]
+      );
+
+    return result.rows;
+
+  } finally {
+
+    client.release();
+
+  }
+
+};

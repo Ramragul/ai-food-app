@@ -1,7 +1,7 @@
 import express from "express";
 
 import {
-  createOrganization,getMyOrganizations , inviteEmployee, inviteClient
+  createOrganization,getMyOrganizations , inviteEmployee, inviteClient, getMyInvitations
 } from "../controllers/organization.controller.js";
 
 import {
@@ -37,6 +37,13 @@ router.post(
   "/invite-client",
   authMiddleware,
   inviteClient
+);
+
+/* 🔥 MY INVITATIONS */
+router.get(
+  "/invitations/me",
+  authMiddleware,
+  getMyInvitations
 );
 
 export default router;

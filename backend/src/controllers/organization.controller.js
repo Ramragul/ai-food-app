@@ -1,6 +1,6 @@
 import {
   createOrganizationService,getMyOrganizationsService, inviteEmployeeService,
-    inviteClientService
+    inviteClientService,getMyInvitationsService
 } from "../services/organization/organization.service.js";
 
 /* 🔥 CREATE ORGANIZATION */
@@ -158,5 +158,40 @@ async (req, res) => {
         });
 
     }
+
+};
+
+
+/* 🔥 GET MY INVITATIONS */
+
+export const getMyInvitations =
+async (req, res) => {
+
+  try {
+
+    const invitations =
+      await getMyInvitationsService(
+        req.user.id
+      );
+
+    return res.json({
+
+      success: true,
+
+      data: invitations
+
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    return res.status(500).json({
+
+      error: err.message
+
+    });
+
+  }
 
 };

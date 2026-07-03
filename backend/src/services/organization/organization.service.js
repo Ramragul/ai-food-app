@@ -122,6 +122,109 @@ const verifyMembership = async (
 };
 
 /* ======================================================
+   GET MEMBER
+====================================================== */
+
+const getMember = async (
+  client,
+  organizationId,
+  userId
+) => {
+
+  const result =
+    await client.query(
+      `
+      SELECT
+
+        om.id,
+
+        om.organization_id,
+
+        om.user_id,
+
+        om.role_id,
+
+        om.status,
+
+        om.joined_at,
+
+        r.name AS role_name
+
+      FROM organization_members om
+
+      INNER JOIN organization_roles r
+        ON r.id = om.role_id
+
+      WHERE
+
+        om.organization_id = $1
+
+        AND om.user_id = $2
+
+      LIMIT 1
+      `,
+      [
+        organizationId,
+        userId
+      ]
+    );
+
+  return result.rows[0] || null;
+
+};
+
+
+/* ======================================================
+   CHECK PERMISSION
+====================================================== */
+
+const hasPermission = async (
+  client,
+  organizationId,
+  userId,
+  permissionKey
+) => {
+
+  const result =
+    await client.query(
+      `
+      SELECT 1
+
+      FROM organization_members om
+
+      INNER JOIN organization_roles r
+        ON r.id = om.role_id
+
+      INNER JOIN organization_role_permissions rp
+        ON rp.role_id = r.id
+
+      INNER JOIN organization_permissions p
+        ON p.id = rp.permission_id
+
+      WHERE
+
+        om.organization_id = $1
+
+        AND om.user_id = $2
+
+        AND om.status = 'ACTIVE'
+
+        AND p.permission_key = $3
+
+      LIMIT 1
+      `,
+      [
+        organizationId,
+        userId,
+        permissionKey
+      ]
+    );
+
+  return result.rows.length > 0;
+
+};
+
+/* ======================================================
    GET ROLE BY NAME
 ====================================================== */
 
@@ -641,14 +744,30 @@ export const inviteEmployeeService = async (
        ONLY OWNER / ADMIN CAN INVITE
     ---------------------------------------------- */
 
-    if (
-      !["OWNER", "ADMIN"]
-        .includes(member.role_name)
-    ) {
+    // if (
+    //   !["OWNER", "ADMIN"]
+    //     .includes(member.role_name)
+    // ) {
 
-      throw new Error(
-        "You don't have permission to invite employees."
-      );
+    //   throw new Error(
+    //     "You don't have permission to invite employees."
+    //   );
+
+    // }
+
+    const allowed =
+    await hasPermission(
+    client,
+    organization_id,
+    userId,
+    "INVITE_EMPLOYEE"
+    );
+
+    if (!allowed) {
+
+    throw new Error(
+        "Permission denied."
+    );
 
     }
 
@@ -841,18 +960,232 @@ export const inviteEmployeeService = async (
 
 
 
+// export const inviteClientService = async (
+//   userId,
+//   {
+//     organization_id,
+//     role,
+//     invited_name,
+//     invited_mobile,
+//     invited_email
+//   }
+// ) => { 
+//     console.log("To be edited")
+// }
+
+/* ======================================================
+   INVITE CLIENT
+====================================================== */
+
 export const inviteClientService = async (
   userId,
   {
     organization_id,
-    role,
     invited_name,
     invited_mobile,
     invited_email
   }
-) => { 
-    console.log("To be edited")
+) => {
+
+  const client = await pool.connect();
+
+  if (!invited_mobile && !invited_email) {
+
+  throw new Error(
+    "Either mobile number or email is required."
+  );
+
 }
+
+  try {
+
+    await client.query("BEGIN");
+
+    /* ---------------------------------------------
+       CHECK PERMISSION
+    ---------------------------------------------- */
+
+    const allowed =
+      await hasPermission(
+        client,
+        organization_id,
+        userId,
+        "INVITE_CLIENT"
+      );
+
+    if (!allowed) {
+
+      throw new Error(
+        "Permission denied."
+      );
+
+    }
+
+    /* ---------------------------------------------
+       GET CLIENT ROLE
+    ---------------------------------------------- */
+
+    const clientRole =
+      await getOrganizationRole(
+        client,
+        organization_id,
+        "CLIENT"
+      );
+
+    if (!clientRole) {
+
+      throw new Error(
+        "CLIENT role not found."
+      );
+
+    }
+
+    /* ---------------------------------------------
+       DUPLICATE INVITATION
+    ---------------------------------------------- */
+
+const duplicate =
+  await client.query(
+    `
+    SELECT id
+    FROM organization_invitations
+    WHERE
+
+      organization_id = $1
+
+      AND
+      (
+        invited_mobile = $2
+
+        OR
+
+        (
+          invited_email IS NOT NULL
+          AND invited_email = $3
+        )
+      )
+
+      AND status = 'PENDING'
+
+    LIMIT 1
+    `,
+    [
+      organization_id,
+      invited_mobile,
+      invited_email || null
+    ]
+  );
+
+    if (duplicate.rows.length) {
+
+      throw new Error(
+        "Client already invited."
+      );
+
+    }
+
+    /* ---------------------------------------------
+       CREATE INVITATION
+    ---------------------------------------------- */
+
+    const expiresAt =
+      new Date(
+        Date.now() +
+        7 * 24 * 60 * 60 * 1000
+      );
+
+    const invitation =
+      await client.query(
+        `
+        INSERT INTO organization_invitations
+        (
+          organization_id,
+          invited_name,
+          invited_mobile,
+          invited_email,
+          role_id,
+          invitation_type,
+          invitation_token,
+          expires_at,
+          status,
+          created_by
+        )
+        VALUES
+        (
+          $1,$2,$3,$4,
+          $5,
+          'CLIENT',
+          gen_random_uuid(),
+          $6,
+          'PENDING',
+          $7
+        )
+        RETURNING *
+        `,
+        [
+          organization_id,
+          invited_name || null,
+          invited_mobile,
+          invited_email || null,
+          clientRole.id,
+          expiresAt,
+          userId
+        ]
+      );
+
+    /* ---------------------------------------------
+       ACTIVITY LOG
+    ---------------------------------------------- */
+
+    await createActivityLog(
+      client,
+      {
+
+        organizationId:
+          organization_id,
+
+        actorUserId:
+          userId,
+
+        entityType:
+          "INVITATION",
+
+        entityId:
+          invitation.rows[0].id,
+
+        action:
+          "CLIENT_INVITED",
+
+        description:
+          `${invited_name} invited as CLIENT.`,
+
+        metadata: {
+
+          mobile:
+            invited_mobile
+
+        }
+
+      }
+    );
+
+    await client.query("COMMIT");
+
+    return invitation.rows[0];
+
+  } catch (err) {
+
+    await client.query("ROLLBACK");
+
+    throw err;
+
+  } finally {
+
+    client.release();
+
+  }
+
+};
 
 
 
@@ -1126,6 +1459,107 @@ export const acceptInvitationService = async (
         ]
       );
 
+
+      /* ---------------------------------------------
+   GET ROLE
+---------------------------------------------- */
+
+const roleResult =
+  await client.query(
+    `
+    SELECT
+      name
+    FROM organization_roles
+    WHERE id = $1
+    LIMIT 1
+    `,
+    [
+      invitation.role_id
+    ]
+  );
+
+const roleName =
+  roleResult.rows[0]?.name;
+
+
+  if (
+  roleName === "CLIENT"
+) {
+
+//   await client.query(
+//     `
+//     INSERT INTO organization_consents
+//     (
+//       organization_id,
+//       client_user_id,
+//       granted,
+//       granted_at,
+//       created_at
+//     )
+//     VALUES
+//     (
+//       $1,
+//       $2,
+//       false,
+//       NULL,
+//       NOW()
+//     )
+//     `,
+//     [
+//       invitation.organization_id,
+//       userId
+//     ]
+//   );
+
+const consent =
+  await client.query(
+    `
+    SELECT id
+    FROM organization_consents
+    WHERE
+      organization_id = $1
+      AND client_user_id = $2
+    LIMIT 1
+    `,
+    [
+      invitation.organization_id,
+      userId
+    ]
+  );
+
+if (
+  !consent.rows.length
+) {
+
+    await client.query(
+      `
+      INSERT INTO organization_consents
+      (
+        organization_id,
+        client_user_id,
+        granted,
+        granted_at,
+        created_at
+      )
+      VALUES
+      (
+        $1,
+        $2,
+        false,
+        NULL,
+        NOW()
+      )
+      `,
+      [
+        invitation.organization_id,
+        userId
+      ]
+    );
+
+}
+
+}
+
     /* ---------------------------------------------
        UPDATE INVITATION
     ---------------------------------------------- */
@@ -1201,6 +1635,103 @@ export const acceptInvitationService = async (
     await client.query("ROLLBACK");
 
     throw err;
+
+  } finally {
+
+    client.release();
+
+  }
+
+};
+
+
+
+/* ======================================================
+   GET ORGANIZATION MEMBERS
+====================================================== */
+
+export const getOrganizationMembersService =
+async (
+  userId,
+  organizationId
+) => {
+
+  const client =
+    await pool.connect();
+
+  try {
+
+    /* ---------------------------------------------
+       PERMISSION CHECK
+    ---------------------------------------------- */
+
+    const allowed =
+      await hasPermission(
+        client,
+        organizationId,
+        userId,
+        "VIEW_MEMBERS"
+      );
+
+    if (!allowed) {
+
+      throw new Error(
+        "Permission denied."
+      );
+
+    }
+
+    /* ---------------------------------------------
+       LOAD MEMBERS
+    ---------------------------------------------- */
+
+    const result =
+      await client.query(
+        `
+        SELECT
+
+          om.id AS member_id,
+
+          om.user_id,
+
+          u.name,
+
+          u.nickname,
+
+          u.mobile,
+
+          u.email,
+
+          r.name AS role,
+
+          om.status,
+
+          om.joined_at
+
+        FROM organization_members om
+
+        INNER JOIN users u
+          ON u.id = om.user_id
+
+        INNER JOIN organization_roles r
+          ON r.id = om.role_id
+
+        WHERE
+
+          om.organization_id = $1
+
+        ORDER BY
+
+          r.name,
+
+          u.name
+        `,
+        [
+          organizationId
+        ]
+      );
+
+    return result.rows;
 
   } finally {
 

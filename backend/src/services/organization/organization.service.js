@@ -936,6 +936,10 @@ async (userId) => {
 
         AND
 
+        oi.expires_at > NOW()
+
+        AND
+
         (
 
           oi.invited_mobile = $1

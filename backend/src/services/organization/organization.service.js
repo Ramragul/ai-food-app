@@ -812,7 +812,7 @@ export const inviteEmployeeService = async (
 
 
 
-export const inviteEmployeeService = async (
+export const inviteClientService = async (
   userId,
   {
     organization_id,

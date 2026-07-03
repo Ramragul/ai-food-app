@@ -396,3 +396,55 @@ export const createOrganizationService = async (
   }
 
 };
+
+
+
+
+/* 🔥 GET MY ORGANIZATIONS */
+
+export const getMyOrganizationsService =
+async (userId) => {
+
+  const result = await pool.query(
+    `
+    SELECT
+
+      o.id AS organization_id,
+
+      o.name AS organization_name,
+
+      o.workspace_code,
+
+      o.organization_type,
+
+      o.logo_url,
+
+      o.subscription_plan,
+
+      o.status AS organization_status,
+
+      om.status AS member_status,
+
+      r.name AS role
+
+    FROM organization_members om
+
+    INNER JOIN organizations o
+      ON o.id = om.organization_id
+
+    INNER JOIN organization_roles r
+      ON r.id = om.role_id
+
+    WHERE
+      om.user_id = $1
+      AND om.status = 'ACTIVE'
+
+    ORDER BY
+      o.created_at DESC
+    `,
+    [userId]
+  );
+
+  return result.rows;
+
+};

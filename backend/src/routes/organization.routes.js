@@ -1,7 +1,7 @@
 import express from "express";
 
 import {
-  createOrganization
+  createOrganization,getMyOrganizations
 } from "../controllers/organization.controller.js";
 
 import {
@@ -15,6 +15,13 @@ router.post(
   "/",
   authMiddleware,
   createOrganization
+);
+
+/* 🔥 MY ORGANIZATIONS */
+router.get(
+  "/my",
+  authMiddleware,
+  getMyOrganizations
 );
 
 export default router;

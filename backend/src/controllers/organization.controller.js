@@ -1,5 +1,5 @@
 import {
-  createOrganizationService
+  createOrganizationService,getMyOrganizationsService
 } from "../services/organization/organization.service.js";
 
 /* 🔥 CREATE ORGANIZATION */
@@ -37,6 +37,35 @@ async (req, res) => {
 
       data: organization
 
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    return res.status(500).json({
+      error: err.message
+    });
+
+  }
+
+};
+
+
+/* 🔥 GET MY ORGANIZATIONS */
+export const getMyOrganizations =
+async (req, res) => {
+
+  try {
+
+    const organizations =
+      await getMyOrganizationsService(
+        req.user.id
+      );
+
+    return res.json({
+      success: true,
+      data: organizations
     });
 
   } catch (err) {

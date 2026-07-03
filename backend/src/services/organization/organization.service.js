@@ -808,3 +808,19 @@ export const inviteEmployeeService = async (
   }
 
 };
+
+
+
+
+export const inviteEmployeeService = async (
+  userId,
+  {
+    organization_id,
+    role,
+    invited_name,
+    invited_mobile,
+    invited_email
+  }
+) => { 
+    console.log("To be edited")
+}

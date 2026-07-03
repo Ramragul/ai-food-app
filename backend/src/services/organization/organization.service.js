@@ -973,3 +973,239 @@ async (userId) => {
   }
 
 };
+
+
+/* ======================================================
+   ACCEPT INVITATION
+====================================================== */
+
+export const acceptInvitationService = async (
+  userId,
+  invitationToken
+) => {
+
+  const client = await pool.connect();
+
+  try {
+
+    await client.query("BEGIN");
+
+    /* ---------------------------------------------
+       GET LOGGED IN USER
+    ---------------------------------------------- */
+
+    const user =
+      await getUser(
+        client,
+        userId
+      );
+
+    if (!user) {
+      throw new Error("User not found.");
+    }
+
+    /* ---------------------------------------------
+       LOAD INVITATION
+    ---------------------------------------------- */
+
+    const invitationResult =
+      await client.query(
+        `
+        SELECT
+          *
+        FROM organization_invitations
+        WHERE
+          invitation_token = $1
+        LIMIT 1
+        `,
+        [invitationToken]
+      );
+
+    if (!invitationResult.rows.length) {
+      throw new Error("Invitation not found.");
+    }
+
+    const invitation =
+      invitationResult.rows[0];
+
+    /* ---------------------------------------------
+       STATUS CHECK
+    ---------------------------------------------- */
+
+    if (invitation.status !== "PENDING") {
+      throw new Error("Invitation is no longer valid.");
+    }
+
+    /* ---------------------------------------------
+       EXPIRY CHECK
+    ---------------------------------------------- */
+
+    if (new Date(invitation.expires_at) < new Date()) {
+      throw new Error("Invitation has expired.");
+    }
+
+    /* ---------------------------------------------
+       VERIFY MOBILE / EMAIL
+    ---------------------------------------------- */
+
+    const mobileMatches =
+      invitation.invited_mobile === user.mobile;
+
+    const emailMatches =
+      invitation.invited_email &&
+      user.email &&
+      invitation.invited_email.toLowerCase() ===
+      user.email.toLowerCase();
+
+    if (!mobileMatches && !emailMatches) {
+
+      throw new Error(
+        "This invitation doesn't belong to your account."
+      );
+
+    }
+
+    /* ---------------------------------------------
+       ALREADY MEMBER?
+    ---------------------------------------------- */
+
+    const existingMember =
+      await client.query(
+        `
+        SELECT id
+        FROM organization_members
+        WHERE
+          organization_id = $1
+          AND user_id = $2
+          AND status = 'ACTIVE'
+        LIMIT 1
+        `,
+        [
+          invitation.organization_id,
+          userId
+        ]
+      );
+
+    if (existingMember.rows.length) {
+
+      throw new Error(
+        "You are already a member of this workspace."
+      );
+
+    }
+
+    /* ---------------------------------------------
+       CREATE MEMBER
+    ---------------------------------------------- */
+
+    const memberResult =
+      await client.query(
+        `
+        INSERT INTO organization_members
+        (
+          organization_id,
+          user_id,
+          role_id,
+          status,
+          joined_at
+        )
+        VALUES
+        (
+          $1,
+          $2,
+          $3,
+          'ACTIVE',
+          NOW()
+        )
+        RETURNING *
+        `,
+        [
+          invitation.organization_id,
+          userId,
+          invitation.role_id
+        ]
+      );
+
+    /* ---------------------------------------------
+       UPDATE INVITATION
+    ---------------------------------------------- */
+
+    await client.query(
+      `
+      UPDATE organization_invitations
+      SET
+
+        status = 'ACCEPTED',
+
+        accepted_at = NOW(),
+
+        accepted_by = $1
+
+      WHERE id = $2
+      `,
+      [
+        userId,
+        invitation.id
+      ]
+    );
+
+    /* ---------------------------------------------
+       ACTIVITY LOG
+    ---------------------------------------------- */
+
+    await createActivityLog(
+      client,
+      {
+        organizationId:
+          invitation.organization_id,
+
+        actorUserId:
+          userId,
+
+        targetUserId:
+          userId,
+
+        entityType:
+          "INVITATION",
+
+        entityId:
+          invitation.id,
+
+        action:
+          "INVITATION_ACCEPTED",
+
+        description:
+          `${user.name} joined the workspace.`,
+
+        metadata: {
+          member_id:
+            memberResult.rows[0].id
+        }
+      }
+    );
+
+    await client.query("COMMIT");
+
+    return {
+
+      member:
+        memberResult.rows[0],
+
+      organization_id:
+        invitation.organization_id
+
+    };
+
+  } catch (err) {
+
+    await client.query("ROLLBACK");
+
+    throw err;
+
+  } finally {
+
+    client.release();
+
+  }
+
+};

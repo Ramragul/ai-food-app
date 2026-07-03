@@ -1,5 +1,5 @@
 import pool from "../../db/connection.js";
-import crypto from "crypto";
+import crypto, { randomUUID }from "crypto";
 
 /* ======================================================
    DEFAULT ROLES
@@ -75,6 +75,136 @@ const generateWorkspaceCode = () => {
     .randomBytes(3)
     .toString("hex")
     .toUpperCase()}`;
+
+};
+
+
+/* ======================================================
+   VERIFY ORGANIZATION MEMBERSHIP
+====================================================== */
+
+const verifyMembership = async (
+  client,
+  organizationId,
+  userId
+) => {
+
+  const result = await client.query(
+    `
+    SELECT
+
+      om.id,
+      om.role_id,
+      om.status,
+      r.name AS role_name
+
+    FROM organization_members om
+
+    INNER JOIN organization_roles r
+      ON r.id = om.role_id
+
+    WHERE
+
+      om.organization_id = $1
+      AND om.user_id = $2
+      AND om.status = 'ACTIVE'
+
+    LIMIT 1
+    `,
+    [
+      organizationId,
+      userId
+    ]
+  );
+
+  return result.rows[0] || null;
+
+};
+
+/* ======================================================
+   GET ROLE BY NAME
+====================================================== */
+
+const getOrganizationRole = async (
+  client,
+  organizationId,
+  roleName
+) => {
+
+  const result = await client.query(
+    `
+    SELECT *
+
+    FROM organization_roles
+
+    WHERE
+
+      organization_id = $1
+      AND name = $2
+
+    LIMIT 1
+    `,
+    [
+      organizationId,
+      roleName
+    ]
+  );
+
+  return result.rows[0] || null;
+
+};
+
+
+/* ======================================================
+   CREATE ACTIVITY LOG
+====================================================== */
+
+const createActivityLog = async (
+  client,
+  {
+    organizationId,
+    actorUserId,
+    targetUserId = null,
+    entityType,
+    entityId,
+    action,
+    description,
+    severity = "INFO",
+    metadata = {}
+  }
+) => {
+
+  await client.query(
+    `
+    INSERT INTO activity_logs
+    (
+      organization_id,
+      actor_user_id,
+      target_user_id,
+      entity_type,
+      entity_id,
+      action,
+      description,
+      severity,
+      metadata
+    )
+    VALUES
+    (
+      $1,$2,$3,$4,$5,$6,$7,$8,$9
+    )
+    `,
+    [
+      organizationId,
+      actorUserId,
+      targetUserId,
+      entityType,
+      entityId,
+      action,
+      description,
+      severity,
+      JSON.stringify(metadata)
+    ]
+  );
 
 };
 
@@ -333,40 +463,22 @@ export const createOrganizationService = async (
        WRITE ACTIVITY LOG
     ---------------------------------------------- */
 
-    await client.query(
-      `
-      INSERT INTO activity_logs
-      (
-        organization_id,
-        actor_user_id,
-        target_user_id,
-        entity_type,
-        entity_id,
-        action,
-        description,
-        severity,
-        metadata
-      )
-      VALUES
-      (
-        $1,$2,$3,$4,$5,$6,$7,$8,$9
-      )
-      `,
-      [
-        organization.id,
-        userId,
-        userId,
-        "ORGANIZATION",
-        organization.id,
-        "WORKSPACE_CREATED",
-        `Workspace '${organization.name}' created`,
-        "INFO",
-        JSON.stringify({
-          workspace_code:
-            organization.workspace_code
-        })
-      ]
-    );
+await createActivityLog(
+  client,
+  {
+    organizationId: organization.id,
+    actorUserId: userId,
+    targetUserId: userId,
+    entityType: "ORGANIZATION",
+    entityId: organization.id,
+    action: "WORKSPACE_CREATED",
+    description: `Workspace '${organization.name}' created`,
+    metadata: {
+      workspace_code:
+        organization.workspace_code
+    }
+  }
+);
 
     /* ---------------------------------------------
        COMMIT
@@ -449,5 +561,250 @@ async (userId) => {
   );
 
   return result.rows;
+
+};
+
+
+
+/* 🔥 INVITE MEMBER */
+
+/* ======================================================
+   INVITE EMPLOYEE
+====================================================== */
+
+export const inviteEmployeeService = async (
+  userId,
+  {
+    organization_id,
+    role,
+    invited_name,
+    invited_mobile,
+    invited_email
+  }
+) => {
+
+  const client = await pool.connect();
+
+  try {
+
+    await client.query("BEGIN");
+
+    /* ---------------------------------------------
+       VERIFY MEMBERSHIP
+    ---------------------------------------------- */
+
+    const member =
+      await verifyMembership(
+        client,
+        organization_id,
+        userId
+      );
+
+    if (!member) {
+
+      throw new Error(
+        "You are not a member of this workspace."
+      );
+
+    }
+
+    /* ---------------------------------------------
+       ONLY OWNER / ADMIN CAN INVITE
+    ---------------------------------------------- */
+
+    if (
+      !["OWNER", "ADMIN"]
+        .includes(member.role_name)
+    ) {
+
+      throw new Error(
+        "You don't have permission to invite employees."
+      );
+
+    }
+
+    /* ---------------------------------------------
+       GET ROLE
+    ---------------------------------------------- */
+
+    const roleRecord =
+      await getOrganizationRole(
+        client,
+        organization_id,
+        role
+      );
+
+    if (!roleRecord) {
+
+      throw new Error(
+        "Invalid role."
+      );
+
+    }
+
+    /* ---------------------------------------------
+       EMPLOYEE ROLES ONLY
+    ---------------------------------------------- */
+
+    if (
+      roleRecord.name === "CLIENT"
+    ) {
+
+      throw new Error(
+        "Use invite-client API for clients."
+      );
+
+    }
+
+    /* ---------------------------------------------
+       DUPLICATE INVITATION
+    ---------------------------------------------- */
+
+    const duplicate =
+      await client.query(
+        `
+        SELECT id
+
+        FROM organization_invitations
+
+        WHERE
+
+        organization_id = $1
+
+        AND invited_mobile = $2
+
+        AND status = 'PENDING'
+
+        LIMIT 1
+        `,
+        [
+          organization_id,
+          invited_mobile
+        ]
+      );
+
+    if (
+      duplicate.rows.length
+    ) {
+
+      throw new Error(
+        "An active invitation already exists."
+      );
+
+    }
+
+    /* ---------------------------------------------
+       CREATE INVITATION
+    ---------------------------------------------- */
+
+    const expiresAt =
+      new Date(
+        Date.now() +
+        7 * 24 * 60 * 60 * 1000
+      );
+
+    const invitation =
+      await client.query(
+        `
+        INSERT INTO
+        organization_invitations
+        (
+          organization_id,
+          invited_name,
+          invited_mobile,
+          invited_email,
+          role_id,
+          invitation_type,
+          invitation_token,
+          expires_at,
+          status,
+          created_by
+        )
+
+        VALUES
+        (
+          $1,$2,$3,$4,
+          $5,
+          'EMPLOYEE',
+          gen_random_uuid(),
+          $6,
+          'PENDING',
+          $7
+        )
+
+        RETURNING *
+        `,
+        [
+
+          organization_id,
+
+          invited_name || null,
+
+          invited_mobile,
+
+          invited_email || null,
+
+          roleRecord.id,
+
+          expiresAt,
+
+          userId
+
+        ]
+      );
+
+    /* ---------------------------------------------
+       ACTIVITY LOG
+    ---------------------------------------------- */
+
+    await createActivityLog(
+      client,
+      {
+
+        organizationId:
+          organization_id,
+
+        actorUserId:
+          userId,
+
+        entityType:
+          "INVITATION",
+
+        entityId:
+          invitation.rows[0].id,
+
+        action:
+          "EMPLOYEE_INVITED",
+
+        description:
+          `${roleRecord.name} invited (${invited_mobile})`,
+
+        metadata: {
+
+          role:
+            roleRecord.name
+
+        }
+
+      }
+    );
+
+    await client.query("COMMIT");
+
+    return invitation.rows[0];
+
+  } catch (err) {
+
+    await client.query(
+      "ROLLBACK"
+    );
+
+    throw err;
+
+  } finally {
+
+    client.release();
+
+  }
 
 };

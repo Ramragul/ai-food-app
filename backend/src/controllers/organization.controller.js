@@ -1,5 +1,6 @@
 import {
-  createOrganizationService,getMyOrganizationsService
+  createOrganizationService,getMyOrganizationsService, inviteEmployeeService,
+    inviteClientService
 } from "../services/organization/organization.service.js";
 
 /* 🔥 CREATE ORGANIZATION */
@@ -77,5 +78,85 @@ async (req, res) => {
     });
 
   }
+
+};
+
+
+
+
+/* 🔥 INVITE EMPLOYEE */
+
+export const inviteEmployee =
+async (req, res) => {
+
+    try {
+
+        const invitation =
+            await inviteEmployeeService(
+                req.user.id,
+                req.body
+            );
+
+        return res.status(201).json({
+
+            success: true,
+
+            message:
+                "Employee invitation sent.",
+
+            data: invitation
+
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        return res.status(500).json({
+
+            error: err.message
+
+        });
+
+    }
+
+};
+
+
+/* 🔥 INVITE CLIENT */
+
+export const inviteClient =
+async (req, res) => {
+
+    try {
+
+        const invitation =
+            await inviteClientService(
+                req.user.id,
+                req.body
+            );
+
+        return res.status(201).json({
+
+            success: true,
+
+            message:
+                "Client invitation sent.",
+
+            data: invitation
+
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        return res.status(500).json({
+
+            error: err.message
+
+        });
+
+    }
 
 };

@@ -32,7 +32,8 @@ const ROLE_PERMISSION_MAP = {
     "VIEW_ANALYTICS",
     "VIEW_REPORTS",
     "EXPORT_REPORT",
-    "INVITE_MEMBER",
+    "INVITE_EMPLOYEE",
+    "INVITE_CLIENT",
     "REMOVE_MEMBER",
     "MANAGE_MEMBERS",
     "ASSIGN_CLIENT"
@@ -56,7 +57,7 @@ const ROLE_PERMISSION_MAP = {
 
   RECEPTIONIST: [
     "VIEW_CLIENT",
-    "INVITE_MEMBER"
+    "INVITE_CLIENT"
   ],
 
   CLIENT: [
@@ -1732,6 +1733,249 @@ async (
       );
 
     return result.rows;
+
+  } finally {
+
+    client.release();
+
+  }
+
+};
+
+
+
+
+/* ======================================================
+   ASSIGN CLIENT TO TRAINER
+====================================================== */
+
+export const assignClientService = async (
+  userId,
+  {
+    organization_id,
+    trainer_member_id,
+    client_member_id
+  }
+) => {
+
+  const client = await pool.connect();
+
+  try {
+
+    await client.query("BEGIN");
+
+    /* ---------------------------------------------
+       PERMISSION CHECK
+    ---------------------------------------------- */
+
+    const allowed =
+      await hasPermission(
+        client,
+        organization_id,
+        userId,
+        "ASSIGN_CLIENT"
+      );
+
+    if (!allowed) {
+      throw new Error(
+        "Permission denied."
+      );
+    }
+
+    /* ---------------------------------------------
+       LOAD TRAINER
+    ---------------------------------------------- */
+
+    const trainerResult =
+      await client.query(
+        `
+        SELECT
+          om.*,
+          r.name AS role_name,
+          u.name
+        FROM organization_members om
+        INNER JOIN organization_roles r
+          ON r.id = om.role_id
+        INNER JOIN users u
+          ON u.id = om.user_id
+        WHERE
+          om.id = $1
+          AND om.organization_id = $2
+          AND om.status = 'ACTIVE'
+        `,
+        [
+          trainer_member_id,
+          organization_id
+        ]
+      );
+
+    if (!trainerResult.rows.length) {
+      throw new Error("Trainer not found.");
+    }
+
+    const trainer =
+      trainerResult.rows[0];
+
+    if (
+      trainer.role_name !== "TRAINER"
+    ) {
+      throw new Error(
+        "Selected member is not a trainer."
+      );
+    }
+
+    /* ---------------------------------------------
+       LOAD CLIENT
+    ---------------------------------------------- */
+
+    const clientResult =
+      await client.query(
+        `
+        SELECT
+          om.*,
+          r.name AS role_name,
+          u.name
+        FROM organization_members om
+        INNER JOIN organization_roles r
+          ON r.id = om.role_id
+        INNER JOIN users u
+          ON u.id = om.user_id
+        WHERE
+          om.id = $1
+          AND om.organization_id = $2
+          AND om.status = 'ACTIVE'
+        `,
+        [
+          client_member_id,
+          organization_id
+        ]
+      );
+
+    if (!clientResult.rows.length) {
+      throw new Error("Client not found.");
+    }
+
+    const assignedClient =
+      clientResult.rows[0];
+
+    if (
+      assignedClient.role_name !== "CLIENT"
+    ) {
+      throw new Error(
+        "Selected member is not a client."
+      );
+    }
+
+    /* ---------------------------------------------
+       EXISTING ACTIVE ASSIGNMENT?
+    ---------------------------------------------- */
+
+    const existingAssignment =
+      await client.query(
+        `
+        SELECT id
+        FROM organization_client_assignments
+        WHERE
+          organization_id = $1
+          AND client_member_id = $2
+          AND is_active = true
+        LIMIT 1
+        `,
+        [
+          organization_id,
+          client_member_id
+        ]
+      );
+
+    if (
+      existingAssignment.rows.length
+    ) {
+      throw new Error(
+        "Client is already assigned to a trainer."
+      );
+    }
+
+    /* ---------------------------------------------
+       CREATE ASSIGNMENT
+    ---------------------------------------------- */
+
+    const assignment =
+      await client.query(
+        `
+        INSERT INTO
+        organization_client_assignments
+        (
+          organization_id,
+          trainer_member_id,
+          client_member_id,
+          assigned_by
+        )
+        VALUES
+        (
+          $1,
+          $2,
+          $3,
+          $4
+        )
+        RETURNING *
+        `,
+        [
+          organization_id,
+          trainer_member_id,
+          client_member_id,
+          userId
+        ]
+      );
+
+    /* ---------------------------------------------
+       ACTIVITY LOG
+    ---------------------------------------------- */
+
+    await createActivityLog(
+      client,
+      {
+
+        organizationId:
+          organization_id,
+
+        actorUserId:
+          userId,
+
+        targetUserId:
+          assignedClient.user_id,
+
+        entityType:
+          "CLIENT_ASSIGNMENT",
+
+        entityId:
+          assignment.rows[0].id,
+
+        action:
+          "CLIENT_ASSIGNED",
+
+        description:
+          `${assignedClient.name} assigned to ${trainer.name}.`,
+
+        metadata: {
+
+          trainer_member_id,
+
+          client_member_id
+
+        }
+
+      }
+    );
+
+    await client.query("COMMIT");
+
+    return assignment.rows[0];
+
+  } catch (err) {
+
+    await client.query("ROLLBACK");
+
+    throw err;
 
   } finally {
 

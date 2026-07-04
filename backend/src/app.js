@@ -47,7 +47,7 @@ app.use("/api/organizations",organizationRoutes);
 
 app.use(
   "/api/coach",
-  trainerRoutes
+  coachRoutes
 );
 
 

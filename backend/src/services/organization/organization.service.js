@@ -1984,3 +1984,181 @@ export const assignClientService = async (
   }
 
 };
+
+
+/* ======================================================
+   ORGANIZATION DASHBOARD
+====================================================== */
+
+export const getOrganizationDashboardService =
+async (
+  userId
+) => {
+
+  const client =
+    await pool.connect();
+
+  try {
+
+    /* ---------------------------------------------
+       FIND ORGANIZATION
+    ---------------------------------------------- */
+
+    const organizationResult =
+      await client.query(
+        `
+        SELECT
+
+          o.id,
+
+          o.name,
+
+          o.organization_type,
+
+          o.workspace_code
+
+        FROM organizations o
+
+        INNER JOIN organization_members om
+          ON om.organization_id = o.id
+
+        WHERE
+
+          om.user_id = $1
+
+          AND om.status = 'ACTIVE'
+
+        LIMIT 1
+        `,
+        [
+          userId
+        ]
+      );
+
+    if (
+      !organizationResult.rows.length
+    ) {
+
+      throw new Error(
+        "Organization not found."
+      );
+
+    }
+
+    const organization =
+      organizationResult.rows[0];
+
+    /* ---------------------------------------------
+       SUMMARY
+    ---------------------------------------------- */
+
+    const summaryResult =
+      await client.query(
+        `
+        SELECT
+
+        (
+            SELECT COUNT(*)
+            FROM organization_members
+            WHERE
+              organization_id = $1
+              AND status='ACTIVE'
+              AND role_id IN
+              (
+                SELECT id
+                FROM organization_roles
+                WHERE
+                  organization_id=$1
+                  AND name<>'CLIENT'
+              )
+        ) AS employees,
+
+        (
+            SELECT COUNT(*)
+            FROM organization_members om
+            INNER JOIN organization_roles r
+            ON r.id=om.role_id
+            WHERE
+              om.organization_id=$1
+              AND om.status='ACTIVE'
+              AND r.name='CLIENT'
+        ) AS clients,
+
+        (
+            SELECT COUNT(*)
+            FROM organization_invitations
+            WHERE
+              organization_id=$1
+              AND invitation_type='EMPLOYEE'
+              AND status='PENDING'
+        ) AS pending_employee_invitations,
+
+        (
+            SELECT COUNT(*)
+            FROM organization_invitations
+            WHERE
+              organization_id=$1
+              AND invitation_type='CLIENT'
+              AND status='PENDING'
+        ) AS pending_client_invitations,
+
+        (
+            SELECT COUNT(*)
+            FROM organization_client_assignments
+            WHERE
+              organization_id=$1
+              AND is_active=true
+        ) AS active_assignments
+        `,
+        [
+          organization.id
+        ]
+      );
+
+    return {
+
+      organization,
+
+      summary: {
+
+        employees:
+          Number(
+            summaryResult.rows[0]
+              .employees
+          ),
+
+        clients:
+          Number(
+            summaryResult.rows[0]
+              .clients
+          ),
+
+        pending_employee_invitations:
+          Number(
+            summaryResult.rows[0]
+              .pending_employee_invitations
+          ),
+
+        pending_client_invitations:
+          Number(
+            summaryResult.rows[0]
+              .pending_client_invitations
+          ),
+
+        active_assignments:
+          Number(
+            summaryResult.rows[0]
+              .active_assignments
+          )
+
+      }
+
+    };
+
+  } finally {
+
+    client.release();
+
+  }
+
+};

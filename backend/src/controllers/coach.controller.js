@@ -1,5 +1,5 @@
 import {
-  getMyClientsService
+  getMyClientsService , getDashboardService
 } from "../services/coach/coach.service.js";
 
 /* ==========================================
@@ -13,6 +13,43 @@ async (req, res) => {
 
     const data =
       await getMyClientsService(
+        req.user.id
+      );
+
+    return res.json({
+
+      success: true,
+
+      data
+
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    return res.status(500).json({
+
+      error: err.message
+
+    });
+
+  }
+
+};
+
+
+/* ==========================================
+   COACH DASHBOARD
+========================================== */
+
+export const getDashboard =
+async (req, res) => {
+
+  try {
+
+    const data =
+      await getDashboardService(
         req.user.id
       );
 

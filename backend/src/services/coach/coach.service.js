@@ -141,7 +141,7 @@ export const getDashboardService = async (
         FROM organization_client_assignments oca
 
         INNER JOIN organization_members coach
-          ON coach.id = oca.coach_member_id
+          ON coach.id = oca.trainer_member_id
 
         INNER JOIN organization_members client_member
           ON client_member.id = oca.client_member_id

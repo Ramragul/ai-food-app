@@ -1,7 +1,7 @@
 import {
   createOrganizationService,getMyOrganizationsService, inviteEmployeeService,
     inviteClientService,getMyInvitationsService, acceptInvitationService ,getOrganizationMembersService,
-    assignClientService,getOrganizationDashboardService
+    assignClientService,getOrganizationDashboardService , getEmployeesService
 } from "../services/organization/organization.service.js";
 
 /* 🔥 CREATE ORGANIZATION */
@@ -323,6 +323,46 @@ async (req, res) => {
 
     const data =
       await getOrganizationDashboardService(
+        req.user.id
+      );
+
+    return res.json({
+
+      success: true,
+
+      data
+
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    return res.status(500).json({
+
+      error: err.message
+
+    });
+
+  }
+
+};
+
+
+/* ==========================================
+   EMPLOYEES
+========================================== */
+
+export const getEmployees =
+async (
+  req,
+  res
+) => {
+
+  try {
+
+    const data =
+      await getEmployeesService(
         req.user.id
       );
 

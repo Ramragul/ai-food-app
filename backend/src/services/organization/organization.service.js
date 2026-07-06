@@ -2361,3 +2361,161 @@ return {
   }
 
 };
+
+
+/* ======================================================
+   GET ORGANIZATION EMPLOYEES
+====================================================== */
+
+export const getEmployeesService = async (
+  userId
+) => {
+
+  const client = await pool.connect();
+
+  try {
+
+    /* ---------------------------------------------
+       FIND ORGANIZATION
+    ---------------------------------------------- */
+
+    const organizationResult =
+      await client.query(
+        `
+        SELECT
+          organization_id
+        FROM organization_members
+        WHERE
+          user_id = $1
+          AND status = 'ACTIVE'
+        LIMIT 1
+        `,
+        [
+          userId
+        ]
+      );
+
+    if (!organizationResult.rows.length) {
+
+      throw new Error(
+        "Organization not found."
+      );
+
+    }
+
+    const organizationId =
+      organizationResult.rows[0]
+        .organization_id;
+
+    /* ---------------------------------------------
+       LOAD EMPLOYEES
+    ---------------------------------------------- */
+
+    const result =
+      await client.query(
+        `
+        SELECT
+
+          om.id AS member_id,
+
+          u.id AS user_id,
+
+          u.name,
+
+          u.nickname,
+
+          u.mobile,
+
+          u.email,
+
+          r.name AS role,
+
+          om.status,
+
+          om.joined_at,
+
+          COUNT(oca.id) FILTER (
+            WHERE
+              oca.is_active = true
+          ) AS assigned_clients
+
+        FROM organization_members om
+
+        INNER JOIN users u
+          ON u.id = om.user_id
+
+        INNER JOIN organization_roles r
+          ON r.id = om.role_id
+
+        LEFT JOIN organization_client_assignments oca
+          ON oca.trainer_member_id = om.id
+
+        WHERE
+
+          om.organization_id = $1
+
+          AND om.status = 'ACTIVE'
+
+          AND r.name <> 'CLIENT'
+
+        GROUP BY
+
+          om.id,
+
+          u.id,
+
+          u.name,
+
+          u.nickname,
+
+          u.mobile,
+
+          u.email,
+
+          r.name,
+
+          om.status,
+
+          om.joined_at
+
+        ORDER BY
+
+          CASE
+
+            WHEN r.name = 'OWNER' THEN 1
+
+            WHEN r.name = 'ADMIN' THEN 2
+
+            WHEN r.name = 'COACH' THEN 3
+
+            WHEN r.name = 'DIETITIAN' THEN 4
+
+            WHEN r.name = 'RECEPTIONIST' THEN 5
+
+            ELSE 99
+
+          END,
+
+          u.name
+        `,
+        [
+          organizationId
+        ]
+      );
+
+    return result.rows.map(employee => ({
+
+  ...employee,
+
+  assigned_clients:
+    Number(employee.assigned_clients)
+
+}));
+
+  } finally {
+
+    client.release();
+
+  }
+
+};

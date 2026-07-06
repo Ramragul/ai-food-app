@@ -2,7 +2,7 @@ import express from "express";
 
 import {
   createOrganization,getMyOrganizations , inviteEmployee, inviteClient,
-   getMyInvitations, acceptInvitation, getOrganizationMembers,assignClient , getOrganizationDashboard
+   getMyInvitations, acceptInvitation, getOrganizationMembers,assignClient , getOrganizationDashboard, getEmployees
 } from "../controllers/organization.controller.js";
 
 import {
@@ -75,6 +75,14 @@ router.get(
   "/dashboard",
   authMiddleware,
   getOrganizationDashboard
+);
+
+/* 🔥 ORGANIZATION EMPLOYEES */
+
+router.get(
+  "/employees",
+  authMiddleware,
+  getEmployees
 );
 
 

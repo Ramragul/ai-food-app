@@ -2519,3 +2519,183 @@ export const getEmployeesService = async (
   }
 
 };
+
+
+/* ======================================================
+   GET ORGANIZATION CLIENTS
+====================================================== */
+
+export const getClientsService = async (
+  userId
+) => {
+
+  const client = await pool.connect();
+
+  try {
+
+    /* ---------------------------------------------
+       FIND ORGANIZATION
+    ---------------------------------------------- */
+
+    const organizationResult =
+      await client.query(
+        `
+        SELECT
+          organization_id
+        FROM organization_members
+        WHERE
+          user_id = $1
+          AND status = 'ACTIVE'
+        LIMIT 1
+        `,
+        [
+          userId
+        ]
+      );
+
+    if (!organizationResult.rows.length) {
+
+      throw new Error(
+        "Organization not found."
+      );
+
+    }
+
+    const organizationId =
+      organizationResult.rows[0]
+        .organization_id;
+
+    /* ---------------------------------------------
+       LOAD CLIENTS
+    ---------------------------------------------- */
+
+    const result =
+      await client.query(
+        `
+        SELECT
+
+          om.id AS member_id,
+
+          u.id AS user_id,
+
+          u.name,
+
+          u.nickname,
+
+          u.mobile,
+
+          u.email,
+
+          om.status,
+
+          om.joined_at,
+
+          oc.granted AS consent_granted,
+
+          coachMember.id AS coach_member_id,
+
+          coachUser.id AS coach_user_id,
+
+          coachUser.name AS coach_name,
+
+          coachRole.name AS coach_role
+
+        FROM organization_members om
+
+        INNER JOIN users u
+          ON u.id = om.user_id
+
+        INNER JOIN organization_roles clientRole
+          ON clientRole.id = om.role_id
+
+        LEFT JOIN organization_consents oc
+          ON oc.organization_id = om.organization_id
+         AND oc.client_user_id = om.user_id
+
+        LEFT JOIN organization_client_assignments oca
+          ON oca.client_member_id = om.id
+         AND oca.is_active = true
+
+        LEFT JOIN organization_members coachMember
+          ON coachMember.id = oca.trainer_member_id
+
+        LEFT JOIN users coachUser
+          ON coachUser.id = coachMember.user_id
+
+        LEFT JOIN organization_roles coachRole
+          ON coachRole.id = coachMember.role_id
+
+        WHERE
+
+          om.organization_id = $1
+
+          AND om.status = 'ACTIVE'
+
+          AND clientRole.name = 'CLIENT'
+
+        ORDER BY
+
+          u.name
+        `,
+        [
+          organizationId
+        ]
+      );
+
+    return result.rows.map(row => ({
+
+      member_id:
+        row.member_id,
+
+      user_id:
+        row.user_id,
+
+      name:
+        row.name,
+
+      nickname:
+        row.nickname,
+
+      mobile:
+        row.mobile,
+
+      email:
+        row.email,
+
+      status:
+        row.status,
+
+      joined_at:
+        row.joined_at,
+
+      consent_granted:
+        row.consent_granted ?? false,
+
+      assigned_coach:
+        row.coach_member_id
+          ? {
+
+              member_id:
+                row.coach_member_id,
+
+              user_id:
+                row.coach_user_id,
+
+              name:
+                row.coach_name,
+
+              role:
+                row.coach_role
+
+            }
+          : null
+
+    }));
+
+  } finally {
+
+    client.release();
+
+  }
+
+};

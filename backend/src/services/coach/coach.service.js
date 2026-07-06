@@ -348,7 +348,7 @@ consent: {
 
 },
 
-        goal: null,
+        fitnessProfile: null,
 
         today: null,
 

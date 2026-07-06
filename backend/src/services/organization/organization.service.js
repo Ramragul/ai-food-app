@@ -2052,68 +2052,159 @@ async (
        SUMMARY
     ---------------------------------------------- */
 
-    const summaryResult =
-      await client.query(
-        `
-        SELECT
+    // const summaryResult =
+    //   await client.query(
+    //     `
+    //     SELECT
 
-        (
-            SELECT COUNT(*)
-            FROM organization_members
+    //     (
+    //         SELECT COUNT(*)
+    //         FROM organization_members
+    //         WHERE
+    //           organization_id = $1
+    //           AND status='ACTIVE'
+    //           AND role_id IN
+    //           (
+    //             SELECT id
+    //             FROM organization_roles
+    //             WHERE
+    //               organization_id=$1
+    //               AND name<>'CLIENT'
+    //           )
+    //     ) AS employees,
+
+    //     (
+    //         SELECT COUNT(*)
+    //         FROM organization_members om
+    //         INNER JOIN organization_roles r
+    //         ON r.id=om.role_id
+    //         WHERE
+    //           om.organization_id=$1
+    //           AND om.status='ACTIVE'
+    //           AND r.name='CLIENT'
+    //     ) AS clients,
+
+    //     (
+    //         SELECT COUNT(*)
+    //         FROM organization_invitations
+    //         WHERE
+    //           organization_id=$1
+    //           AND invitation_type='EMPLOYEE'
+    //           AND status='PENDING'
+    //     ) AS pending_employee_invitations,
+
+    //     (
+    //         SELECT COUNT(*)
+    //         FROM organization_invitations
+    //         WHERE
+    //           organization_id=$1
+    //           AND invitation_type='CLIENT'
+    //           AND status='PENDING'
+    //     ) AS pending_client_invitations,
+
+    //     (
+    //         SELECT COUNT(*)
+    //         FROM organization_client_assignments
+    //         WHERE
+    //           organization_id=$1
+    //           AND is_active=true
+    //     ) AS active_assignments
+    //     `,
+    //     [
+    //       organization.id
+    //     ]
+    //   );
+
+
+    const summaryResult =
+  await client.query(
+    `
+    SELECT
+
+    (
+        SELECT COUNT(*)
+        FROM organization_members
+        WHERE
+          organization_id = $1
+          AND status = 'ACTIVE'
+          AND role_id IN
+          (
+            SELECT id
+            FROM organization_roles
             WHERE
               organization_id = $1
-              AND status='ACTIVE'
-              AND role_id IN
-              (
-                SELECT id
-                FROM organization_roles
-                WHERE
-                  organization_id=$1
-                  AND name<>'CLIENT'
-              )
-        ) AS employees,
+              AND name <> 'CLIENT'
+          )
+    ) AS employees,
 
-        (
-            SELECT COUNT(*)
-            FROM organization_members om
-            INNER JOIN organization_roles r
-            ON r.id=om.role_id
-            WHERE
-              om.organization_id=$1
-              AND om.status='ACTIVE'
-              AND r.name='CLIENT'
-        ) AS clients,
+    (
+        SELECT COUNT(*)
+        FROM organization_members om
 
-        (
-            SELECT COUNT(*)
-            FROM organization_invitations
-            WHERE
-              organization_id=$1
-              AND invitation_type='EMPLOYEE'
-              AND status='PENDING'
-        ) AS pending_employee_invitations,
+        INNER JOIN organization_roles r
+          ON r.id = om.role_id
 
-        (
-            SELECT COUNT(*)
-            FROM organization_invitations
-            WHERE
-              organization_id=$1
-              AND invitation_type='CLIENT'
-              AND status='PENDING'
-        ) AS pending_client_invitations,
+        WHERE
+          om.organization_id = $1
+          AND om.status = 'ACTIVE'
+          AND r.name = 'CLIENT'
+    ) AS clients,
 
-        (
-            SELECT COUNT(*)
-            FROM organization_client_assignments
-            WHERE
-              organization_id=$1
-              AND is_active=true
-        ) AS active_assignments
-        `,
-        [
-          organization.id
-        ]
-      );
+    (
+        SELECT COUNT(*)
+        FROM organization_invitations
+        WHERE
+          organization_id = $1
+          AND invitation_type = 'EMPLOYEE'
+          AND status = 'PENDING'
+    ) AS pending_employee_invitations,
+
+    (
+        SELECT COUNT(*)
+        FROM organization_invitations
+        WHERE
+          organization_id = $1
+          AND invitation_type = 'CLIENT'
+          AND status = 'PENDING'
+    ) AS pending_client_invitations,
+
+    (
+        SELECT COUNT(*)
+        FROM organization_client_assignments
+        WHERE
+          organization_id = $1
+          AND is_active = true
+    ) AS active_assignments,
+
+    (
+        SELECT COUNT(*)
+
+        FROM organization_members om
+
+        INNER JOIN organization_roles r
+          ON r.id = om.role_id
+
+        LEFT JOIN organization_client_assignments oca
+          ON oca.client_member_id = om.id
+          AND oca.is_active = true
+
+        WHERE
+
+          om.organization_id = $1
+
+          AND om.status = 'ACTIVE'
+
+          AND r.name = 'CLIENT'
+
+          AND oca.id IS NULL
+
+    ) AS unassigned_clients
+
+    `,
+    [
+      organization.id
+    ]
+  );
 
     return {
 

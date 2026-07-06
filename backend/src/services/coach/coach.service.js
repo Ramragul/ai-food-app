@@ -473,23 +473,23 @@ const today =
 
     let todaySummary = null;
 
-    if (goal && today) {
+    if (fitnessProfile && today) {
 
       todaySummary = {
 
         target: {
 
           calories:
-            goal.target_calories,
+            fitnessProfile.target_calories,
 
           protein:
-            goal.target_protein,
+            fitnessProfile.target_protein,
 
           carbs:
-            goal.target_carbs,
+            fitnessProfile.target_carbs,
 
           fats:
-            goal.target_fats
+            fitnessProfile.target_fats
 
         },
 
@@ -517,25 +517,25 @@ const today =
           calories:
             Math.max(
               0,
-              goal.target_calories - today.calories
+              fitnessProfile.target_calories - today.calories
             ),
 
           protein:
             Math.max(
               0,
-              goal.target_protein - today.protein
+              fitnessProfile.target_protein - today.protein
             ),
 
           carbs:
             Math.max(
               0,
-              goal.target_carbs - today.carbs
+              fitnessProfile.target_carbs - today.carbs
             ),
 
           fats:
             Math.max(
               0,
-              goal.target_fats - today.fats
+              fitnessProfile.target_fats - today.fats
             )
 
         }
@@ -579,7 +579,7 @@ const today =
 
       },
 
-      fitness_profile: goal,
+      fitness_profile: fitnessProfile,
 
       today: todaySummary,
 

@@ -335,7 +335,7 @@ export const getClientDetailsService = async (
 
       return {
 
-        profile,
+       client: profile,
 
 consent: {
 
@@ -348,7 +348,7 @@ consent: {
 
 },
 
-        fitnessProfile: null,
+        fitness_profile: null,
 
         today: null,
 

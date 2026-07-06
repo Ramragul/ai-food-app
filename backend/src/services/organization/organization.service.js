@@ -2328,6 +2328,25 @@ if (summary.unassigned_clients > 0) {
 
 }
 
+/* ---------------------------------------------
+   NO PENDING ACTIONS
+---------------------------------------------- */
+
+if (quickActions.length === 0) {
+
+  quickActions.push({
+
+    action: "ALL_CAUGHT_UP",
+
+    title: "Everything looks good",
+
+    description:
+      "No pending invitations or client assignments."
+
+  });
+
+}
+
 return {
 
   organization,

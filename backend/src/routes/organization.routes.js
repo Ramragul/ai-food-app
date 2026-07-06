@@ -3,7 +3,7 @@ import express from "express";
 import {
   createOrganization,getMyOrganizations , inviteEmployee, inviteClient,
    getMyInvitations, acceptInvitation, getOrganizationMembers,assignClient , getOrganizationDashboard, getEmployees,
-   getClients , getAssignments
+   getClients , getAssignments, getInvitations
 } from "../controllers/organization.controller.js";
 
 import {
@@ -102,5 +102,12 @@ router.get(
   getAssignments
 );
 
+/* 🔥 ORGANIZATION INVITATIONS */
+
+router.get(
+  "/invitations",
+  authMiddleware,
+  getInvitations
+);
 
 export default router;

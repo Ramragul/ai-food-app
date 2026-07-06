@@ -2908,3 +2908,108 @@ async (
   }
 
 };
+
+
+/* ======================================================
+   GET ORGANIZATION INVITATIONS
+====================================================== */
+
+export const getInvitationsService = async (
+  userId
+) => {
+
+  const client =
+    await pool.connect();
+
+  try {
+
+    /* ---------------------------------------------
+       FIND ORGANIZATION
+    ---------------------------------------------- */
+
+    const organizationResult =
+      await client.query(
+        `
+        SELECT
+          organization_id
+        FROM organization_members
+        WHERE
+          user_id = $1
+          AND status='ACTIVE'
+        LIMIT 1
+        `,
+        [
+          userId
+        ]
+      );
+
+    if (
+      !organizationResult.rows.length
+    ) {
+
+      throw new Error(
+        "Organization not found."
+      );
+
+    }
+
+    const organizationId =
+      organizationResult.rows[0]
+        .organization_id;
+
+    /* ---------------------------------------------
+       LOAD INVITATIONS
+    ---------------------------------------------- */
+
+    const result =
+      await client.query(
+        `
+        SELECT
+
+          oi.id,
+
+          oi.invitation_type,
+
+          oi.invited_name,
+
+          oi.invited_mobile,
+
+          oi.invited_email,
+
+          oi.status,
+
+          oi.created_at,
+
+          oi.expires_at,
+
+          oi.accepted_at,
+
+          r.name AS role
+
+        FROM organization_invitations oi
+
+        LEFT JOIN organization_roles r
+          ON r.id = oi.role_id
+
+        WHERE
+
+          oi.organization_id = $1
+
+        ORDER BY
+
+          oi.created_at DESC
+        `,
+        [
+          organizationId
+        ]
+      );
+
+    return result.rows;
+
+  } finally {
+
+    client.release();
+
+  }
+
+};

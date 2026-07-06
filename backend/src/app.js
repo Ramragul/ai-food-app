@@ -13,6 +13,7 @@ import mealPlanRoutes from "./routes/mealPlan.routes.js";
 import fitnessRoutes from "./routes/fitness.routes.js";
 import organizationRoutes from "./routes/organization.routes.js";
 import coachRoutes from "./routes/coach.routes.js";
+import consentRoutes from "./routes/consent.routes.js";
 
 
 
@@ -50,6 +51,10 @@ app.use(
   coachRoutes
 );
 
+app.use(
+  "/api/consent",
+  consentRoutes
+);
 
 
 

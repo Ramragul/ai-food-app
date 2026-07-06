@@ -2206,45 +2206,39 @@ async (
     ]
   );
 
-    // return {
+/* ---------------------------------------------
+   RECENT ACTIVITY
+---------------------------------------------- */
 
-    //   organization,
+const activityResult =
+  await client.query(
+    `
+    SELECT
 
-    //   summary: {
+      action,
 
-    //     employees:
-    //       Number(
-    //         summaryResult.rows[0]
-    //           .employees
-    //       ),
+      description,
 
-    //     clients:
-    //       Number(
-    //         summaryResult.rows[0]
-    //           .clients
-    //       ),
+      severity,
 
-    //     pending_employee_invitations:
-    //       Number(
-    //         summaryResult.rows[0]
-    //           .pending_employee_invitations
-    //       ),
+      created_at
 
-    //     pending_client_invitations:
-    //       Number(
-    //         summaryResult.rows[0]
-    //           .pending_client_invitations
-    //       ),
+    FROM activity_logs
 
-    //     active_assignments:
-    //       Number(
-    //         summaryResult.rows[0]
-    //           .active_assignments
-    //       )
+    WHERE
+      organization_id = $1
 
-    //   }
+    ORDER BY
+      created_at DESC
 
-    // };
+    LIMIT 10
+    `,
+    [
+      organization.id
+    ]
+  );
+
+
 
     const summary = {
 
@@ -2353,7 +2347,10 @@ return {
 
   summary,
 
-  quick_actions: quickActions
+  quick_actions: quickActions,
+
+  recent_activity:
+    activityResult.rows
 
 };
 

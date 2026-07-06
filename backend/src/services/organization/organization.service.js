@@ -2206,45 +2206,137 @@ async (
     ]
   );
 
-    return {
+    // return {
 
-      organization,
+    //   organization,
 
-      summary: {
+    //   summary: {
 
-        employees:
-          Number(
-            summaryResult.rows[0]
-              .employees
-          ),
+    //     employees:
+    //       Number(
+    //         summaryResult.rows[0]
+    //           .employees
+    //       ),
 
-        clients:
-          Number(
-            summaryResult.rows[0]
-              .clients
-          ),
+    //     clients:
+    //       Number(
+    //         summaryResult.rows[0]
+    //           .clients
+    //       ),
 
-        pending_employee_invitations:
-          Number(
-            summaryResult.rows[0]
-              .pending_employee_invitations
-          ),
+    //     pending_employee_invitations:
+    //       Number(
+    //         summaryResult.rows[0]
+    //           .pending_employee_invitations
+    //       ),
 
-        pending_client_invitations:
-          Number(
-            summaryResult.rows[0]
-              .pending_client_invitations
-          ),
+    //     pending_client_invitations:
+    //       Number(
+    //         summaryResult.rows[0]
+    //           .pending_client_invitations
+    //       ),
 
-        active_assignments:
-          Number(
-            summaryResult.rows[0]
-              .active_assignments
-          )
+    //     active_assignments:
+    //       Number(
+    //         summaryResult.rows[0]
+    //           .active_assignments
+    //       )
 
-      }
+    //   }
 
-    };
+    // };
+
+    const summary = {
+
+  employees:
+    Number(
+      summaryResult.rows[0].employees
+    ),
+
+  clients:
+    Number(
+      summaryResult.rows[0].clients
+    ),
+
+  pending_employee_invitations:
+    Number(
+      summaryResult.rows[0].pending_employee_invitations
+    ),
+
+  pending_client_invitations:
+    Number(
+      summaryResult.rows[0].pending_client_invitations
+    ),
+
+  active_assignments:
+    Number(
+      summaryResult.rows[0].active_assignments
+    ),
+
+  unassigned_clients:
+    Number(
+      summaryResult.rows[0].unassigned_clients
+    )
+
+};
+
+const quickActions = [];
+
+/* ---------------------------------------------
+   QUICK ACTIONS
+---------------------------------------------- */
+
+if (summary.pending_employee_invitations > 0) {
+
+  quickActions.push({
+
+    action: "REVIEW_EMPLOYEE_INVITATIONS",
+
+    title: "Employee invitations pending",
+
+    count: summary.pending_employee_invitations
+
+  });
+
+}
+
+if (summary.pending_client_invitations > 0) {
+
+  quickActions.push({
+
+    action: "REVIEW_CLIENT_INVITATIONS",
+
+    title: "Client invitations pending",
+
+    count: summary.pending_client_invitations
+
+  });
+
+}
+
+if (summary.unassigned_clients > 0) {
+
+  quickActions.push({
+
+    action: "ASSIGN_COACH",
+
+    title: "Clients waiting for coach assignment",
+
+    count: summary.unassigned_clients
+
+  });
+
+}
+
+return {
+
+  organization,
+
+  summary,
+
+  quick_actions: quickActions
+
+};
 
   } finally {
 

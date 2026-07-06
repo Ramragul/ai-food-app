@@ -575,7 +575,9 @@ const today =
 
         granted: true,
 
-        status: "GRANTED"
+        status: "GRANTED",
+        
+        message: "Client has granted health data access."
 
       },
 

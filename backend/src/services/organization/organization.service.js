@@ -2699,3 +2699,212 @@ export const getClientsService = async (
   }
 
 };
+
+
+/* ======================================================
+   GET ORGANIZATION ASSIGNMENTS
+====================================================== */
+
+export const getAssignmentsService =
+async (
+  userId
+) => {
+
+  const client =
+    await pool.connect();
+
+  try {
+
+    /* ---------------------------------------------
+       FIND ORGANIZATION
+    ---------------------------------------------- */
+
+    const organizationResult =
+      await client.query(
+        `
+        SELECT
+          organization_id
+        FROM organization_members
+        WHERE
+          user_id = $1
+          AND status = 'ACTIVE'
+        LIMIT 1
+        `,
+        [
+          userId
+        ]
+      );
+
+    if (
+      !organizationResult.rows.length
+    ) {
+
+      throw new Error(
+        "Organization not found."
+      );
+
+    }
+
+    const organizationId =
+      organizationResult.rows[0]
+        .organization_id;
+
+    /* ---------------------------------------------
+       LOAD ASSIGNMENTS
+    ---------------------------------------------- */
+
+    const result =
+      await client.query(
+        `
+        SELECT
+
+          coach.id AS coach_member_id,
+
+          coachUser.id AS coach_user_id,
+
+          coachUser.name AS coach_name,
+
+          coachUser.nickname AS coach_nickname,
+
+          coachRole.name AS coach_role,
+
+          clientMember.id AS client_member_id,
+
+          clientUser.id AS client_user_id,
+
+          clientUser.name AS client_name,
+
+          clientUser.nickname AS client_nickname,
+
+          oc.granted AS consent_granted,
+
+          oca.assigned_at
+
+        FROM organization_client_assignments oca
+
+        INNER JOIN organization_members coach
+          ON coach.id = oca.trainer_member_id
+
+        INNER JOIN users coachUser
+          ON coachUser.id = coach.user_id
+
+        INNER JOIN organization_roles coachRole
+          ON coachRole.id = coach.role_id
+
+        INNER JOIN organization_members clientMember
+          ON clientMember.id = oca.client_member_id
+
+        INNER JOIN users clientUser
+          ON clientUser.id = clientMember.user_id
+
+        LEFT JOIN organization_consents oc
+          ON oc.organization_id = oca.organization_id
+         AND oc.client_user_id = clientUser.id
+
+        WHERE
+
+          oca.organization_id = $1
+
+          AND oca.is_active = true
+
+        ORDER BY
+
+          coachUser.name,
+
+          clientUser.name
+        `,
+        [
+          organizationId
+        ]
+      );
+
+          /* ---------------------------------------------
+       GROUP BY COACH
+    ---------------------------------------------- */
+
+    const assignmentsMap =
+      new Map();
+
+    for (const row of result.rows) {
+
+      if (
+        !assignmentsMap.has(
+          row.coach_member_id
+        )
+      ) {
+
+        assignmentsMap.set(
+          row.coach_member_id,
+          {
+
+            coach: {
+
+              member_id:
+                row.coach_member_id,
+
+              user_id:
+                row.coach_user_id,
+
+              name:
+                row.coach_name,
+
+              nickname:
+                row.coach_nickname,
+
+              role:
+                row.coach_role
+
+            },
+
+            total_clients: 0,
+
+            clients: []
+
+          }
+        );
+
+      }
+
+      const coach =
+        assignmentsMap.get(
+          row.coach_member_id
+        );
+
+      coach.clients.push({
+
+        member_id:
+          row.client_member_id,
+
+        user_id:
+          row.client_user_id,
+
+        name:
+          row.client_name,
+
+        nickname:
+          row.client_nickname,
+
+        consent_granted:
+          row.consent_granted ?? false,
+
+        assigned_at:
+          row.assigned_at
+
+      });
+
+      coach.total_clients =
+        coach.clients.length;
+
+    }
+
+    return Array.from(
+      assignmentsMap.values()
+    );
+
+  } finally {
+
+    client.release();
+
+  }
+
+};

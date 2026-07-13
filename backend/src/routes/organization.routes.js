@@ -101,7 +101,7 @@ router.get(
 
   "/clients/:memberId",
 
-  authenticate,
+  authMiddleware,
 
   getClientDetails
 

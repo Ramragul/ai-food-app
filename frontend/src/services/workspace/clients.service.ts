@@ -147,7 +147,7 @@ export const getClientDetails = async (
 ): Promise<ClientDetails> => {
 
   const response = await api.get(
-    `/coach/client/${memberId}`
+    `/organizations/client/${memberId}`
   );
 
   return response.data.data;

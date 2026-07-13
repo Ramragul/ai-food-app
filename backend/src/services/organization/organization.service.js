@@ -2713,6 +2713,8 @@ export const getClientDetailsService = async (
 
   const client = await pool.connect();
 
+  console.log("Inside Get Client Details Service" +userId + clientMemberId);
+
   try {
 
     /* ---------------------------------------------

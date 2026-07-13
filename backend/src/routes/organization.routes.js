@@ -3,7 +3,7 @@ import express from "express";
 import {
   createOrganization,getMyOrganizations , inviteEmployee, inviteClient,
    getMyInvitations, acceptInvitation, getOrganizationMembers,assignClient , getOrganizationDashboard, getEmployees,
-   getClients , getAssignments, getInvitations
+   getClients , getAssignments, getInvitations, getClientDetails
 } from "../controllers/organization.controller.js";
 
 import {

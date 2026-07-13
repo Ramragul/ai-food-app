@@ -45,6 +45,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { AppModeProvider } from "./context/AppModeContext";
 import { useState } from "react";
 import Onboarding from "./components/Onboarding";
+import { WorkspaceProvider } from "./context/WorkspaceContext";
 
 function App() {
   const [showOnboarding, setShowOnboarding] = useState(
@@ -53,6 +54,7 @@ function App() {
 
   return (
     <AuthProvider>
+      <WorkspaceProvider>
       <AppModeProvider>
         <BrowserRouter>
 
@@ -66,6 +68,7 @@ function App() {
 
         </BrowserRouter>
       </AppModeProvider>
+      </WorkspaceProvider>
     </AuthProvider>
   );
 }

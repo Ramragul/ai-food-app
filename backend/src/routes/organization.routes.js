@@ -94,6 +94,19 @@ router.get(
   getClients
 );
 
+
+/* ORGANIZATION CLIENT DETAILS */
+
+router.get(
+
+  "/clients/:memberId",
+
+  authenticate,
+
+  getClientDetails
+
+);
+
 /* 🔥 ORGANIZATION ASSIGNMENTS */
 
 router.get(

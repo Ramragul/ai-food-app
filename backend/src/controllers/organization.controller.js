@@ -431,6 +431,49 @@ async (
 
 
 /* ==========================================
+   CLIENTS DETAILS
+========================================== */
+
+
+export const getClientDetails = async (
+  req,
+  res,
+  next
+) => {
+
+  try {
+
+    const data =
+      await getClientDetailsService(
+
+        req.user.id,
+
+        Number(
+          req.params.memberId
+        )
+
+      );
+
+    res.json({
+
+      success: true,
+
+      data
+
+    });
+
+  }
+
+  catch (err) {
+
+    next(err);
+
+  }
+
+};
+
+
+/* ==========================================
    ASSIGNMENTS
 ========================================== */
 

@@ -2701,6 +2701,440 @@ export const getClientsService = async (
 };
 
 
+
+/* ======================================================
+   GET ORGANIZATION CLIENT DETAILS
+====================================================== */
+
+export const getClientDetailsService = async (
+  userId,
+  clientMemberId
+) => {
+
+  const client = await pool.connect();
+
+  try {
+
+    /* ---------------------------------------------
+       FIND ORGANIZATION
+    ---------------------------------------------- */
+
+    const organizationResult =
+      await client.query(
+        `
+        SELECT
+
+          organization_id
+
+        FROM organization_members
+
+        WHERE
+
+          user_id = $1
+
+          AND status = 'ACTIVE'
+
+        LIMIT 1
+        `,
+        [
+          userId
+        ]
+      );
+
+    if (!organizationResult.rows.length) {
+
+      throw new Error(
+        "Organization not found."
+      );
+
+    }
+
+    const organizationId =
+      organizationResult.rows[0]
+        .organization_id;
+
+    /* ---------------------------------------------
+       VERIFY CLIENT BELONGS TO ORG
+    ---------------------------------------------- */
+
+    const assignmentResult =
+      await client.query(
+        `
+        SELECT
+
+          om.user_id AS client_user_id,
+
+          oc.granted AS consent_granted
+
+        FROM organization_members om
+
+        INNER JOIN organization_roles r
+
+          ON r.id = om.role_id
+
+        LEFT JOIN organization_consents oc
+
+          ON oc.organization_id = om.organization_id
+
+         AND oc.client_user_id = om.user_id
+
+        WHERE
+
+          om.id = $1
+
+          AND om.organization_id = $2
+
+          AND om.status = 'ACTIVE'
+
+          AND r.name = 'CLIENT'
+
+        LIMIT 1
+        `,
+        [
+          clientMemberId,
+          organizationId
+        ]
+      );
+
+    if (!assignmentResult.rows.length) {
+
+      throw new Error(
+        "Client not found."
+      );
+
+    }
+
+    const assignment =
+      assignmentResult.rows[0];
+
+
+             /* ---------------------------------------------
+       CLIENT PROFILE
+    ---------------------------------------------- */
+
+    const profileResult =
+      await client.query(
+        `
+        SELECT
+
+          id,
+
+          name,
+
+          nickname,
+
+          mobile,
+
+          email,
+
+          gender,
+
+          age_range,
+
+          created_at
+
+        FROM users
+
+        WHERE
+
+          id = $1
+
+        LIMIT 1
+        `,
+        [
+          assignment.client_user_id
+        ]
+      );
+
+    if (!profileResult.rows.length) {
+
+      throw new Error(
+        "Client not found."
+      );
+
+    }
+
+    const profile =
+      profileResult.rows[0];
+
+
+          /* ---------------------------------------------
+       CONSENT CHECK
+    ---------------------------------------------- */
+
+    if (
+      !assignment.consent_granted
+    ) {
+
+      return {
+
+       client: profile,
+
+consent: {
+
+  granted: false,
+
+  status: "PENDING",
+
+  message:
+    "Client has not granted health data access."
+
+},
+
+        fitness_profile: null,
+
+        today: null,
+
+        recent_meals: [],
+
+        coach_notes: []
+
+      };
+
+    } 
+
+
+
+/* ---------------------------------------------
+   ACTIVE FITNESS PROFILE
+---------------------------------------------- */
+
+const goalResult =
+  await client.query(
+    `
+    SELECT
+
+      id,
+
+      goal_type,
+
+      activity_level,
+
+      height_cm,
+
+      weight_kg,
+
+      target_weight,
+
+      duration_days,
+
+      target_calories,
+
+      protein_target,
+
+      carbs_target,
+
+      fats_target,
+
+      food_preference,
+
+      meal_plan_enabled,
+
+      goal_mode,
+
+      target_source,
+
+      created_at,
+
+      updated_at
+
+    FROM user_profile
+
+    WHERE
+
+      user_id = $1
+
+      AND is_active = true
+
+    LIMIT 1
+    `,
+    [
+      assignment.client_user_id
+    ]
+  );
+
+const fitnessProfile =
+  goalResult.rows.length
+    ? goalResult.rows[0]
+    : null;
+
+
+    /* ---------------------------------------------
+   TODAY'S NUTRITION
+---------------------------------------------- */
+
+const nutritionResult =
+  await client.query(
+    `
+    SELECT
+
+      total_calories,
+
+      protein,
+
+      carbs,
+
+      fats,
+
+      fiber
+
+    FROM daily_nutrition
+
+    WHERE
+
+      user_id = $1
+
+      AND date = CURRENT_DATE
+
+    LIMIT 1
+    `,
+    [
+      assignment.client_user_id
+    ]
+  );
+
+const today =
+  nutritionResult.rows.length
+    ? nutritionResult.rows[0]
+    : null;
+
+
+
+        /* ---------------------------------------------
+       TODAY SUMMARY
+    ---------------------------------------------- */
+
+    let todaySummary = null;
+
+    if (fitnessProfile && today) {
+
+      todaySummary = {
+
+        target: {
+
+          calories:
+            fitnessProfile.target_calories,
+
+          protein:
+            fitnessProfile.target_protein,
+
+          carbs:
+            fitnessProfile.target_carbs,
+
+          fats:
+            fitnessProfile.target_fats
+
+        },
+
+        consumed: {
+
+          calories:
+            today.calories,
+
+          protein:
+            today.protein,
+
+          carbs:
+            today.carbs,
+
+          fats:
+            today.fats,
+
+          water:
+            today.water
+
+        },
+
+        remaining: {
+
+          calories:
+            Math.max(
+              0,
+              fitnessProfile.target_calories - today.calories
+            ),
+
+          protein:
+            Math.max(
+              0,
+              fitnessProfile.target_protein - today.protein
+            ),
+
+          carbs:
+            Math.max(
+              0,
+              fitnessProfile.target_carbs - today.carbs
+            ),
+
+          fats:
+            Math.max(
+              0,
+              fitnessProfile.target_fats - today.fats
+            )
+
+        }
+
+      };
+
+    }
+
+    /* ---------------------------------------------
+       PERMISSIONS
+    ---------------------------------------------- */
+
+    const permissions = {
+
+      can_view_profile: true,
+
+      can_view_nutrition:
+        true,
+
+      can_write_notes:
+        true,
+
+      can_create_goal:
+        true
+
+    };
+
+    /* ---------------------------------------------
+       RESPONSE
+    ---------------------------------------------- */
+
+    return {
+
+      client: profile,
+
+      consent: {
+
+        granted: true,
+
+        status: "GRANTED",
+        
+        message: "Client has granted health data access."
+
+      },
+
+      fitness_profile: fitnessProfile,
+
+      today: todaySummary,
+
+      coach_notes: [],
+
+      analytics: {},
+
+      permissions
+
+    };
+
+  } finally {
+
+    client.release();
+
+  }
+
+};
+
+
 /* ======================================================
    GET ORGANIZATION ASSIGNMENTS
 ====================================================== */
@@ -3013,3 +3447,6 @@ export const getInvitationsService = async (
   }
 
 };
+
+
+

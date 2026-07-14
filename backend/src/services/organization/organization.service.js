@@ -3228,6 +3228,10 @@ async (
 
           clientUser.nickname AS client_nickname,
 
+           oca.id AS assignment_id,
+
+          oca.is_active,
+
           oc.granted AS consent_granted,
 
           oca.assigned_at
@@ -3322,27 +3326,33 @@ async (
           row.coach_member_id
         );
 
-      coach.clients.push({
+    coach.clients.push({
 
-        member_id:
-          row.client_member_id,
+      assignment_id:
+        row.assignment_id,
 
-        user_id:
-          row.client_user_id,
+      member_id:
+        row.client_member_id,
 
-        name:
-          row.client_name,
+      user_id:
+        row.client_user_id,
 
-        nickname:
-          row.client_nickname,
+      name:
+        row.client_name,
 
-        consent_granted:
-          row.consent_granted ?? false,
+      nickname:
+        row.client_nickname,
 
-        assigned_at:
-          row.assigned_at
+      consent_granted:
+        row.consent_granted ?? false,
 
-      });
+      assigned_at:
+        row.assigned_at,
+
+      is_active:
+        row.is_active
+
+    });
 
       coach.total_clients =
         coach.clients.length;

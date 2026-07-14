@@ -280,7 +280,7 @@ const ClientDetailsPage = () => {
       </Box>
 
 
-      <SimpleGrid
+<SimpleGrid
 
   columns={{
     base: 2,
@@ -295,9 +295,13 @@ const ClientDetailsPage = () => {
 
     title="Calories"
 
-    value="--"
+    value={
+      details.today?.consumed?.calories ?? 0
+    }
 
-    subtitle="Today"
+    subtitle={`Target ${
+      details.today?.target?.calories ?? 0
+    } kcal`}
 
   />
 
@@ -305,19 +309,29 @@ const ClientDetailsPage = () => {
 
     title="Protein"
 
-    value="--"
+    value={`${(
+      details.today?.consumed?.protein ?? 0
+    ).toFixed(1)} g`}
 
-    subtitle="Today"
+    subtitle={`Target ${
+      details.today?.target?.protein ?? 0
+    } g`}
 
   />
 
   <QuickStatsCard
 
-    title="Meals"
+    title="Goal"
 
-    value="0"
+    value={
+      details.fitness_profile
+        ?.goal_type
+        ?.replaceAll("_", " ")
+        .replace(/\b\w/g, c => c.toUpperCase()) ??
+      "--"
+    }
 
-    subtitle="Today"
+    subtitle="Current Goal"
 
   />
 
@@ -328,12 +342,16 @@ const ClientDetailsPage = () => {
     value={
       details.consent.granted
         ? "Granted"
-        : "Denied"
+        : "Pending"
     }
+
+    subtitle={details.consent.status}
 
   />
 
 </SimpleGrid>
+
+
 
       {/* Consent */}
 
@@ -355,85 +373,41 @@ const ClientDetailsPage = () => {
 
       {
 
-        details.fitness_profile ? (
-
-          <Box
-
-            bg="white"
-
-            p={6}
-
-            borderRadius="20px"
-
-            shadow="sm"
-
-          >
-
-            <Text
-
-              fontWeight="700"
-
-              fontSize="lg"
-
-            >
-
-              Fitness Profile
-
-            </Text>
-
-          </Box>
-
-        ) : (
-<FitnessProfileCard
-
-  profile={details.fitness_profile}
-
-/>
-
-        )
+details.fitness_profile ? (
+  <FitnessProfileCard
+    profile={details.fitness_profile}
+  />
+) : (
+  <EmptyStateCard
+    title="Fitness Profile"
+    message="No active fitness profile."
+  />
+)
 
       }
 
       {/* Today's Nutrition */}
 
       {
+details.today ? (
 
-        details.today ? (
+    <TodayNutritionCard
 
-          <Box
+      nutrition={details.today}
 
-            bg="white"
+    />
 
-            p={6}
+  ) : (
 
-            borderRadius="20px"
+    <EmptyStateCard
 
-            shadow="sm"
+      title="Today's Nutrition"
 
-          >
+      message="No nutrition data available for today."
 
-            <Text
+    />
 
-              fontWeight="700"
-
-              fontSize="lg"
-
-            >
-
-              Today's Nutrition
-
-            </Text>
-
-          </Box>
-
-        ) : (
-<TodayNutritionCard
-
-  nutrition={details.today}
-
-/>
-
-        )
+  )
 
       }
 

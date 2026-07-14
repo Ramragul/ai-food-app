@@ -3481,19 +3481,13 @@ export const getInvitationsService = async (
    TRANSFER CLIENT
 ====================================================== */
 
-export const transferAssignmentService =
-async (
-
+export const transferAssignmentService = async (
   userId,
-
   assignmentId,
-
   trainerMemberId
-
 ) => {
 
-  const client =
-    await pool.connect();
+  const client = await pool.connect();
 
   try {
 
@@ -3505,7 +3499,6 @@ async (
 
     const organizationResult =
       await client.query(
-
         `
         SELECT
 
@@ -3517,17 +3510,13 @@ async (
 
           user_id = $1
 
-          AND status='ACTIVE'
+          AND status = 'ACTIVE'
 
         LIMIT 1
         `,
-
         [
-
           userId
-
         ]
-
       );
 
     if (!organizationResult.rows.length) {
@@ -3548,11 +3537,10 @@ async (
 
     const trainerResult =
       await client.query(
-
         `
         SELECT
 
-          id
+          om.id
 
         FROM organization_members om
 
@@ -3566,21 +3554,16 @@ async (
 
           AND om.organization_id = $2
 
-          AND om.status='ACTIVE'
+          AND om.status = 'ACTIVE'
 
-          AND r.name='TRAINER'
+          AND r.name = 'TRAINER'
 
         LIMIT 1
         `,
-
         [
-
           trainerMemberId,
-
           organizationId
-
         ]
-
       );
 
     if (!trainerResult.rows.length) {
@@ -3597,37 +3580,31 @@ async (
 
     const assignmentResult =
       await client.query(
-
         `
         SELECT
 
-          id,
+          oca.id,
 
-          trainer_member_id,
+          oca.trainer_member_id,
 
-          client_member_id
+          oca.client_member_id
 
-        FROM organization_client_assignments
+        FROM organization_client_assignments oca
 
         WHERE
 
-          id=$1
+          oca.id = $1
 
-          AND organization_id=$2
+          AND oca.organization_id = $2
 
-          AND is_active=true
+          AND oca.is_active = true
 
         LIMIT 1
         `,
-
         [
-
           assignmentId,
-
           organizationId
-
         ]
-
       );
 
     if (!assignmentResult.rows.length) {
@@ -3641,9 +3618,19 @@ async (
     const assignment =
       assignmentResult.rows[0];
 
+    /* ---------------------------------------------
+       SAME TRAINER?
+    ---------------------------------------------- */
+
     if (
-      assignment.trainer_member_id ===
-      trainerMemberId
+
+      Number(
+        assignment.trainer_member_id
+      ) ===
+      Number(
+        trainerMemberId
+      )
+
     ) {
 
       throw new Error(
@@ -3653,12 +3640,11 @@ async (
     }
 
     /* ---------------------------------------------
-       UPDATE
+       TRANSFER
     ---------------------------------------------- */
 
     const updateResult =
       await client.query(
-
         `
         UPDATE organization_client_assignments
 
@@ -3673,15 +3659,10 @@ async (
         RETURNING *
 
         `,
-
         [
-
           trainerMemberId,
-
           assignmentId
-
         ]
-
       );
 
     await client.query(

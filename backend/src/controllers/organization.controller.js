@@ -441,6 +441,8 @@ export const getClientDetails = async (
   next
 ) => {
 
+  console.log("Client Details controller called with memberId:", req.params.memberId);
+
   try {
 
     const data =

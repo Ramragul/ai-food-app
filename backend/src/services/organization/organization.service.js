@@ -3012,68 +3012,84 @@ const today =
 
       todaySummary = {
 
+        // target: {
+
+        //   calories:
+        //     fitnessProfile.target_calories,
+
+        //   protein:
+        //     fitnessProfile.target_protein,
+
+        //   carbs:
+        //     fitnessProfile.target_carbs,
+
+        //   fats:
+        //     fitnessProfile.target_fats
+
+        // },
+
         target: {
 
-          calories:
-            fitnessProfile.target_calories,
+            calories:
+              fitnessProfile.target_calories,
 
-          protein:
-            fitnessProfile.target_protein,
+            protein:
+              fitnessProfile.protein_target,
 
-          carbs:
-            fitnessProfile.target_carbs,
+            carbs:
+              fitnessProfile.carbs_target,
 
-          fats:
-            fitnessProfile.target_fats
+            fats:
+              fitnessProfile.fats_target
 
-        },
+          },
 
-        consumed: {
+          consumed: {
 
-          calories:
-            today.calories,
+            calories:
+              today.total_calories,
 
-          protein:
-            today.protein,
+            protein:
+              today.protein,
 
-          carbs:
-            today.carbs,
+            carbs:
+              today.carbs,
 
-          fats:
-            today.fats,
+            fats:
+              today.fats
 
-          water:
-            today.water
+          },
+          remaining: {
 
-        },
+            calories:
+              Math.max(
+                0,
+                fitnessProfile.target_calories -
+                today.total_calories
+              ),
 
-        remaining: {
+            protein:
+              Math.max(
+                0,
+                fitnessProfile.protein_target -
+                today.protein
+              ),
 
-          calories:
-            Math.max(
-              0,
-              fitnessProfile.target_calories - today.calories
-            ),
+            carbs:
+              Math.max(
+                0,
+                fitnessProfile.carbs_target -
+                today.carbs
+              ),
 
-          protein:
-            Math.max(
-              0,
-              fitnessProfile.target_protein - today.protein
-            ),
+            fats:
+              Math.max(
+                0,
+                fitnessProfile.fats_target -
+                today.fats
+              )
 
-          carbs:
-            Math.max(
-              0,
-              fitnessProfile.target_carbs - today.carbs
-            ),
-
-          fats:
-            Math.max(
-              0,
-              fitnessProfile.target_fats - today.fats
-            )
-
-        }
+          }
 
       };
 

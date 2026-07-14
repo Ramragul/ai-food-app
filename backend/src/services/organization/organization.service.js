@@ -3477,4 +3477,238 @@ export const getInvitationsService = async (
 };
 
 
+/* ======================================================
+   TRANSFER CLIENT
+====================================================== */
+
+export const transferAssignmentService =
+async (
+
+  userId,
+
+  assignmentId,
+
+  trainerMemberId
+
+) => {
+
+  const client =
+    await pool.connect();
+
+  try {
+
+    await client.query("BEGIN");
+
+    /* ---------------------------------------------
+       FIND OWNER ORGANIZATION
+    ---------------------------------------------- */
+
+    const organizationResult =
+      await client.query(
+
+        `
+        SELECT
+
+          organization_id
+
+        FROM organization_members
+
+        WHERE
+
+          user_id = $1
+
+          AND status='ACTIVE'
+
+        LIMIT 1
+        `,
+
+        [
+
+          userId
+
+        ]
+
+      );
+
+    if (!organizationResult.rows.length) {
+
+      throw new Error(
+        "Organization not found."
+      );
+
+    }
+
+    const organizationId =
+      organizationResult.rows[0]
+        .organization_id;
+
+    /* ---------------------------------------------
+       VERIFY TRAINER
+    ---------------------------------------------- */
+
+    const trainerResult =
+      await client.query(
+
+        `
+        SELECT
+
+          id
+
+        FROM organization_members om
+
+        INNER JOIN organization_roles r
+
+          ON r.id = om.role_id
+
+        WHERE
+
+          om.id = $1
+
+          AND om.organization_id = $2
+
+          AND om.status='ACTIVE'
+
+          AND r.name='TRAINER'
+
+        LIMIT 1
+        `,
+
+        [
+
+          trainerMemberId,
+
+          organizationId
+
+        ]
+
+      );
+
+    if (!trainerResult.rows.length) {
+
+      throw new Error(
+        "Trainer not found."
+      );
+
+    }
+
+    /* ---------------------------------------------
+       VERIFY ASSIGNMENT
+    ---------------------------------------------- */
+
+    const assignmentResult =
+      await client.query(
+
+        `
+        SELECT
+
+          id,
+
+          trainer_member_id,
+
+          client_member_id
+
+        FROM organization_client_assignments
+
+        WHERE
+
+          id=$1
+
+          AND organization_id=$2
+
+          AND is_active=true
+
+        LIMIT 1
+        `,
+
+        [
+
+          assignmentId,
+
+          organizationId
+
+        ]
+
+      );
+
+    if (!assignmentResult.rows.length) {
+
+      throw new Error(
+        "Assignment not found."
+      );
+
+    }
+
+    const assignment =
+      assignmentResult.rows[0];
+
+    if (
+      assignment.trainer_member_id ===
+      trainerMemberId
+    ) {
+
+      throw new Error(
+        "Client is already assigned to this trainer."
+      );
+
+    }
+
+    /* ---------------------------------------------
+       UPDATE
+    ---------------------------------------------- */
+
+    const updateResult =
+      await client.query(
+
+        `
+        UPDATE organization_client_assignments
+
+        SET
+
+          trainer_member_id = $1
+
+        WHERE
+
+          id = $2
+
+        RETURNING *
+
+        `,
+
+        [
+
+          trainerMemberId,
+
+          assignmentId
+
+        ]
+
+      );
+
+    await client.query(
+      "COMMIT"
+    );
+
+    return updateResult.rows[0];
+
+  }
+
+  catch (err) {
+
+    await client.query(
+      "ROLLBACK"
+    );
+
+    throw err;
+
+  }
+
+  finally {
+
+    client.release();
+
+  }
+
+};
+
+
 

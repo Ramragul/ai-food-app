@@ -2,7 +2,7 @@ import {
   createOrganizationService,getMyOrganizationsService, inviteEmployeeService,
     inviteClientService,getMyInvitationsService, acceptInvitationService ,getOrganizationMembersService,
     assignClientService,getOrganizationDashboardService , getEmployeesService, getClientsService , getAssignmentsService,
-    getInvitationsService,getClientDetailsService
+    getInvitationsService,getClientDetailsService, transferAssignmentService
 } from "../services/organization/organization.service.js";
 
 /* 🔥 CREATE ORGANIZATION */
@@ -509,6 +509,54 @@ async (
       error: err.message
 
     });
+
+  }
+
+};
+
+
+
+/* ==========================================
+  TRANSFER ASSIGNMENTS
+========================================== */
+
+export const transferAssignment = async (
+  req,
+  res,
+  next
+) => {
+
+  try {
+
+    const data =
+      await transferAssignmentService(
+
+        req.user.id,
+
+        Number(
+          req.params.assignmentId
+        ),
+
+        req.body.trainer_member_id
+
+      );
+
+    res.json({
+
+      success: true,
+
+      message:
+        "Client transferred successfully.",
+
+      data
+
+    });
+
+  }
+
+  catch (err) {
+
+    next(err);
 
   }
 

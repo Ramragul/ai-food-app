@@ -117,7 +117,7 @@ router.get(
 
 router.put(
   "/assignments/:assignmentId/transfer",
-  authenticate,
+  authMiddleware,
   transferAssignment
 );
 

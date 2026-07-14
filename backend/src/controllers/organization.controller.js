@@ -2,7 +2,7 @@ import {
   createOrganizationService,getMyOrganizationsService, inviteEmployeeService,
     inviteClientService,getMyInvitationsService, acceptInvitationService ,getOrganizationMembersService,
     assignClientService,getOrganizationDashboardService , getEmployeesService, getClientsService , getAssignmentsService,
-    getInvitationsService
+    getInvitationsService,getClientDetailsService
 } from "../services/organization/organization.service.js";
 
 /* 🔥 CREATE ORGANIZATION */

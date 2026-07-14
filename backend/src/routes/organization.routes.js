@@ -99,7 +99,7 @@ router.get(
 
 router.get(
 
-  "/clients/:memberId",
+  "/client/:memberId",
 
   authMiddleware,
 

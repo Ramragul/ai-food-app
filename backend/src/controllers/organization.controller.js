@@ -466,11 +466,19 @@ export const getClientDetails = async (
 
   }
 
-  catch (err) {
+catch (err) {
 
-    next(err);
+    console.error(err);
 
-  }
+    return res.status(400).json({
+
+        success:false,
+
+        error: err.message
+
+    });
+
+}
 
 };
 
@@ -520,10 +528,52 @@ async (
   TRANSFER ASSIGNMENTS
 ========================================== */
 
+// export const transferAssignment = async (
+//   req,
+//   res,
+//   next
+// ) => {
+
+//   try {
+
+//     const data =
+//       await transferAssignmentService(
+
+//         req.user.id,
+
+//         Number(
+//           req.params.assignmentId
+//         ),
+
+//         req.body.trainer_member_id
+
+//       );
+
+//     res.json({
+
+//       success: true,
+
+//       message:
+//         "Client transferred successfully.",
+
+//       data
+
+//     });
+
+//   }
+
+//   catch (err) {
+
+//     next(err);
+
+//   }
+
+// };
+
+
 export const transferAssignment = async (
   req,
-  res,
-  next
+  res
 ) => {
 
   try {
@@ -533,15 +583,13 @@ export const transferAssignment = async (
 
         req.user.id,
 
-        Number(
-          req.params.assignmentId
-        ),
+        Number(req.params.assignmentId),
 
-        req.body.trainer_member_id
+        Number(req.body.trainer_member_id)
 
       );
 
-    res.json({
+    return res.json({
 
       success: true,
 
@@ -556,7 +604,15 @@ export const transferAssignment = async (
 
   catch (err) {
 
-    next(err);
+    console.error(err);
+
+    return res.status(400).json({
+
+      success: false,
+
+      error: err.message
+
+    });
 
   }
 

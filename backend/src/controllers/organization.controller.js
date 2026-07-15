@@ -2,7 +2,7 @@ import {
   createOrganizationService,getMyOrganizationsService, inviteEmployeeService,
     inviteClientService,getMyInvitationsService, acceptInvitationService ,getOrganizationMembersService,
     assignClientService,getOrganizationDashboardService , getEmployeesService, getClientsService , getAssignmentsService,
-    getInvitationsService,getClientDetailsService, transferAssignmentService
+    getInvitationsService,getClientDetailsService, transferAssignmentService, removeAssignmentService
 } from "../services/organization/organization.service.js";
 
 /* 🔥 CREATE ORGANIZATION */
@@ -528,47 +528,6 @@ async (
   TRANSFER ASSIGNMENTS
 ========================================== */
 
-// export const transferAssignment = async (
-//   req,
-//   res,
-//   next
-// ) => {
-
-//   try {
-
-//     const data =
-//       await transferAssignmentService(
-
-//         req.user.id,
-
-//         Number(
-//           req.params.assignmentId
-//         ),
-
-//         req.body.trainer_member_id
-
-//       );
-
-//     res.json({
-
-//       success: true,
-
-//       message:
-//         "Client transferred successfully.",
-
-//       data
-
-//     });
-
-//   }
-
-//   catch (err) {
-
-//     next(err);
-
-//   }
-
-// };
 
 
 export const transferAssignment = async (
@@ -609,6 +568,59 @@ export const transferAssignment = async (
     return res.status(400).json({
 
       success: false,
+
+      error: err.message
+
+    });
+
+  }
+
+};
+
+
+/* ==========================================
+  Remove ASSIGNMENTS
+========================================== */
+
+export const removeAssignment =
+async (
+  req,
+  res
+) => {
+
+  try {
+
+    const data =
+      await removeAssignmentService(
+
+        req.user.id,
+
+        Number(
+          req.params.assignmentId
+        )
+
+      );
+
+    return res.json({
+
+      success: true,
+
+      message:
+        "Assignment removed successfully.",
+
+      data
+
+    });
+
+  }
+
+  catch (err) {
+
+    console.error(err);
+
+    return res.status(400).json({
+
+      success:false,
 
       error: err.message
 

@@ -3693,3 +3693,174 @@ export const transferAssignmentService = async (
 
 
 
+/* =============================================
+   REMOVE ASSIGNMENT
+============================================= */
+
+export const removeAssignmentService =
+async (
+
+  userId,
+
+  assignmentId
+
+) => {
+
+  const client =
+    await pool.connect();
+
+  try {
+
+    await client.query(
+      "BEGIN"
+    );
+
+    /* ---------------------------------------------
+       FIND ORGANIZATION
+    ---------------------------------------------- */
+
+    const organizationResult =
+      await client.query(
+
+        `
+        SELECT
+
+          organization_id
+
+        FROM organization_members
+
+        WHERE
+
+          user_id = $1
+
+          AND status='ACTIVE'
+
+        LIMIT 1
+        `,
+
+        [
+
+          userId
+
+        ]
+
+      );
+
+    if (!organizationResult.rows.length) {
+
+      throw new Error(
+        "Organization not found."
+      );
+
+    }
+
+    const organizationId =
+      organizationResult.rows[0]
+        .organization_id;
+
+    /* ---------------------------------------------
+       VERIFY ASSIGNMENT
+    ---------------------------------------------- */
+
+    const assignmentResult =
+      await client.query(
+
+        `
+        SELECT
+
+          id
+
+        FROM organization_client_assignments
+
+        WHERE
+
+          id = $1
+
+          AND organization_id = $2
+
+          AND is_active = true
+
+        LIMIT 1
+        `,
+
+        [
+
+          assignmentId,
+
+          organizationId
+
+        ]
+
+      );
+
+    if (!assignmentResult.rows.length) {
+
+      throw new Error(
+        "Assignment not found."
+      );
+
+    }
+
+    /* ---------------------------------------------
+       SOFT DELETE
+    ---------------------------------------------- */
+
+    await client.query(
+
+      `
+      UPDATE
+
+        organization_client_assignments
+
+      SET
+
+        is_active = false,
+
+        ended_at = NOW()
+
+      WHERE
+
+        id = $1
+      `,
+
+      [
+
+        assignmentId
+
+      ]
+
+    );
+
+    await client.query(
+      "COMMIT"
+    );
+
+    return {
+
+      assignment_id:
+        assignmentId
+
+    };
+
+  }
+
+  catch (err) {
+
+    await client.query(
+      "ROLLBACK"
+    );
+
+    throw err;
+
+  }
+
+  finally {
+
+    client.release();
+
+  }
+
+};
+
+
+

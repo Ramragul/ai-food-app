@@ -23,6 +23,15 @@ import {
   useState
 } from "react";
 
+import {
+
+  useNavigate
+
+} from "react-router-dom";
+
+import TransferClientDrawer
+from "../../components/WorkspaceUI/TransferClientDrawer";
+
 import PageHeader from "../../components/WorkspaceUI/PageHeader";
 import AssignmentCard from "../../components/WorkspaceUI/AssignmentCard";
 
@@ -47,6 +56,45 @@ const AssignmentsPage = () => {
     useState("");
 
     const {isOpen,onOpen,onClose} = useDisclosure();
+
+    const navigate =
+  useNavigate();
+
+const [
+
+  selectedAssignment,
+
+  setSelectedAssignment
+
+] = useState<any>(null);
+
+const {
+
+  isOpen: isTransferOpen,
+
+  onOpen: onTransferOpen,
+
+  onClose: onTransferClose
+
+} = useDisclosure();
+
+const [
+
+selectedRemove,
+
+setSelectedRemove
+
+]=useState<any>(null);
+
+const{
+
+isOpen:isRemoveOpen,
+
+onOpen:onRemoveOpen,
+
+onClose:onRemoveClose
+
+}=useDisclosure();
 
   useEffect(() => {
 
@@ -251,15 +299,47 @@ const AssignmentsPage = () => {
 
                 assignment => (
 
-                  <AssignmentCard
+<AssignmentCard
 
-                    key={
-                      assignment.coach.member_id
-                    }
+  key={
+    assignment.coach.member_id
+  }
 
-                    assignment={assignment}
+  assignment={assignment}
 
-                  />
+  onViewClient={(memberId) =>
+
+    navigate(
+
+      `/workspace/clients/${memberId}`
+
+    )
+
+  }
+
+  onTransferClient={(assignment) => {
+
+    setSelectedAssignment(
+      assignment
+    );
+
+    onTransferOpen();
+
+  }}
+
+
+
+  onRemoveAssignment={(assignment)=>{
+
+setSelectedRemove(
+assignment
+);
+
+onRemoveOpen();
+
+}}
+
+/>
 
                 )
 
@@ -281,6 +361,48 @@ const AssignmentsPage = () => {
   onClose={onClose}
 
   onSuccess={loadAssignments}
+
+/>
+
+<TransferClientDrawer
+
+  isOpen={
+    isTransferOpen
+  }
+
+  onClose={
+    onTransferClose
+  }
+
+  assignment={
+    selectedAssignment
+  }
+
+  onSuccess={() => {
+
+    onTransferClose();
+
+    loadAssignments();
+
+  }}
+
+/>
+
+<RemoveAssignmentDialog
+
+isOpen={isRemoveOpen}
+
+onClose={onRemoveClose}
+
+assignment={selectedRemove}
+
+onSuccess={()=>{
+
+onRemoveClose();
+
+loadAssignments();
+
+}}
 
 />
 </>

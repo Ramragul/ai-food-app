@@ -12,9 +12,29 @@ import type {
   CoachAssignment
 } from "../../services/workspace/assignments.service";
 
+import AssignmentActionMenu from "./AssignmentActionMenu";
+
 interface Props {
 
   assignment: CoachAssignment;
+
+}
+
+interface Props {
+
+  assignment: CoachAssignment;
+
+  onViewClient: (
+    memberId: number
+  ) => void;
+
+  onTransferClient: (
+    assignment: any
+  ) => void;
+
+  onRemoveAssignment: (
+    assignment: any
+  ) => void;
 
 }
 
@@ -30,7 +50,15 @@ const formatDate = (date: string) =>
   );
 
 const AssignmentCard = ({
-  assignment
+
+  assignment,
+
+  onViewClient,
+
+  onTransferClient,
+
+  onRemoveAssignment
+
 }: Props) => {
 
   return (
@@ -112,75 +140,114 @@ const AssignmentCard = ({
 
           {assignment.clients.map(client => (
 
-            <HStack
+<HStack
 
-              key={client.member_id}
+  key={client.member_id}
 
-              justify="space-between"
+  justify="space-between"
 
-            >
+  align="start"
 
-              <Box>
+>
 
-                <Text
+  <VStack
 
-                  fontWeight="600"
+    align="start"
 
-                >
+    spacing={1}
 
-                  {client.name}
+  >
 
-                </Text>
+    <Text
 
-                <Text
+      fontWeight="600"
 
-                  fontSize="xs"
+    >
 
-                  color="gray.500"
+      {client.name}
 
-                >
+    </Text>
 
-                  Assigned {formatDate(client.assigned_at)}
+    <Text
 
-                </Text>
+      fontSize="xs"
 
-              </Box>
+      color="gray.500"
 
-              <Badge
+    >
 
-                colorScheme={
-                  client.consent_granted
-                    ? "green"
-                    : "orange"
-                }
+      Assigned {formatDate(client.assigned_at)}
 
-              >
+    </Text>
 
-                {client.consent_granted
-                  ? "Consent"
-                  : "Pending"}
+    <Badge
 
-              </Badge>
+      colorScheme={
+        client.consent_granted
+          ? "green"
+          : "orange"
+      }
 
-            </HStack>
+    >
+
+      {
+
+        client.consent_granted
+
+          ? "Consent Granted"
+
+          : "Consent Pending"
+
+      }
+
+    </Badge>
+
+  </VStack>
+
+  <AssignmentActionMenu
+
+    onView={() =>
+
+      onViewClient(
+
+        client.member_id
+
+      )
+
+    }
+
+    onTransfer={() =>
+
+      onTransferClient({
+
+        coach: assignment.coach,
+
+        client
+
+      })
+
+    }
+
+    onRemove={() =>
+
+      onRemoveAssignment({
+
+        coach: assignment.coach,
+
+        client
+
+      })
+
+    }
+
+  />
+
+</HStack>
 
           ))}
 
         </VStack>
 
-        <Button
-
-          colorScheme="blue"
-
-          variant="outline"
-
-          borderRadius="12px"
-
-        >
-
-          Manage Assignment
-
-        </Button>
 
       </VStack>
 

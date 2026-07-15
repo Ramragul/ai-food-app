@@ -105,3 +105,48 @@ export const getAssignments = async () => {
   return response.data.data as CoachAssignment[];
 
 };
+
+export const transferAssignment = async (
+
+  assignmentId: number,
+
+  trainerMemberId: number
+
+) => {
+
+  const response =
+    await api.put(
+
+      `/organizations/assignments/${assignmentId}/transfer`,
+
+      {
+
+        trainer_member_id:
+          trainerMemberId
+
+      }
+
+    );
+
+  return response.data.data;
+
+};
+
+
+export const removeAssignment =
+async (
+
+  assignmentId:number
+
+)=>{
+
+  const response =
+    await api.delete(
+
+      `/organizations/assignments/${assignmentId}`
+
+    );
+
+  return response.data.data;
+
+};

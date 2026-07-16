@@ -1,7 +1,7 @@
 import express from "express";
 
 import {
-  getMyClients,  getDashboard, getClientDetails, getDashboard
+  getMyClients,  getDashboard, getClientDetails
 } from "../controllers/coach.controller.js";
 
 import {

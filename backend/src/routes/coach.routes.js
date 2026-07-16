@@ -1,7 +1,7 @@
 import express from "express";
 
 import {
-  getMyClients,  getDashboard, getClientDetails
+  getMyClients,  getDashboard, getClientDetails, getDashboard
 } from "../controllers/coach.controller.js";
 
 import {
@@ -33,5 +33,15 @@ router.get(
   authMiddleware,
   getClientDetails
 );
+
+// router.get(
+
+//   "/dashboard",
+
+//  authMiddleware,
+
+//   getDashboard
+
+// );
 
 export default router;

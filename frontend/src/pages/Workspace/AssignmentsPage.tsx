@@ -40,6 +40,7 @@ import {
   type CoachAssignment
 } from "../../services/workspace/assignments.service";
 import AssignClientDrawer from "../../components/WorkspaceUI/AssignClientDrawer";
+import RemoveAssignmentDialog from "../../components/WorkspaceUI/RemoveAssignmentDialog";
 
 const AssignmentsPage = () => {
 

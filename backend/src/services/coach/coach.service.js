@@ -1,5 +1,83 @@
 import pool from "../../db/connection.js";
 
+
+const getClientStatus = (
+
+  consumedCalories,
+
+  targetCalories
+
+) => {
+
+  if (!targetCalories) {
+
+    return {
+
+      code: "NO_GOAL",
+
+      label: "No Goal",
+
+      color: "gray",
+
+      progress: 0
+
+    };
+
+  }
+
+  const progress = Math.min(
+    100,
+    Math.round(
+      (consumedCalories / targetCalories) * 100
+    )
+  );
+
+  if (consumedCalories === 0) {
+
+    return {
+
+      code: "NOT_STARTED",
+
+      label: "Not Started",
+
+      color: "gray",
+
+      progress
+
+    };
+
+  }
+
+  if (progress >= 80) {
+
+    return {
+
+      code: "ON_TRACK",
+
+      label: "On Track",
+
+      color: "green",
+
+      progress
+
+    };
+
+  }
+
+  return {
+
+    code: "PENDING",
+
+    label: "Needs Attention",
+
+    color: "orange",
+
+    progress
+
+  };
+
+};
+
 /* ======================================================
    GET MY CLIENTS
 ====================================================== */
@@ -241,38 +319,47 @@ export const getMyClientsService = async (
           row.consumed_calories || 0
         );
 
-      let status = "NO_GOAL";
+      // let status = "NO_GOAL";
 
-      if (targetCalories > 0) {
+      // if (targetCalories > 0) {
 
-        if (
+      //   if (
 
-          consumedCalories >=
-          targetCalories * 0.8
+      //     consumedCalories >=
+      //     targetCalories * 0.8
 
-        ) {
+      //   ) {
 
-          status = "ON_TRACK";
+      //     status = "ON_TRACK";
 
-        }
+      //   }
 
-        else if (
+      //   else if (
 
-          consumedCalories > 0
+      //     consumedCalories > 0
 
-        ) {
+      //   ) {
 
-          status = "PENDING";
+      //     status = "PENDING";
 
-        }
+      //   }
 
-        else {
+      //   else {
 
-          status = "NOT_STARTED";
+      //     status = "NOT_STARTED";
 
-        }
+      //   }
 
-      }
+      // }
+
+      const status =
+  getClientStatus(
+
+    consumedCalories,
+
+    targetCalories
+
+  );
 
       return {
 

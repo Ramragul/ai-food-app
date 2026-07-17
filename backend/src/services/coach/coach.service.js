@@ -78,6 +78,116 @@ const getClientStatus = (
 
 };
 
+
+const getGoal = (goalType) => {
+
+    const labels = {
+
+        lean_muscle_gain: "Lean Muscle Gain",
+
+        weight_loss: "Weight Loss",
+
+        fat_loss: "Fat Loss",
+
+        maintenance: "Maintenance",
+
+        bulk_up: "Bulk Up",
+
+        strength_gain: "Strength Gain",
+
+        athletic_performance: "Athletic Performance",
+
+        healthy_lifestyle: "Healthy Lifestyle"
+
+    };
+
+    return labels[goalType] ?? "Unknown";
+
+};
+
+
+const buildNutrition = (
+
+    targetCalories,
+    consumedCalories,
+
+    targetProtein,
+    consumedProtein,
+
+    targetCarbs,
+    consumedCarbs,
+
+    targetFats,
+    consumedFats,
+
+    consumedFiber
+
+) => ({
+
+    calories: {
+
+        target: targetCalories,
+
+        consumed: consumedCalories,
+
+        progress: targetCalories
+            ? Math.round(
+                consumedCalories * 100 / targetCalories
+            )
+            : 0
+
+    },
+
+    protein: {
+
+        target: targetProtein,
+
+        consumed: consumedProtein,
+
+        progress: targetProtein
+            ? Math.round(
+                consumedProtein * 100 / targetProtein
+            )
+            : 0
+
+    },
+
+    carbs: {
+
+        target: targetCarbs,
+
+        consumed: consumedCarbs,
+
+        progress: targetCarbs
+            ? Math.round(
+                consumedCarbs * 100 / targetCarbs
+            )
+            : 0
+
+    },
+
+    fats: {
+
+        target: targetFats,
+
+        consumed: consumedFats,
+
+        progress: targetFats
+            ? Math.round(
+                consumedFats * 100 / targetFats
+            )
+            : 0
+
+    },
+
+    fiber: {
+
+        consumed: consumedFiber
+
+    }
+
+});
+
 /* ======================================================
    GET MY CLIENTS
 ====================================================== */
@@ -361,97 +471,190 @@ export const getMyClientsService = async (
 
   );
 
+      // return {
+
+      //   assignment_id:
+      //     row.assignment_id,
+
+      //   assigned_at:
+      //     row.assigned_at,
+
+      //   organization_id:
+      //     row.organization_id,
+
+      //   organization_name:
+      //     row.organization_name,
+
+      //   member_id:
+      //     row.client_member_id,
+
+      //   user_id:
+      //     row.client_user_id,
+
+      //   name:
+      //     row.name,
+
+      //   nickname:
+      //     row.nickname,
+
+      //   mobile:
+      //     row.mobile,
+
+      //   email:
+      //     row.email,
+
+      //   consent_granted:
+      //     row.consent_granted,
+
+      //   goal_type:
+      //     row.goal_type,
+
+      //   height_cm:
+      //     row.height_cm,
+
+      //   weight_kg:
+      //     row.weight_kg,
+
+      //   target_weight:
+      //     row.target_weight,
+
+      //   target_calories:
+      //     targetCalories,
+
+      //   target_protein:
+      //     Number(
+      //       row.protein_target || 0
+      //     ),
+
+      //   target_carbs:
+      //     Number(
+      //       row.carbs_target || 0
+      //     ),
+
+      //   target_fats:
+      //     Number(
+      //       row.fats_target || 0
+      //     ),
+
+      //   consumed_calories:
+      //     consumedCalories,
+
+      //   consumed_protein:
+      //     Number(
+      //       row.consumed_protein || 0
+      //     ),
+
+      //   consumed_carbs:
+      //     Number(
+      //       row.consumed_carbs || 0
+      //     ),
+
+      //   consumed_fats:
+      //     Number(
+      //       row.consumed_fats || 0
+      //     ),
+
+      //   consumed_fiber:
+      //     Number(
+      //       row.consumed_fiber || 0
+      //     ),
+
+      //   status
+
+      // };
+
+
       return {
 
-        assignment_id:
-          row.assignment_id,
+  assignment_id:
+    row.assignment_id,
 
-        assigned_at:
-          row.assigned_at,
+  assigned_at:
+    row.assigned_at,
 
-        organization_id:
-          row.organization_id,
+  organization_id:
+    row.organization_id,
 
-        organization_name:
-          row.organization_name,
+  organization_name:
+    row.organization_name,
 
-        member_id:
-          row.client_member_id,
+  member_id:
+    row.client_member_id,
 
-        user_id:
-          row.client_user_id,
+  user_id:
+    row.client_user_id,
 
-        name:
-          row.name,
+  name:
+    row.name,
 
-        nickname:
-          row.nickname,
+  nickname:
+    row.nickname,
 
-        mobile:
-          row.mobile,
+  mobile:
+    row.mobile,
 
-        email:
-          row.email,
+  email:
+    row.email,
 
-        consent_granted:
-          row.consent_granted,
+  consent_granted:
+    row.consent_granted,
 
-        goal_type:
-          row.goal_type,
+  goal:
+    getGoal(row.goal_type),
 
-        height_cm:
-          row.height_cm,
+  height_cm:
+    row.height_cm,
 
-        weight_kg:
-          row.weight_kg,
+  weight_kg:
+    row.weight_kg,
 
-        target_weight:
-          row.target_weight,
+  target_weight:
+    row.target_weight,
 
-        target_calories:
-          targetCalories,
+  target_calories:
+    targetCalories,
 
-        target_protein:
-          Number(
-            row.protein_target || 0
-          ),
+  target_protein:
+    Number(
+      row.protein_target || 0
+    ),
 
-        target_carbs:
-          Number(
-            row.carbs_target || 0
-          ),
+  target_carbs:
+    Number(
+      row.carbs_target || 0
+    ),
 
-        target_fats:
-          Number(
-            row.fats_target || 0
-          ),
+  target_fats:
+    Number(
+      row.fats_target || 0
+    ),
 
-        consumed_calories:
-          consumedCalories,
+  consumed_calories:
+    consumedCalories,
 
-        consumed_protein:
-          Number(
-            row.consumed_protein || 0
-          ),
+  consumed_protein:
+    Number(
+      row.consumed_protein || 0
+    ),
 
-        consumed_carbs:
-          Number(
-            row.consumed_carbs || 0
-          ),
+  consumed_carbs:
+    Number(
+      row.consumed_carbs || 0
+    ),
 
-        consumed_fats:
-          Number(
-            row.consumed_fats || 0
-          ),
+  consumed_fats:
+    Number(
+      row.consumed_fats || 0
+    ),
 
-        consumed_fiber:
-          Number(
-            row.consumed_fiber || 0
-          ),
+  consumed_fiber:
+    Number(
+      row.consumed_fiber || 0
+    ),
 
-        status
+  status
 
-      };
+};
 
     });
 

@@ -81,27 +81,33 @@ const getClientStatus = (
 
 const getGoal = (goalType) => {
 
-    const labels = {
+  const labels = {
 
-        lean_muscle_gain: "Lean Muscle Gain",
+    lean_muscle_gain: "Lean Muscle Gain",
 
-        weight_loss: "Weight Loss",
+    weight_loss: "Weight Loss",
 
-        fat_loss: "Fat Loss",
+    fat_loss: "Fat Loss",
 
-        maintenance: "Maintenance",
+    maintenance: "Maintenance",
 
-        bulk_up: "Bulk Up",
+    bulk_up: "Bulk Up",
 
-        strength_gain: "Strength Gain",
+    strength_gain: "Strength Gain",
 
-        athletic_performance: "Athletic Performance",
+    athletic_performance: "Athletic Performance",
 
-        healthy_lifestyle: "Healthy Lifestyle"
+    healthy_lifestyle: "Healthy Lifestyle"
 
-    };
+  };
 
-    return labels[goalType] ?? "Unknown";
+  return {
+
+    code: goalType,
+
+    label: labels[goalType] || "Unknown"
+
+  };
 
 };
 

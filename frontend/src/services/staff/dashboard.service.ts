@@ -1,4 +1,12 @@
-import api from "../api";
+import api from "../../utils/api";
+
+export interface Goal {
+
+  code: string;
+
+  label: string;
+
+}
 
 export interface ClientStatus {
 
@@ -16,6 +24,12 @@ export interface DashboardClient {
 
   assignment_id: number;
 
+  assigned_at: string;
+
+  organization_id: number;
+
+  organization_name: string;
+
   member_id: number;
 
   user_id: number;
@@ -30,15 +44,31 @@ export interface DashboardClient {
 
   consent_granted: boolean;
 
-  goal_type: string | null;
+  goal: Goal;
+
+  height_cm: number;
+
+  weight_kg: number;
+
+  target_weight: number;
 
   target_calories: number;
 
-  consumed_calories: number;
-
   target_protein: number;
 
+  target_carbs: number;
+
+  target_fats: number;
+
+  consumed_calories: number;
+
   consumed_protein: number;
+
+  consumed_carbs: number;
+
+  consumed_fats: number;
+
+  consumed_fiber: number;
 
   status: ClientStatus;
 

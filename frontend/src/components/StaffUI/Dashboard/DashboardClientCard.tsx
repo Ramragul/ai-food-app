@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Badge,
   Box,
   Button,
@@ -10,7 +11,11 @@ import {
   VStack
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import type { DashboardClient } from "../../../services/staff/dashboard.service";
+import { ChevronRightIcon } from "@chakra-ui/icons";
+
+import type {
+  DashboardClient
+} from "../../../services/staff/dashboard.service";
 
 interface Props {
   client: DashboardClient;
@@ -20,55 +25,79 @@ const DashboardClientCard = ({ client }: Props) => {
 
   const navigate = useNavigate();
 
+  const calorieProgress =
+    client.target_calories
+      ? (client.consumed_calories /
+          client.target_calories) *
+        100
+      : 0;
+
+  const proteinProgress =
+    client.target_protein
+      ? (client.consumed_protein /
+          client.target_protein) *
+        100
+      : 0;
+
   return (
 
     <Box
       bg="white"
       borderRadius="2xl"
       p={6}
-      shadow="sm"
       border="1px solid"
       borderColor="gray.100"
-      transition=".25s"
+      shadow="sm"
+      transition="all .25s"
       _hover={{
         shadow: "lg",
-        transform: "translateY(-2px)"
+        transform: "translateY(-3px)"
       }}
     >
 
       <Flex
         justify="space-between"
         align="flex-start"
-        mb={5}
+        mb={6}
       >
 
-        <VStack
-          align="start"
-          spacing={1}
-        >
+        <Flex gap={4}>
 
-          <Heading size="md">
+          <Avatar
+            name={client.name}
+            size="md"
+            bg="brand.500"
+          />
 
-            {client.name}
-
-          </Heading>
-
-          <Text
-            color="gray.500"
-            fontSize="sm"
+          <VStack
+            align="start"
+            spacing={1}
           >
 
-            {client.goal_type
-              ?.replaceAll("_", " ")
-              .replace(/\b\w/g, c => c.toUpperCase())}
+            <Heading size="md">
 
-          </Text>
+              {client.name}
 
-        </VStack>
+            </Heading>
+
+            <Text
+              color="gray.500"
+              fontSize="sm"
+            >
+
+              {client.goal.label}
+
+            </Text>
+
+          </VStack>
+
+        </Flex>
 
         <Badge
 
-          colorScheme={client.status.color}
+          colorScheme={
+            client.status.color
+          }
 
           borderRadius="full"
 
@@ -93,9 +122,7 @@ const DashboardClientCard = ({ client }: Props) => {
             mb={2}
           >
 
-            <Text
-              fontWeight="600"
-            >
+            <Text fontWeight="600">
 
               Calories
 
@@ -104,8 +131,12 @@ const DashboardClientCard = ({ client }: Props) => {
             <Text>
 
               {client.consumed_calories}
+
               {" / "}
+
               {client.target_calories}
+
+              {" kcal"}
 
             </Text>
 
@@ -113,7 +144,9 @@ const DashboardClientCard = ({ client }: Props) => {
 
           <Progress
 
-            value={client.status.progress}
+            value={calorieProgress}
+
+            colorScheme="blue"
 
             borderRadius="full"
 
@@ -128,9 +161,7 @@ const DashboardClientCard = ({ client }: Props) => {
             mb={2}
           >
 
-            <Text
-              fontWeight="600"
-            >
+            <Text fontWeight="600">
 
               Protein
 
@@ -139,8 +170,12 @@ const DashboardClientCard = ({ client }: Props) => {
             <Text>
 
               {client.consumed_protein}
+
               {" / "}
-              {client.target_protein}g
+
+              {client.target_protein}
+
+              {" g"}
 
             </Text>
 
@@ -148,13 +183,9 @@ const DashboardClientCard = ({ client }: Props) => {
 
           <Progress
 
-            value={
-              client.target_protein
-                ? (client.consumed_protein /
-                    client.target_protein) *
-                  100
-                : 0
-            }
+            value={proteinProgress}
+
+            colorScheme="green"
 
             borderRadius="full"
 
@@ -173,6 +204,10 @@ const DashboardClientCard = ({ client }: Props) => {
 
           colorScheme="brand"
 
+          rightIcon={
+            <ChevronRightIcon />
+          }
+
           onClick={() =>
             navigate(
               `/staff/clients/${client.member_id}`
@@ -181,7 +216,7 @@ const DashboardClientCard = ({ client }: Props) => {
 
         >
 
-          View Client →
+          View Client
 
         </Button>
 

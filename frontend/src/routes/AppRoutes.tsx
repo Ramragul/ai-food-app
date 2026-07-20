@@ -153,6 +153,10 @@ import ClientsPage from "../pages/Workspace/ClientsPage";
 import AssignmentsPage from "../pages/Workspace/AssignmentsPage";
 import InvitationsPage from "../pages/Workspace/InvitationsPage";
 import ClientDetailsPage from "../pages/Workspace/ClientDetailsPage";
+import MyClientPage from "../pages/staff/MyClientPage";
+import StaffDashboardPage from "../pages/Staff/StaffDashboardPage";
+import StaffLayout from "../components/StaffUI/StaffLayout";
+import StaffClientsPage from "../pages/Staff/StaffClientsPage";
 
 
 
@@ -261,6 +265,16 @@ const AppRoutes: React.FC = () => {
     path="/workspace/invitations"
     element={<InvitationsPage />}
   />
+{/* 
+    <Route
+    path="/staff"
+    element={<StaffDashboardPage />}
+  /> */}
+
+  {/* <Route
+    path="/staff/clients/:memberId"
+    element={<MyClientPage />}
+/> */}
 
 
 {/*
@@ -268,6 +282,50 @@ const AppRoutes: React.FC = () => {
     path="/workspace/coach"
     element={<CoachDashboardPage />}
   /> */}
+</Route>
+
+
+
+<Route
+    path="/staff"
+    element={<StaffLayout />}
+>
+
+    <Route
+        index
+        element={<StaffDashboardPage />}
+    />
+
+    <Route
+        path="clients"
+        element={<StaffClientsPage />}
+    />
+
+    <Route
+        path="clients/:memberId"
+        element={<MyClientPage />}
+    />
+
+    {/* <Route
+        path="goals"
+        element={<GoalsPage />}
+    />
+
+    <Route
+        path="notes"
+        element={<NotesPage />}
+    />
+
+    <Route
+        path="reports"
+        element={<ReportsPage />}
+    /> */}
+
+    <Route
+        path="profile"
+        element={<ProfilePage />}
+    />
+
 </Route>
 
       {/* 🔥 FALLBACK */}

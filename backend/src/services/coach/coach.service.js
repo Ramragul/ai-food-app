@@ -1396,238 +1396,123 @@ const today =
 
 
     /* ---------------------------------------------
-       DASHBOARD API
+       COACH NOTES API
     ---------------------------------------------- */
 
 
-
-// export const getDashboardService = async (
-//   coachUserId
-// ) => {
-
-//   const client = await pool.connect();
-
-//   try {
-
-//     /* ---------------------------------------
-//        FIND TRAINER
-//     ---------------------------------------- */
-
-//     const trainerResult =
-//       await client.query(
-//         `
-//         SELECT
-
-//           id
-
-//         FROM organization_members
-
-//         WHERE
-
-//           user_id = $1
-
-//           AND status='ACTIVE'
-
-//         LIMIT 1
-//         `,
-//         [coachUserId]
-//       );
-
-//     if (!trainerResult.rows.length) {
-
-//       throw new Error(
-//         "Trainer not found."
-//       );
-
-//     }
-
-//     const trainerMemberId =
-//       trainerResult.rows[0].id;
-
-//     /* ---------------------------------------
-//        SUMMARY
-//     ---------------------------------------- */
-
-//     const summaryResult =
-//       await client.query(
-//         `
-//         SELECT
-
-//           COUNT(*) AS my_clients,
-
-//           COUNT(
-//             CASE
-//               WHEN up.is_active = true
-//               THEN 1
-//             END
-//           ) AS active_goals,
-
-//           COUNT(
-//             CASE
-//               WHEN dn.user_id IS NOT NULL
-//               THEN 1
-//             END
-//           ) AS clients_logged_today
-
-//         FROM organization_client_assignments oca
-
-//         INNER JOIN organization_members om
-
-//           ON om.id = oca.client_member_id
-
-//         LEFT JOIN user_profile up
-
-//           ON up.user_id = om.user_id
-
-//          AND up.is_active = true
-
-//         LEFT JOIN daily_nutrition dn
-
-//           ON dn.user_id = om.user_id
-
-//          AND dn.date = CURRENT_DATE
-
-//         WHERE
-
-//           oca.trainer_member_id = $1
-
-//           AND oca.is_active = true
-//         `,
-//         [trainerMemberId]
-//       );
-
-//     const summary =
-//       summaryResult.rows[0];
-
-//     const clientsPending =
-//       Number(summary.my_clients) -
-//       Number(summary.clients_logged_today);
-
-//     /* ---------------------------------------
-//        TODAY CLIENTS
-//     ---------------------------------------- */
-
-//     const clientsResult =
-//       await client.query(
-//         `
-//         SELECT
-
-//           om.id AS member_id,
-
-//           u.name,
-
-//           u.nickname,
-
-//           up.goal_type,
-
-//           up.target_calories,
-
-//           up.protein_target,
-
-//           COALESCE(
-//             dn.total_calories,
-//             0
-//           ) AS consumed_calories,
-
-//           COALESCE(
-//             dn.protein,
-//             0
-//           ) AS consumed_protein
-
-//         FROM organization_client_assignments oca
-
-//         INNER JOIN organization_members om
-
-//           ON om.id =
-//              oca.client_member_id
-
-//         INNER JOIN users u
-
-//           ON u.id =
-//              om.user_id
-
-//         LEFT JOIN user_profile up
-
-//           ON up.user_id = u.id
-
-//          AND up.is_active = true
-
-//         LEFT JOIN daily_nutrition dn
-
-//           ON dn.user_id = u.id
-
-//          AND dn.date = CURRENT_DATE
-
-//         WHERE
-
-//           oca.trainer_member_id = $1
-
-//           AND oca.is_active = true
-
-//         ORDER BY
-
-//           u.name
-//         `,
-//         [trainerMemberId]
-//       );
-
-//     const todayClients =
-//       clientsResult.rows.map(
-//         client => ({
-
-//           ...client,
-
-//           status:
-
-//             Number(
-//               client.consumed_calories
-//             ) >=
-
-//             Number(
-//               client.target_calories
-//             ) * 0.8
-
-//               ? "ON_TRACK"
-
-//               : "PENDING"
-
-//         })
-//       );
-
-//     return {
-
-//       summary: {
-
-//         my_clients:
-//           Number(summary.my_clients),
-
-//         active_goals:
-//           Number(summary.active_goals),
-
-//         clients_logged_today:
-//           Number(
-//             summary.clients_logged_today
-//           ),
-
-//         clients_pending:
-//           clientsPending
-
-//       },
-
-//       today_clients:
-//         todayClients
-
-//     };
-
-//   }
-
-//   finally {
-
-//     client.release();
-
-//   }
-
-// };
-
-
-  
+    const getCoachNotesService = async (clientMemberId) => {
+
+    const { rows } = await db.query(
+        `
+        SELECT
+            cn.id,
+            cn.category,
+            cn.title,
+            cn.note,
+            cn.created_at,
+            u.name AS coach_name
+        FROM coach_notes cn
+        INNER JOIN organization_members om
+            ON om.id = cn.coach_member_id
+        INNER JOIN users u
+            ON u.id = om.user_id
+        WHERE
+            cn.client_member_id = $1
+            AND cn.deleted_at IS NULL
+        ORDER BY cn.created_at DESC
+        `,
+        [clientMemberId]
+    );
+
+    return rows;
+};
+
+
+const createCoachNoteService = async (clientMemberId, userId, body) => {
+
+    const memberResult = await db.query(
+        `
+        SELECT id
+        FROM organization_members
+        WHERE user_id = $1
+        LIMIT 1
+        `,
+        [userId]
+    );
+
+    if (memberResult.rows.length === 0) {
+        throw new Error("Coach membership not found.");
+    }
+
+    const coachMemberId = memberResult.rows[0].id;
+
+    const { rows } = await db.query(
+        `
+        INSERT INTO coach_notes (
+            client_member_id,
+            coach_member_id,
+            category,
+            title,
+            note
+        )
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING *
+        `,
+        [
+            clientMemberId,
+            coachMemberId,
+            body.category || "GENERAL",
+            body.title,
+            body.note
+        ]
+    );
+
+    return rows[0];
+};
+
+
+
+
+const updateCoachNoteService = async (noteId, body) => {
+
+    const { rows } = await db.query(
+        `
+        UPDATE coach_notes
+        SET
+            category = $1,
+            title = $2,
+            note = $3,
+            updated_at = NOW()
+        WHERE
+            id = $4
+            AND deleted_at IS NULL
+        RETURNING *
+        `,
+        [
+            body.category,
+            body.title,
+            body.note,
+            noteId
+        ]
+    );
+
+    return rows[0];
+};
+
+
+const deleteCoachNoteService = async (noteId) => {
+
+    const { rowCount } = await db.query(
+        `
+        UPDATE coach_notes
+        SET
+            deleted_at = NOW()
+        WHERE
+            id = $1
+            AND deleted_at IS NULL
+        `,
+        [noteId]
+    );
+
+    return rowCount > 0;
+};

@@ -341,7 +341,8 @@ export const createProfileService = async ({
   target_calories,
   protein_target,
   carbs_target,
-  fats_target
+  fats_target,
+  assigned_by_member_id = null
 }) => {
 
   const client = await pool.connect();
@@ -386,9 +387,9 @@ if (goal_mode === "SMART") {
       (user_id, height_cm, weight_kg, gender, goal_type, activity_level,
        target_weight, duration_days,
        target_calories, protein_target, carbs_target, fats_target,food_preference,goal_mode,
-target_source,
+target_source,assigned_by_member_id,
        is_active)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,true)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,true)
       RETURNING *
       `,
       [
@@ -406,7 +407,8 @@ target_source,
         targets.fats,
         food_preference,
         goal_mode,
-        target_source
+        target_source,
+        assigned_by_member_id
       ]
     );
 

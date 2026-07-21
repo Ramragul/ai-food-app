@@ -99,3 +99,40 @@ export const deleteCoachNote = async (
     return response.data;
 
 };
+
+
+
+
+export interface AssignGoalRequest {
+  goal_mode: "SMART" | "CUSTOM";
+
+  goal_type?: string;
+
+  activity_level?: string;
+
+  target_weight: number;
+
+  duration_days: number;
+
+  target_calories?: number;
+
+  protein_target?: number;
+
+  carbs_target?: number;
+
+  fats_target?: number;
+}
+
+
+
+export const assignClientGoal = async (
+  memberId: number,
+  payload: AssignGoalRequest
+) => {
+  const response = await api.post(
+    `/coach/client/${memberId}/goal`,
+    payload
+  );
+
+  return response.data;
+};

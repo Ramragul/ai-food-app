@@ -1,5 +1,10 @@
 import pool from "../../db/connection.js";
 
+import {
+  createProfileService,
+  getActiveProfileService
+} from "../profile/profile.service.js";
+
 
 const getClientStatus = (
 
@@ -1546,4 +1551,189 @@ export const deleteCoachNoteService = async (noteId) => {
   } finally {
     client.release();
   }
+};
+
+
+
+export const getClientActivityService = async (
+    clientMemberId
+) => {
+
+    const query = `
+
+        SELECT
+            'COACH_NOTE' AS type,
+            'Coach Note Added' AS title,
+            title AS description,
+            created_at
+
+        FROM coach_notes
+
+        WHERE
+            client_member_id = $1
+            AND deleted_at IS NULL
+
+        UNION ALL
+
+        SELECT
+            'GOAL' AS type,
+            'Goal Updated' AS title,
+            goal AS description,
+            updated_at AS created_at
+
+        FROM user_profile
+
+        WHERE member_id = $1
+
+        UNION ALL
+
+        SELECT
+            'WEIGHT' AS type,
+            'Weight Updated' AS title,
+            CONCAT(weight, ' kg') AS description,
+            updated_at AS created_at
+
+        FROM user_profile
+
+        WHERE member_id = $1
+
+        ORDER BY created_at DESC
+
+        LIMIT 20;
+
+    `;
+
+    const result =
+        await pool.query(
+            query,
+            [clientMemberId]
+        );
+
+    return result.rows;
+
+};
+
+
+export const assignClientGoalService = async ({
+  memberId,
+  coachUserId,
+
+  goal_type,
+  activity_level,
+  target_weight,
+  duration_days,
+
+  goal_mode,
+
+  target_calories,
+  protein_target,
+  carbs_target,
+  fats_target
+}) => {
+
+  /*
+   * Resolve coach membership
+   */
+
+  const coachResult = await pool.query(
+    `
+    SELECT id
+    FROM organization_members
+    WHERE user_id = $1
+    LIMIT 1
+    `,
+    [coachUserId]
+  );
+
+  if (!coachResult.rows.length) {
+    throw new Error("Coach membership not found.");
+  }
+
+  const coachMemberId =
+    coachResult.rows[0].id;
+
+  /*
+   * Resolve client user
+   */
+
+  const clientResult = await pool.query(
+    `
+    SELECT user_id
+    FROM organization_members
+    WHERE id = $1
+    LIMIT 1
+    `,
+    [memberId]
+  );
+
+  if (!clientResult.rows.length) {
+    throw new Error("Client not found.");
+  }
+
+  const clientUserId =
+    clientResult.rows[0].user_id;
+
+  /*
+   * Load current active profile
+   */
+
+  const profile =
+    await getActiveProfileService(clientUserId);
+
+  if (!profile) {
+    throw new Error(
+      "Client has not completed onboarding yet."
+    );
+  }
+
+  /*
+   * Reuse existing Goal Engine
+   */
+
+  return await createProfileService({
+
+    userId: clientUserId,
+
+    height_cm: profile.height_cm,
+
+    weight_kg: profile.weight_kg,
+
+    gender: profile.gender,
+
+    food_preference: profile.food_preference,
+
+    goal_type:
+      goal_mode === "SMART"
+        ? goal_type
+        : "custom",
+
+    activity_level:
+      goal_mode === "SMART"
+        ? activity_level
+        : null,
+
+    target_weight,
+
+    duration_days,
+
+    goal_mode,
+
+    target_source:
+      goal_mode === "SMART"
+        ? "NEKA"
+        : "USER",
+
+    target_calories,
+
+    protein_target,
+
+    carbs_target,
+
+    fats_target,
+
+    assigned_by_member_id:
+      coachMemberId
+
+  });
+
 };

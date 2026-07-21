@@ -44,6 +44,8 @@ import {
 import { FiArrowLeft } from "react-icons/fi";
 import CoachNotes from "../../components/StaffUI/Clients/CoachNotes/CoachNotes";
 
+import GoalAssignment from "../../components/StaffUI/Clients/GoalAssignment/GoalAssignment";
+
 const MyClientPage = () => {
 
     const { memberId } = useParams();
@@ -159,6 +161,14 @@ const MyClientPage = () => {
     <MyClientNutritionCard
         client={client}
     />
+
+    {client.permissions.can_create_goal && (
+  <GoalAssignment
+    memberId={Number(memberId)}
+    client={client}
+    onSuccess={loadClient}
+  />
+)}
 
 </Grid>
     {/* <VStack

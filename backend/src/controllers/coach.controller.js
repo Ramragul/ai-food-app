@@ -1,5 +1,6 @@
 import {
-  getMyClientsService , getDashboardService, getClientDetailsService , getCoachNotesService,createCoachNoteService,updateCoachNoteService, deleteCoachNoteService
+  getMyClientsService , getDashboardService, getClientDetailsService , getCoachNotesService,createCoachNoteService,updateCoachNoteService, 
+  deleteCoachNoteService, getClientActivityService, assignClientGoalService
 } from "../services/coach/coach.service.js";
 
 /* ==========================================
@@ -304,6 +305,73 @@ export const deleteCoachNote = async (req, res) => {
             success: false,
 
             message: error.message
+
+        });
+
+    }
+
+};
+
+
+export const getClientActivity = async (req, res) => {
+
+    try {
+
+        const activities =
+            await getClientActivityService(
+                Number(req.params.memberId)
+            );
+
+        return res.json({
+
+            success: true,
+
+            data: activities
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: error.message
+
+        });
+
+    }
+
+};
+
+
+export const assignClientGoal = async (req, res) => {
+
+    try {
+
+        const result = await assignClientGoalService({
+
+            memberId: Number(req.params.memberId),
+
+            coachUserId: req.user.id,
+
+            ...req.body
+
+        });
+
+        return res.status(201).json(result);
+
+    } catch (err) {
+
+        console.error(err);
+
+        return res.status(500).json({
+
+            message: err.message
 
         });
 

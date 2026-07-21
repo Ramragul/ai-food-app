@@ -1,7 +1,8 @@
 import express from "express";
 
 import {
-  getMyClients,  getDashboard, getClientDetails , getCoachNotes, createCoachNote , updateCoachNote, deleteCoachNote
+  getMyClients,  getDashboard, getClientDetails , getCoachNotes, createCoachNote , updateCoachNote,
+   deleteCoachNote,getClientActivity,assignClientGoal
 } from "../controllers/coach.controller.js";
 
 import {
@@ -56,6 +57,18 @@ router.delete(
     "/notes/:noteId",
     authMiddleware,
     deleteCoachNote
+);
+
+router.get(
+    "/client/:memberId/activity",
+    authMiddleware,
+    getClientActivity
+);
+
+router.post(
+    "/client/:memberId/goal",
+    authMiddleware,
+    assignClientGoal
 );
 
 // router.get(

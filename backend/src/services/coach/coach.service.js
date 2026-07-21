@@ -1403,6 +1403,7 @@ const today =
     export const getCoachNotesService = async (clientMemberId) => {
         const client = await pool.connect();
 
+try{
     const { rows } = await client.query(
         `
         SELECT
@@ -1426,11 +1427,17 @@ const today =
     );
 
     return rows;
+
+  } finally {
+    client.release();
+  }
 };
 
 
 export const createCoachNoteService = async (clientMemberId, userId, body) => {
     const client = await pool.connect();
+
+    try{
 
     const memberResult = await client.query(
         `
@@ -1471,12 +1478,19 @@ export const createCoachNoteService = async (clientMemberId, userId, body) => {
     );
 
     return rows[0];
+  
+      
+  } finally {
+    client.release();
+  }
 };
 
 
 
 
 export const updateCoachNoteService = async (noteId, body) => {
+
+  try{
 
     const client = await pool.connect();
 
@@ -1502,11 +1516,18 @@ export const updateCoachNoteService = async (noteId, body) => {
     );
 
     return rows[0];
+
+        
+  } finally {
+    client.release();
+  }
 };
 
 
 export const deleteCoachNoteService = async (noteId) => {
     const client = await pool.connect();
+
+    try{
 
     const { rowCount } = await client.query(
         `
@@ -1521,4 +1542,8 @@ export const deleteCoachNoteService = async (noteId) => {
     );
 
     return rowCount > 0;
+        
+  } finally {
+    client.release();
+  }
 };

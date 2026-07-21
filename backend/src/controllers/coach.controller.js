@@ -158,7 +158,7 @@ async (
 
 
 
-const getCoachNotes = async (req, res) => {
+export const getCoachNotes = async (req, res) => {
 
     try {
 
@@ -192,7 +192,7 @@ const getCoachNotes = async (req, res) => {
 
 
 
-const createCoachNote = async (req, res) => {
+export const createCoachNote = async (req, res) => {
 
     try {
 
@@ -221,7 +221,7 @@ const createCoachNote = async (req, res) => {
 };
 
 
-const updateCoachNote = async (req, res) => {
+export const updateCoachNote = async (req, res) => {
 
     try {
 
@@ -267,7 +267,7 @@ const updateCoachNote = async (req, res) => {
 };
 
 
-const deleteCoachNote = async (req, res) => {
+export const deleteCoachNote = async (req, res) => {
 
     try {
 

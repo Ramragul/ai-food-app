@@ -1447,7 +1447,7 @@ export const createCoachNoteService = async (clientMemberId, userId, body) => {
     }
 
     const coachMemberId = memberResult.rows[0].id;
-      const client = await pool.connect();
+     
 
     const { rows } = await client.query(
         `

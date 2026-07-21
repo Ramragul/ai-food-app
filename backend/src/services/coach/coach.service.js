@@ -1401,8 +1401,9 @@ const today =
 
 
     export const getCoachNotesService = async (clientMemberId) => {
+        const client = await pool.connect();
 
-    const { rows } = await db.query(
+    const { rows } = await client.query(
         `
         SELECT
             cn.id,
@@ -1429,8 +1430,9 @@ const today =
 
 
 export const createCoachNoteService = async (clientMemberId, userId, body) => {
+    const client = await pool.connect();
 
-    const memberResult = await db.query(
+    const memberResult = await client.query(
         `
         SELECT id
         FROM organization_members
@@ -1445,8 +1447,9 @@ export const createCoachNoteService = async (clientMemberId, userId, body) => {
     }
 
     const coachMemberId = memberResult.rows[0].id;
+      const client = await pool.connect();
 
-    const { rows } = await db.query(
+    const { rows } = await client.query(
         `
         INSERT INTO coach_notes (
             client_member_id,
@@ -1475,7 +1478,9 @@ export const createCoachNoteService = async (clientMemberId, userId, body) => {
 
 export const updateCoachNoteService = async (noteId, body) => {
 
-    const { rows } = await db.query(
+    const client = await pool.connect();
+
+    const { rows } = await client.query(
         `
         UPDATE coach_notes
         SET
@@ -1501,8 +1506,9 @@ export const updateCoachNoteService = async (noteId, body) => {
 
 
 export const deleteCoachNoteService = async (noteId) => {
+    const client = await pool.connect();
 
-    const { rowCount } = await db.query(
+    const { rowCount } = await client.query(
         `
         UPDATE coach_notes
         SET

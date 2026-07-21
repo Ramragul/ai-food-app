@@ -1,5 +1,5 @@
 import {
-  getMyClientsService , getDashboardService, getClientDetailsService , getCoachNoteService, createCoachNoteService,updateCoachNoteService, deleteCoachNoteService
+  getMyClientsService , getDashboardService, getClientDetailsService , getCoachNoteService,createCoachNoteService,updateCoachNoteService, deleteCoachNoteService
 } from "../services/coach/coach.service.js";
 
 /* ==========================================

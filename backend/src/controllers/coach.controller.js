@@ -1,5 +1,5 @@
 import {
-  getMyClientsService , getDashboardService, getClientDetailsService , getCoachNoteService,createCoachNoteService,updateCoachNoteService, deleteCoachNoteService
+  getMyClientsService , getDashboardService, getClientDetailsService , getCoachNotesService,createCoachNoteService,updateCoachNoteService, deleteCoachNoteService
 } from "../services/coach/coach.service.js";
 
 /* ==========================================
@@ -162,7 +162,7 @@ const getCoachNotes = async (req, res) => {
 
     try {
 
-        const notes = await getCoachNoteService(
+        const notes = await getCoachNotesService(
             Number(req.params.memberId)
         );
 

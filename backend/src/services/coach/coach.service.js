@@ -1400,7 +1400,7 @@ const today =
     ---------------------------------------------- */
 
 
-    const getCoachNotesService = async (clientMemberId) => {
+    export const getCoachNotesService = async (clientMemberId) => {
 
     const { rows } = await db.query(
         `
@@ -1428,7 +1428,7 @@ const today =
 };
 
 
-const createCoachNoteService = async (clientMemberId, userId, body) => {
+export const createCoachNoteService = async (clientMemberId, userId, body) => {
 
     const memberResult = await db.query(
         `
@@ -1473,7 +1473,7 @@ const createCoachNoteService = async (clientMemberId, userId, body) => {
 
 
 
-const updateCoachNoteService = async (noteId, body) => {
+export const updateCoachNoteService = async (noteId, body) => {
 
     const { rows } = await db.query(
         `
@@ -1500,7 +1500,7 @@ const updateCoachNoteService = async (noteId, body) => {
 };
 
 
-const deleteCoachNoteService = async (noteId) => {
+export const deleteCoachNoteService = async (noteId) => {
 
     const { rowCount } = await db.query(
         `

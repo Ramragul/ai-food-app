@@ -18,7 +18,7 @@ interface Props {
 }
 
 const capitalize = (value: string) =>
-    value.charAt(0).toUpperCase() + value.slice(1);
+    value?.charAt(0).toUpperCase() + value?.slice(1);
 
 const formatGoal = (goal: string) =>
     goal

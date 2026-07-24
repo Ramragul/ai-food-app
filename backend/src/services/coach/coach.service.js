@@ -1737,3 +1737,449 @@ export const assignClientGoalService = async ({
   });
 
 };
+
+
+
+/* ======================================================
+   NUTRITION INTELLIGENCE
+====================================================== */
+
+export const getNutritionIntelligenceService = async (
+    coachUserId,
+    clientMemberId,
+    period = "today"
+) => {
+
+    const client = await pool.connect();
+
+    try {
+
+        /*
+        ---------------------------------------------
+        VERIFY ASSIGNMENT
+        ---------------------------------------------
+        */
+
+        const assignmentResult =
+            await client.query(
+                `
+                SELECT
+
+                    oca.organization_id,
+
+                    om.user_id AS client_user_id,
+
+                    oc.granted AS consent_granted
+
+                FROM organization_client_assignments oca
+
+                INNER JOIN organization_members coach
+                    ON coach.id = oca.trainer_member_id
+
+                INNER JOIN organization_members om
+                    ON om.id = oca.client_member_id
+
+                LEFT JOIN organization_consents oc
+                    ON oc.organization_id = oca.organization_id
+                   AND oc.client_user_id = om.user_id
+
+                WHERE
+
+                    coach.user_id = $1
+
+                    AND oca.client_member_id = $2
+
+                    AND coach.status = 'ACTIVE'
+
+                    AND oca.is_active = true
+
+                LIMIT 1
+                `,
+                [
+                    coachUserId,
+                    clientMemberId
+                ]
+            );
+
+        if (!assignmentResult.rows.length) {
+
+            throw new Error(
+                "Client not assigned to you."
+            );
+
+        }
+
+        const assignment =
+            assignmentResult.rows[0];
+
+        /*
+        ---------------------------------------------
+        CONSENT
+        ---------------------------------------------
+        */
+
+        if (!assignment.consent_granted) {
+
+            return {
+
+                consent: {
+
+                    granted: false,
+
+                    status: "PENDING"
+
+                }
+
+            };
+
+        }
+
+        /*
+        ---------------------------------------------
+        ACTIVE PROFILE
+        ---------------------------------------------
+        */
+
+        const profileResult =
+            await client.query(
+                `
+                SELECT *
+
+                FROM user_profile
+
+                WHERE
+
+                    user_id = $1
+
+                    AND is_active = true
+
+                LIMIT 1
+                `,
+                [
+                    assignment.client_user_id
+                ]
+            );
+
+        if (!profileResult.rows.length) {
+
+            throw new Error(
+                "Active profile not found."
+            );
+
+        }
+
+        const profile =
+            profileResult.rows[0];
+
+        /*
+        ---------------------------------------------
+        ROUTER
+        ---------------------------------------------
+        */
+
+        switch (period.toLowerCase()) {
+
+            case "today":
+
+                return await getTodayNutrition(
+                    client,
+                    assignment.client_user_id,
+                    profile
+                );
+
+            case "week":
+
+                return await getWeeklyNutrition(
+                    client,
+                    assignment.client_user_id,
+                    profile
+                );
+
+            case "month":
+
+                return await getMonthlyNutrition(
+                    client,
+                    assignment.client_user_id,
+                    profile
+                );
+
+            case "history":
+
+                return await getNutritionHistory(
+                    client,
+                    assignment.client_user_id,
+                    profile
+                );
+
+            default:
+
+                throw new Error(
+                    "Invalid nutrition period."
+                );
+
+        }
+
+    }
+
+    finally {
+
+        client.release();
+
+    }
+
+};
+
+async function getTodayNutrition(
+    client,
+    userId,
+    profile
+) {
+
+    /* ---------------------------------------------
+       TODAY NUTRITION
+    ---------------------------------------------- */
+
+    const nutritionResult =
+        await client.query(
+            `
+            SELECT
+
+                total_calories,
+
+                protein,
+
+                carbs,
+
+                fats,
+
+                fiber
+
+            FROM daily_nutrition
+
+            WHERE
+
+                user_id = $1
+
+                AND date = CURRENT_DATE
+
+            LIMIT 1
+            `,
+            [
+                userId
+            ]
+        );
+
+    const nutrition =
+        nutritionResult.rows.length
+            ? nutritionResult.rows[0]
+            : null;
+
+
+    /* ---------------------------------------------
+       TODAY MEALS
+    ---------------------------------------------- */
+
+    const mealResult =
+        await client.query(
+            `
+            SELECT
+
+                id,
+
+                meal_type,
+
+                calories,
+
+                protein,
+
+                carbs,
+
+                fats,
+
+                fiber,
+
+                food_items,
+
+                created_at
+
+            FROM meal_entries
+
+            WHERE
+
+                user_id = $1
+
+                AND DATE(created_at) = CURRENT_DATE
+
+            ORDER BY created_at ASC
+            `,
+            [
+                userId
+            ]
+        );
+
+    const meals =
+        mealResult.rows;
+
+
+    /* ---------------------------------------------
+       DEFAULTS
+    ---------------------------------------------- */
+
+    const totalCalories =
+        Number(
+            nutrition?.total_calories || 0
+        );
+
+    const protein =
+        Number(
+            nutrition?.protein || 0
+        );
+
+    const carbs =
+        Number(
+            nutrition?.carbs || 0
+        );
+
+    const fats =
+        Number(
+            nutrition?.fats || 0
+        );
+
+    const fiber =
+        Number(
+            nutrition?.fiber || 0
+        );
+
+
+    /* ---------------------------------------------
+       RESPONSE
+    ---------------------------------------------- */
+
+    return {
+
+        period: "today",
+
+        summary: {
+
+            calories: totalCalories,
+
+            protein,
+
+            carbs,
+
+            fats,
+
+            fiber
+
+        },
+
+        targets: {
+
+            calories:
+                Number(
+                    profile.target_calories || 0
+                ),
+
+            protein:
+                Number(
+                    profile.protein_target || 0
+                ),
+
+            carbs:
+                Number(
+                    profile.carbs_target || 0
+                ),
+
+            fats:
+                Number(
+                    profile.fats_target || 0
+                )
+
+        },
+
+        remaining: {
+
+            calories:
+                Math.max(
+                    Number(profile.target_calories || 0) -
+                    totalCalories,
+                    0
+                ),
+
+            protein:
+                Math.max(
+                    Number(profile.protein_target || 0) -
+                    protein,
+                    0
+                ),
+
+            carbs:
+                Math.max(
+                    Number(profile.carbs_target || 0) -
+                    carbs,
+                    0
+                ),
+
+            fats:
+                Math.max(
+                    Number(profile.fats_target || 0) -
+                    fats,
+                    0
+                )
+
+        },
+
+        meals,
+
+        insights: []
+
+    };
+
+}
+
+
+async function getWeeklyNutrition(
+    client,
+    userId,
+    profile
+) {
+
+    return {
+
+        period: "week"
+
+    };
+
+}
+
+
+async function getMonthlyNutrition(
+    client,
+    userId,
+    profile
+) {
+
+    return {
+
+        period: "month"
+
+    };
+
+}
+
+
+async function getNutritionHistory(
+    client,
+    userId,
+    profile
+) {
+
+    return {
+
+        period: "history"
+
+    };
+
+}
+
+

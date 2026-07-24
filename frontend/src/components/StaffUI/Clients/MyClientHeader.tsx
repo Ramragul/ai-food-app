@@ -24,12 +24,18 @@ const formatGoal = (goal: string) =>
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(" ");
 
-const capitalize = (value: string) =>
-    value.charAt(0).toUpperCase() + value.slice(1);
+const capitalize = (value?: string) =>
+    value?.charAt(0).toUpperCase() + value?.slice(1);
 
 const MyClientHeader = ({ client }: Props) => {
 
-    const { fitness_profile, consent } = client;
+    // const { fitness_profile, consent } = client;
+
+    const fitness_profile =
+    client.fitness_profile ?? {};
+
+    const consent =
+    client.consent ?? {};
 
     return (
 
@@ -88,7 +94,7 @@ const MyClientHeader = ({ client }: Props) => {
                             <Badge colorScheme="purple">
 
                                 {formatGoal(
-                                    fitness_profile.goal_type
+                                    fitness_profile?.goal_type
                                 )}
 
                             </Badge>
@@ -96,7 +102,7 @@ const MyClientHeader = ({ client }: Props) => {
                             <Badge colorScheme="blue">
 
                                 {capitalize(
-                                    fitness_profile.activity_level
+                                    fitness_profile?.activity_level
                                 )}
 
                             </Badge>

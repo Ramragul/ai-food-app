@@ -1,6 +1,6 @@
 import {
   getMyClientsService , getDashboardService, getClientDetailsService , getCoachNotesService,createCoachNoteService,updateCoachNoteService, 
-  deleteCoachNoteService, getClientActivityService, assignClientGoalService
+  deleteCoachNoteService, getClientActivityService, assignClientGoalService, getNutritionIntelligenceService
 } from "../services/coach/coach.service.js";
 
 /* ==========================================
@@ -372,6 +372,51 @@ export const assignClientGoal = async (req, res) => {
         return res.status(500).json({
 
             message: err.message
+
+        });
+
+    }
+
+};
+
+
+
+
+export const getNutritionIntelligence = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const data =
+            await getNutritionIntelligenceService(
+
+                req.user.id,
+
+                Number(req.params.memberId),
+
+                req.query.period || "today"
+
+            );
+
+        return res.json({
+
+            success: true,
+
+            data
+
+        });
+
+    }
+
+    catch (err) {
+
+        console.error(err);
+
+        return res.status(500).json({
+
+            error: err.message
 
         });
 

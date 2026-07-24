@@ -72,10 +72,14 @@ const MyClientPage = () => {
 
         try {
 
+            console.log("load client is loading")
+
             const data =
                 await getClientDetails(
                     Number(memberId)
                 );
+
+                console.log("data is " +JSON.stringify(data))
 
             setClient(data);
 
@@ -99,11 +103,15 @@ const MyClientPage = () => {
 
     }
 
+   
+
     if (!client) {
 
         return null;
 
     }
+
+    
 
     return (
 
@@ -146,7 +154,7 @@ const MyClientPage = () => {
             />
 
 
-            <Grid
+            {/* <Grid
     templateColumns={{
         base: "1fr",
         xl: "1fr 1fr"
@@ -168,9 +176,39 @@ const MyClientPage = () => {
     client={client}
     onSuccess={loadClient}
   />
-)}
+ )} 
+
+</Grid> */}
+
+<Grid
+    templateColumns={{
+        base: "1fr",
+        xl: "1fr 1fr"
+    }}
+    gap={6}
+>
+
+    <MyClientProfileCard
+        client={client}
+    />
+
+    <MyClientNutritionCard
+        client={client}
+    />
 
 </Grid>
+
+{client.permissions.can_create_goal && (
+    <Box mt={6}>
+        <GoalAssignment
+            memberId={Number(memberId)}
+            client={client}
+            onSuccess={loadClient}
+        />
+    </Box>
+)}
+
+
     {/* <VStack
         spacing={6}
         mt={6}

@@ -2,7 +2,7 @@ import express from "express";
 
 import {
   getMyClients,  getDashboard, getClientDetails , getCoachNotes, createCoachNote , updateCoachNote,
-   deleteCoachNote,getClientActivity,assignClientGoal
+   deleteCoachNote,getClientActivity,assignClientGoal, getNutritionIntelligence
 } from "../controllers/coach.controller.js";
 
 import {
@@ -70,6 +70,15 @@ router.post(
     authMiddleware,
     assignClientGoal
 );
+
+
+router.get(
+    "/client/:memberId/nutrition-intelligence",
+    authMiddleware,
+    getNutritionIntelligence
+);
+
+
 
 // router.get(
 

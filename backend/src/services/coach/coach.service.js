@@ -484,97 +484,7 @@ export const getMyClientsService = async (
 
   );
 
-      // return {
 
-      //   assignment_id:
-      //     row.assignment_id,
-
-      //   assigned_at:
-      //     row.assigned_at,
-
-      //   organization_id:
-      //     row.organization_id,
-
-      //   organization_name:
-      //     row.organization_name,
-
-      //   member_id:
-      //     row.client_member_id,
-
-      //   user_id:
-      //     row.client_user_id,
-
-      //   name:
-      //     row.name,
-
-      //   nickname:
-      //     row.nickname,
-
-      //   mobile:
-      //     row.mobile,
-
-      //   email:
-      //     row.email,
-
-      //   consent_granted:
-      //     row.consent_granted,
-
-      //   goal_type:
-      //     row.goal_type,
-
-      //   height_cm:
-      //     row.height_cm,
-
-      //   weight_kg:
-      //     row.weight_kg,
-
-      //   target_weight:
-      //     row.target_weight,
-
-      //   target_calories:
-      //     targetCalories,
-
-      //   target_protein:
-      //     Number(
-      //       row.protein_target || 0
-      //     ),
-
-      //   target_carbs:
-      //     Number(
-      //       row.carbs_target || 0
-      //     ),
-
-      //   target_fats:
-      //     Number(
-      //       row.fats_target || 0
-      //     ),
-
-      //   consumed_calories:
-      //     consumedCalories,
-
-      //   consumed_protein:
-      //     Number(
-      //       row.consumed_protein || 0
-      //     ),
-
-      //   consumed_carbs:
-      //     Number(
-      //       row.consumed_carbs || 0
-      //     ),
-
-      //   consumed_fats:
-      //     Number(
-      //       row.consumed_fats || 0
-      //     ),
-
-      //   consumed_fiber:
-      //     Number(
-      //       row.consumed_fiber || 0
-      //     ),
-
-      //   status
-
-      // };
 
 
       return {
@@ -2908,9 +2818,135 @@ async function getNutritionHistory(
     profile
 ) {
 
+    const normalizeNumber = (value) =>
+        Math.round(Number(value ?? 0));
+
+    /* ---------------------------------------------
+       LOAD HISTORY
+    ---------------------------------------------- */
+
+    const nutritionResult = await client.query(
+        `
+        SELECT
+
+            date,
+
+            total_calories,
+
+            protein,
+
+            carbs,
+
+            fats,
+
+            fiber
+
+        FROM daily_nutrition
+
+        WHERE
+
+            user_id = $1
+
+        ORDER BY date DESC
+        `,
+        [
+            userId
+        ]
+    );
+
+    /* ---------------------------------------------
+       TARGETS
+    ---------------------------------------------- */
+
+    const targets = {
+
+        calories: normalizeNumber(
+            profile.target_calories
+        ),
+
+        protein: normalizeNumber(
+            profile.protein_target
+        ),
+
+        carbs: normalizeNumber(
+            profile.carbs_target
+        ),
+
+        fats: normalizeNumber(
+            profile.fats_target
+        )
+
+    };
+
+    /* ---------------------------------------------
+       HISTORY
+    ---------------------------------------------- */
+
+    const history = nutritionResult.rows.map(row => {
+
+        const calories = normalizeNumber(
+            row.total_calories
+        );
+
+        return {
+
+            date: row.date,
+
+            calories,
+
+            protein: normalizeNumber(
+                row.protein
+            ),
+
+            carbs: normalizeNumber(
+                row.carbs
+            ),
+
+            fats: normalizeNumber(
+                row.fats
+            ),
+
+            fiber: normalizeNumber(
+                row.fiber
+            ),
+
+            calorie_completion:
+
+                targets.calories > 0
+
+                    ? Math.min(
+                        100,
+                        Math.round(
+                            calories * 100 /
+                            targets.calories
+                        )
+                    )
+
+                    : 0
+
+        };
+
+    });
+
+    /* ---------------------------------------------
+       RESPONSE
+    ---------------------------------------------- */
+
     return {
 
-        period: "history"
+        period: "history",
+
+        targets,
+
+        history,
+
+        meta: {
+
+            generated_at: new Date().toISOString(),
+
+            total_days: history.length
+
+        }
 
     };
 

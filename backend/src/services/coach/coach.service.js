@@ -1929,6 +1929,215 @@ export const getNutritionIntelligenceService = async (
 
 };
 
+// async function getTodayNutrition(
+//     client,
+//     userId,
+//     profile
+// ) {
+
+//     /* ---------------------------------------------
+//        TODAY NUTRITION
+//     ---------------------------------------------- */
+
+//     const nutritionResult =
+//         await client.query(
+//             `
+//             SELECT
+
+//                 total_calories,
+
+//                 protein,
+
+//                 carbs,
+
+//                 fats,
+
+//                 fiber
+
+//             FROM daily_nutrition
+
+//             WHERE
+
+//                 user_id = $1
+
+//                 AND date = CURRENT_DATE
+
+//             LIMIT 1
+//             `,
+//             [
+//                 userId
+//             ]
+//         );
+
+//     const nutrition =
+//         nutritionResult.rows.length
+//             ? nutritionResult.rows[0]
+//             : null;
+
+
+//     /* ---------------------------------------------
+//        TODAY MEALS
+//     ---------------------------------------------- */
+
+//     const mealResult =
+//         await client.query(
+//             `
+//             SELECT
+
+//                 id,
+
+//                 meal_type,
+
+//                 calories,
+
+//                 protein,
+
+//                 carbs,
+
+//                 fats,
+
+//                 fiber,
+
+//                 food_items,
+
+//                 created_at
+
+//             FROM meal_entries
+
+//             WHERE
+
+//                 user_id = $1
+
+//                 AND DATE(created_at) = CURRENT_DATE
+
+//             ORDER BY created_at ASC
+//             `,
+//             [
+//                 userId
+//             ]
+//         );
+
+//     const meals =
+//         mealResult.rows;
+
+
+//     /* ---------------------------------------------
+//        DEFAULTS
+//     ---------------------------------------------- */
+
+//     const totalCalories =
+//         Number(
+//             nutrition?.total_calories || 0
+//         );
+
+//     const protein =
+//         Number(
+//             nutrition?.protein || 0
+//         );
+
+//     const carbs =
+//         Number(
+//             nutrition?.carbs || 0
+//         );
+
+//     const fats =
+//         Number(
+//             nutrition?.fats || 0
+//         );
+
+//     const fiber =
+//         Number(
+//             nutrition?.fiber || 0
+//         );
+
+
+//     /* ---------------------------------------------
+//        RESPONSE
+//     ---------------------------------------------- */
+
+//     return {
+
+//         period: "today",
+
+//         summary: {
+
+//             calories: totalCalories,
+
+//             protein,
+
+//             carbs,
+
+//             fats,
+
+//             fiber
+
+//         },
+
+//         targets: {
+
+//             calories:
+//                 Number(
+//                     profile.target_calories || 0
+//                 ),
+
+//             protein:
+//                 Number(
+//                     profile.protein_target || 0
+//                 ),
+
+//             carbs:
+//                 Number(
+//                     profile.carbs_target || 0
+//                 ),
+
+//             fats:
+//                 Number(
+//                     profile.fats_target || 0
+//                 )
+
+//         },
+
+//         remaining: {
+
+//             calories:
+//                 Math.max(
+//                     Number(profile.target_calories || 0) -
+//                     totalCalories,
+//                     0
+//                 ),
+
+//             protein:
+//                 Math.max(
+//                     Number(profile.protein_target || 0) -
+//                     protein,
+//                     0
+//                 ),
+
+//             carbs:
+//                 Math.max(
+//                     Number(profile.carbs_target || 0) -
+//                     carbs,
+//                     0
+//                 ),
+
+//             fats:
+//                 Math.max(
+//                     Number(profile.fats_target || 0) -
+//                     fats,
+//                     0
+//                 )
+
+//         },
+
+//         meals,
+
+//         insights: []
+
+//     };
+
+// }
+
+
 async function getTodayNutrition(
     client,
     userId,
@@ -1936,11 +2145,15 @@ async function getTodayNutrition(
 ) {
 
     /* ---------------------------------------------
-       TODAY NUTRITION
+       LOAD TODAY'S DATA (RUN IN PARALLEL)
     ---------------------------------------------- */
 
-    const nutritionResult =
-        await client.query(
+    const [
+        nutritionResult,
+        mealResult
+    ] = await Promise.all([
+
+        client.query(
             `
             SELECT
 
@@ -1967,20 +2180,9 @@ async function getTodayNutrition(
             [
                 userId
             ]
-        );
+        ),
 
-    const nutrition =
-        nutritionResult.rows.length
-            ? nutritionResult.rows[0]
-            : null;
-
-
-    /* ---------------------------------------------
-       TODAY MEALS
-    ---------------------------------------------- */
-
-    const mealResult =
-        await client.query(
+        client.query(
             `
             SELECT
 
@@ -2008,47 +2210,105 @@ async function getTodayNutrition(
 
                 user_id = $1
 
-                AND DATE(created_at) = CURRENT_DATE
+                AND created_at >= CURRENT_DATE
+                AND created_at < CURRENT_DATE + INTERVAL '1 day'
 
             ORDER BY created_at ASC
             `,
             [
                 userId
             ]
-        );
+        )
 
-    const meals =
-        mealResult.rows;
+    ]);
 
 
     /* ---------------------------------------------
-       DEFAULTS
+       NUTRITION SUMMARY
     ---------------------------------------------- */
 
-    const totalCalories =
-        Number(
-            nutrition?.total_calories || 0
-        );
+    const nutrition =
+        nutritionResult.rows.length
+            ? nutritionResult.rows[0]
+            : null;
 
-    const protein =
-        Number(
-            nutrition?.protein || 0
-        );
+    const summary = {
 
-    const carbs =
-        Number(
-            nutrition?.carbs || 0
-        );
+        calories: Number(
+            nutrition?.total_calories ?? 0
+        ),
 
-    const fats =
-        Number(
-            nutrition?.fats || 0
-        );
+        protein: Number(
+            nutrition?.protein ?? 0
+        ),
 
-    const fiber =
-        Number(
-            nutrition?.fiber || 0
-        );
+        carbs: Number(
+            nutrition?.carbs ?? 0
+        ),
+
+        fats: Number(
+            nutrition?.fats ?? 0
+        ),
+
+        fiber: Number(
+            nutrition?.fiber ?? 0
+        )
+
+    };
+
+
+    /* ---------------------------------------------
+       DAILY TARGETS
+    ---------------------------------------------- */
+
+    const targets = {
+
+        calories: Number(
+            profile.target_calories ?? 0
+        ),
+
+        protein: Number(
+            profile.protein_target ?? 0
+        ),
+
+        carbs: Number(
+            profile.carbs_target ?? 0
+        ),
+
+        fats: Number(
+            profile.fats_target ?? 0
+        )
+
+    };
+
+
+    /* ---------------------------------------------
+       REMAINING
+    ---------------------------------------------- */
+
+    const remaining = {
+
+        calories: Math.max(
+            targets.calories - summary.calories,
+            0
+        ),
+
+        protein: Math.max(
+            targets.protein - summary.protein,
+            0
+        ),
+
+        carbs: Math.max(
+            targets.carbs - summary.carbs,
+            0
+        ),
+
+        fats: Math.max(
+            targets.fats - summary.fats,
+            0
+        )
+
+    };
 
 
     /* ---------------------------------------------
@@ -2059,79 +2319,21 @@ async function getTodayNutrition(
 
         period: "today",
 
-        summary: {
+        summary,
 
-            calories: totalCalories,
+        targets,
 
-            protein,
+        remaining,
 
-            carbs,
+        meals: mealResult.rows,
 
-            fats,
+        insights: [],
 
-            fiber
+        meta: {
 
-        },
+            generated_at: new Date().toISOString()
 
-        targets: {
-
-            calories:
-                Number(
-                    profile.target_calories || 0
-                ),
-
-            protein:
-                Number(
-                    profile.protein_target || 0
-                ),
-
-            carbs:
-                Number(
-                    profile.carbs_target || 0
-                ),
-
-            fats:
-                Number(
-                    profile.fats_target || 0
-                )
-
-        },
-
-        remaining: {
-
-            calories:
-                Math.max(
-                    Number(profile.target_calories || 0) -
-                    totalCalories,
-                    0
-                ),
-
-            protein:
-                Math.max(
-                    Number(profile.protein_target || 0) -
-                    protein,
-                    0
-                ),
-
-            carbs:
-                Math.max(
-                    Number(profile.carbs_target || 0) -
-                    carbs,
-                    0
-                ),
-
-            fats:
-                Math.max(
-                    Number(profile.fats_target || 0) -
-                    fats,
-                    0
-                )
-
-        },
-
-        meals,
-
-        insights: []
+        }
 
     };
 

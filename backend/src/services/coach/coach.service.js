@@ -2890,7 +2890,7 @@ async function getNutritionHistory(
 
         return {
 
-            date: row.date,
+            date: row.date.toISOString().split("T")[0],
 
             calories,
 

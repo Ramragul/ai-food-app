@@ -2317,6 +2317,45 @@ async function getTodayNutrition(
     };
 
 
+
+    // Meal Result Normalisation 
+
+
+    const meals = mealResult.rows.map(meal => ({
+
+    ...meal,
+
+    calories: normalizeNumber(meal.calories),
+
+    protein: normalizeNumber(meal.protein),
+
+    carbs: normalizeNumber(meal.carbs),
+
+    fats: normalizeNumber(meal.fats),
+
+    fiber: normalizeNumber(meal.fiber),
+
+    food_items: meal.food_items.map(food => ({
+
+        ...food,
+
+        calories: normalizeNumber(food.calories),
+
+        protein: normalizeNumber(food.protein),
+
+        carbs: normalizeNumber(food.carbs),
+
+        fats: normalizeNumber(food.fats),
+
+        fiber: normalizeNumber(food.fiber),
+
+        grams: normalizeNumber(food.grams)
+
+    }))
+
+}));
+
+
     /* ---------------------------------------------
        RESPONSE
     ---------------------------------------------- */
@@ -2331,7 +2370,7 @@ async function getTodayNutrition(
 
         remaining,
 
-        meals: mealResult.rows,
+        meals,
 
         insights: [],
 

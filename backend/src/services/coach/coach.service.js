@@ -6,6 +6,8 @@ import {
 } from "../profile/profile.service.js";
 
 
+import { generateNutritionInsights } from "../../helpers/nutritionInsights.helper.js";
+
 const getClientStatus = (
 
   consumedCalories,
@@ -2355,6 +2357,13 @@ async function getTodayNutrition(
 
 }));
 
+const insights = generateNutritionInsights(
+    "today",
+    summary,
+    targets,
+    []
+);
+
 
     /* ---------------------------------------------
        RESPONSE
@@ -2372,7 +2381,7 @@ async function getTodayNutrition(
 
         meals,
 
-        insights: [],
+        insights,
 
         meta: {
 
@@ -2590,6 +2599,13 @@ async function getWeeklyNutrition(
 
     };
 
+    const insights = generateNutritionInsights(
+    "week",
+    summary,
+    targets,
+    days
+);
+
     /* ---------------------------------------------
        RESPONSE
     ---------------------------------------------- */
@@ -2604,7 +2620,7 @@ async function getWeeklyNutrition(
 
         days,
 
-        insights: [],
+        insights,
 
         meta: {
 
@@ -2848,6 +2864,13 @@ async function getMonthlyNutrition(
 
     };
 
+    const insights = generateNutritionInsights(
+    "month",
+    summary,
+    targets,
+    days
+);
+
     /* ---------------------------------------------
        RESPONSE
     ---------------------------------------------- */
@@ -2862,7 +2885,7 @@ async function getMonthlyNutrition(
 
         days,
 
-        insights: [],
+        insights,
 
         meta: {
 

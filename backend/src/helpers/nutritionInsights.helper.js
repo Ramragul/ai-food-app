@@ -229,8 +229,3 @@ export const generateNutritionInsights = (
 
 }
 
-module.exports = {
-
-    generateNutritionInsights
-
-};

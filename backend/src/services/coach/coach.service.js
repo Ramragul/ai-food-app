@@ -2391,9 +2391,230 @@ async function getWeeklyNutrition(
     profile
 ) {
 
+    const normalizeNumber = (value) =>
+        Math.round(Number(value ?? 0));
+
+    /* ---------------------------------------------
+       LOAD LAST 7 DAYS
+    ---------------------------------------------- */
+
+    const nutritionResult = await client.query(
+        `
+        SELECT
+
+            date,
+
+            total_calories,
+
+            protein,
+
+            carbs,
+
+            fats,
+
+            fiber
+
+        FROM daily_nutrition
+
+        WHERE
+
+            user_id = $1
+
+            AND date >= CURRENT_DATE - INTERVAL '6 days'
+
+        ORDER BY date ASC
+        `,
+        [
+            userId
+        ]
+    );
+
+    /* ---------------------------------------------
+       CREATE LOOKUP MAP
+    ---------------------------------------------- */
+
+    const nutritionMap = new Map();
+
+    nutritionResult.rows.forEach(row => {
+
+        nutritionMap.set(
+
+            row.date.toISOString().split("T")[0],
+
+            row
+
+        );
+
+    });
+
+    /* ---------------------------------------------
+       BUILD LAST 7 DAYS
+    ---------------------------------------------- */
+
+    const days = [];
+
+    let totalCalories = 0;
+    let totalProtein = 0;
+    let totalCarbs = 0;
+    let totalFats = 0;
+    let totalFiber = 0;
+
+    for (let i = 6; i >= 0; i--) {
+
+        const date = new Date();
+
+        date.setDate(date.getDate() - i);
+
+        const dateKey = date.toISOString().split("T")[0];
+
+        const nutrition = nutritionMap.get(dateKey);
+
+        const calories = normalizeNumber(
+            nutrition?.total_calories
+        );
+
+        const protein = normalizeNumber(
+            nutrition?.protein
+        );
+
+        const carbs = normalizeNumber(
+            nutrition?.carbs
+        );
+
+        const fats = normalizeNumber(
+            nutrition?.fats
+        );
+
+        const fiber = normalizeNumber(
+            nutrition?.fiber
+        );
+
+        totalCalories += calories;
+        totalProtein += protein;
+        totalCarbs += carbs;
+        totalFats += fats;
+        totalFiber += fiber;
+
+        days.push({
+
+            date: dateKey,
+
+            day: date.toLocaleDateString(
+                "en-US",
+                {
+                    weekday: "short"
+                }
+            ),
+
+            calories,
+
+            protein,
+
+            carbs,
+
+            fats,
+
+            fiber
+
+        });
+
+    }
+
+    /* ---------------------------------------------
+       SUMMARY
+    ---------------------------------------------- */
+
+    const summary = {
+
+        average: {
+
+            calories: normalizeNumber(
+                totalCalories / 7
+            ),
+
+            protein: normalizeNumber(
+                totalProtein / 7
+            ),
+
+            carbs: normalizeNumber(
+                totalCarbs / 7
+            ),
+
+            fats: normalizeNumber(
+                totalFats / 7
+            ),
+
+            fiber: normalizeNumber(
+                totalFiber / 7
+            )
+
+        },
+
+        total: {
+
+            calories: totalCalories,
+
+            protein: totalProtein,
+
+            carbs: totalCarbs,
+
+            fats: totalFats,
+
+            fiber: totalFiber
+
+        }
+
+    };
+
+    /* ---------------------------------------------
+       TARGETS
+    ---------------------------------------------- */
+
+    const targets = {
+
+        calories: normalizeNumber(
+            profile.target_calories
+        ),
+
+        protein: normalizeNumber(
+            profile.protein_target
+        ),
+
+        carbs: normalizeNumber(
+            profile.carbs_target
+        ),
+
+        fats: normalizeNumber(
+            profile.fats_target
+        )
+
+    };
+
+    /* ---------------------------------------------
+       RESPONSE
+    ---------------------------------------------- */
+
     return {
 
-        period: "week"
+        period: "week",
+
+        summary,
+
+        targets,
+
+        days,
+
+        insights: [],
+
+        meta: {
+
+            generated_at: new Date().toISOString(),
+
+            start_date: days[0].date,
+
+            end_date: days[days.length - 1].date
+
+        }
 
     };
 

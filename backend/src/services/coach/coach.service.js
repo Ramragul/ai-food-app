@@ -2627,9 +2627,252 @@ async function getMonthlyNutrition(
     profile
 ) {
 
+    const normalizeNumber = (value) =>
+        Math.round(Number(value ?? 0));
+
+    /* ---------------------------------------------
+       LOAD CURRENT MONTH
+    ---------------------------------------------- */
+
+    const nutritionResult = await client.query(
+        `
+        SELECT
+
+            date,
+
+            total_calories,
+
+            protein,
+
+            carbs,
+
+            fats,
+
+            fiber
+
+        FROM daily_nutrition
+
+        WHERE
+
+            user_id = $1
+
+            AND date >= DATE_TRUNC('month', CURRENT_DATE)
+
+            AND date < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month'
+
+        ORDER BY date ASC
+        `,
+        [
+            userId
+        ]
+    );
+
+    /* ---------------------------------------------
+       CREATE LOOKUP MAP
+    ---------------------------------------------- */
+
+    const nutritionMap = new Map();
+
+    nutritionResult.rows.forEach(row => {
+
+        nutritionMap.set(
+
+            row.date.toISOString().split("T")[0],
+
+            row
+
+        );
+
+    });
+
+    /* ---------------------------------------------
+       MONTH DETAILS
+    ---------------------------------------------- */
+
+    const today = new Date();
+
+    const year = today.getFullYear();
+
+    const month = today.getMonth();
+
+    const totalDaysInMonth = new Date(
+        year,
+        month + 1,
+        0
+    ).getDate();
+
+    /* ---------------------------------------------
+       BUILD MONTH DATA
+    ---------------------------------------------- */
+
+    const days = [];
+
+    let totalCalories = 0;
+    let totalProtein = 0;
+    let totalCarbs = 0;
+    let totalFats = 0;
+    let totalFiber = 0;
+
+    for (let day = 1; day <= totalDaysInMonth; day++) {
+
+        const currentDate = new Date(
+            year,
+            month,
+            day
+        );
+
+        const dateKey =
+            currentDate.toISOString().split("T")[0];
+
+        const nutrition =
+            nutritionMap.get(dateKey);
+
+        const calories = normalizeNumber(
+            nutrition?.total_calories
+        );
+
+        const protein = normalizeNumber(
+            nutrition?.protein
+        );
+
+        const carbs = normalizeNumber(
+            nutrition?.carbs
+        );
+
+        const fats = normalizeNumber(
+            nutrition?.fats
+        );
+
+        const fiber = normalizeNumber(
+            nutrition?.fiber
+        );
+
+        totalCalories += calories;
+        totalProtein += protein;
+        totalCarbs += carbs;
+        totalFats += fats;
+        totalFiber += fiber;
+
+        days.push({
+
+            date: dateKey,
+
+            day: currentDate.toLocaleDateString(
+                "en-US",
+                {
+                    weekday: "short"
+                }
+            ),
+
+            calories,
+
+            protein,
+
+            carbs,
+
+            fats,
+
+            fiber
+
+        });
+
+    }
+
+    /* ---------------------------------------------
+       SUMMARY
+    ---------------------------------------------- */
+
+    const summary = {
+
+        average: {
+
+            calories: normalizeNumber(
+                totalCalories / totalDaysInMonth
+            ),
+
+            protein: normalizeNumber(
+                totalProtein / totalDaysInMonth
+            ),
+
+            carbs: normalizeNumber(
+                totalCarbs / totalDaysInMonth
+            ),
+
+            fats: normalizeNumber(
+                totalFats / totalDaysInMonth
+            ),
+
+            fiber: normalizeNumber(
+                totalFiber / totalDaysInMonth
+            )
+
+        },
+
+        total: {
+
+            calories: totalCalories,
+
+            protein: totalProtein,
+
+            carbs: totalCarbs,
+
+            fats: totalFats,
+
+            fiber: totalFiber
+
+        }
+
+    };
+
+    /* ---------------------------------------------
+       TARGETS
+    ---------------------------------------------- */
+
+    const targets = {
+
+        calories: normalizeNumber(
+            profile.target_calories
+        ),
+
+        protein: normalizeNumber(
+            profile.protein_target
+        ),
+
+        carbs: normalizeNumber(
+            profile.carbs_target
+        ),
+
+        fats: normalizeNumber(
+            profile.fats_target
+        )
+
+    };
+
+    /* ---------------------------------------------
+       RESPONSE
+    ---------------------------------------------- */
+
     return {
 
-        period: "month"
+        period: "month",
+
+        summary,
+
+        targets,
+
+        days,
+
+        insights: [],
+
+        meta: {
+
+            generated_at: new Date().toISOString(),
+
+            start_date: days[0].date,
+
+            end_date: days[days.length - 1].date
+
+        }
 
     };
 

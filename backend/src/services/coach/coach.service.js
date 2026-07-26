@@ -2144,8 +2144,11 @@ async function getTodayNutrition(
     profile
 ) {
 
-  const normalizeNumber = value =>
-    Number(Number(value ?? 0).toFixed(1));
+  // const normalizeNumber = value =>
+  //   Number(Number(value ?? 0).toFixed(1));
+
+  const normalizeNumber = (value) =>
+    Math.round(value || 0);
 
     /* ---------------------------------------------
        LOAD TODAY'S DATA (RUN IN PARALLEL)

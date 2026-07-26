@@ -2144,6 +2144,9 @@ async function getTodayNutrition(
     profile
 ) {
 
+  const normalizeNumber = value =>
+    Number(Number(value ?? 0).toFixed(1));
+
     /* ---------------------------------------------
        LOAD TODAY'S DATA (RUN IN PARALLEL)
     ---------------------------------------------- */
@@ -2234,23 +2237,23 @@ async function getTodayNutrition(
 
     const summary = {
 
-        calories: Number(
+        calories: normalizeNumber(
             nutrition?.total_calories ?? 0
         ),
 
-        protein: Number(
+        protein: normalizeNumber(
             nutrition?.protein ?? 0
         ),
 
-        carbs: Number(
+        carbs: normalizeNumber(
             nutrition?.carbs ?? 0
         ),
 
-        fats: Number(
+        fats: normalizeNumber(
             nutrition?.fats ?? 0
         ),
 
-        fiber: Number(
+        fiber: normalizeNumber(
             nutrition?.fiber ?? 0
         )
 

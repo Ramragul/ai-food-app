@@ -8,6 +8,7 @@ import {
 
 import { generateNutritionInsights } from "../../helpers/nutritionInsights.helper.js";
 import {generateNutritionScore} from "../../helpers/nutritionScore.helper.js";
+import {generateCoachInsights} from "../../helpers/coachInsights.helper.js";
 
 const getClientStatus = (
 
@@ -2284,6 +2285,13 @@ const nutritionScore =
     );
 
 
+    const coachInsights =
+    generateCoachInsights(
+        summary,
+        targets,
+        []
+    );
+
     /* ---------------------------------------------
        RESPONSE
     ---------------------------------------------- */
@@ -2303,6 +2311,8 @@ const nutritionScore =
         nutrition_score: nutritionScore,
 
         insights,
+
+        coach_insights: coachInsights,
 
         meta: {
 
@@ -2534,6 +2544,13 @@ const nutritionScore =
         targets,
         days
     );
+
+        const coachInsights =
+    generateCoachInsights(
+        summary,
+        targets,
+        days
+    );
     /* ---------------------------------------------
        RESPONSE
     ---------------------------------------------- */
@@ -2549,6 +2566,8 @@ const nutritionScore =
         days,
 
         insights,
+
+        coach_insights: coachInsights,
 
         nutrition_score: nutritionScore,
 
@@ -2809,6 +2828,13 @@ const nutritionScore =
         days
     );
 
+            const coachInsights =
+    generateCoachInsights(
+        summary,
+        targets,
+        days
+    );
+
     /* ---------------------------------------------
        RESPONSE
     ---------------------------------------------- */
@@ -2824,6 +2850,8 @@ const nutritionScore =
         days,
 
         insights,
+
+        coach_insights: coachInsights,
 
         nutrition_score: nutritionScore,
 

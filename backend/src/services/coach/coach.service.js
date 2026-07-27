@@ -1207,7 +1207,7 @@ const today =
         consumed: {
 
           calories:
-            today.calories,
+            today.total_calories,
 
           protein:
             today.protein,

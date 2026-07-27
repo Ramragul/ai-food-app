@@ -198,11 +198,14 @@ const MyClientPage = () => {
         client={client}
     />
 
-    <NutritionOverview
-    memberId={Number(memberId)}
-/>
 
 </Grid>
+
+<Box mt={6} w="100%">
+    <NutritionOverview
+        memberId={Number(memberId)}
+    />
+</Box>
 
 {client.permissions.can_create_goal && (
     <Box mt={6}>

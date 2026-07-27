@@ -3,6 +3,12 @@ import {
     AlertDescription,
     AlertIcon,
     AlertTitle,
+    Accordion,
+    AccordionItem,
+    AccordionButton,
+    AccordionPanel,
+    AccordionIcon,
+    Collapse,
     Badge,
     Box,
     Divider,
@@ -53,6 +59,7 @@ import {
 import type {
     NutritionIntelligence
 } from "../../../../services/staff/client.types";
+import AppleCard from "../../../Shared/Apple/AppleCard";
 
 interface Props{
 
@@ -133,6 +140,92 @@ const loadNutrition = async (
 
 };
 
+const displayNutrition =
+    period === "today"
+        ? nutrition?.summary
+        : nutrition?.total;
+
+const targetMultiplier =
+    period === "today"
+        ? 1
+        : nutrition?.timeline?.length ?? 0;
+
+const displayTargets = {
+
+    calories: (nutrition?.targets?.calories ?? 0) * targetMultiplier,
+
+    protein: (nutrition?.targets?.protein ?? 0) * targetMultiplier,
+
+    carbs: (nutrition?.targets?.carbs ?? 0) * targetMultiplier,
+
+    fats: (nutrition?.targets?.fats ?? 0) * targetMultiplier
+
+};
+
+// const displayRemaining = {
+
+//     calories: Math.max(
+//         0,
+//         displayTargets?.calories - displayNutrition?.calories
+//     ),
+
+//     protein: Math.max(
+//         0,
+//         displayTargets?.protein - displayNutrition?.protein
+//     ),
+
+//     carbs: Math.max(
+//         0,
+//         displayTargets?.carbs - displayNutrition?.carbs
+//     ),
+
+//     fats: Math.max(
+//         0,
+//         displayTargets?.fats - displayNutrition?.fats
+//     )
+
+// };
+
+const displayRemaining =
+    period === "today"
+        ? nutrition?.remaining!
+        : {
+
+            calories: Math.max(
+                0,
+                displayTargets?.calories - displayNutrition?.calories
+            ),
+
+            protein: Math.max(
+                0,
+                displayTargets?.protein - displayNutrition?.protein
+            ),
+
+            carbs: Math.max(
+                0,
+                displayTargets?.carbs - displayNutrition?.carbs
+            ),
+
+            fats: Math.max(
+                0,
+                displayTargets?.fats - displayNutrition?.fats
+            )
+
+        };
+
+
+        console.log("Period:", period);
+
+console.log("Display Nutrition:", displayNutrition);
+
+console.log("Display Targets:", displayTargets);
+
+console.log("Display Remaining:", displayRemaining);
+
+console.log("Timeline Length:", nutrition?.timeline?.length);
+
+console.log("Backend Targets:", nutrition?.targets);
+
     const completion=useMemo(()=>{
 
         if(!nutrition)
@@ -155,9 +248,9 @@ const loadNutrition = async (
 
                 100,
 
-                (nutrition.summary.calories/
+                (displayNutrition.calories/
 
-                nutrition.targets.calories)*100
+                displayTargets.calories)*100
 
             ),
 
@@ -165,9 +258,9 @@ const loadNutrition = async (
 
                 100,
 
-                (nutrition.summary.protein/
+                (displayNutrition.protein/
 
-                nutrition.targets.protein)*100
+                displayTargets.protein)*100
 
             ),
 
@@ -175,9 +268,9 @@ const loadNutrition = async (
 
                 100,
 
-                (nutrition.summary.carbs/
+                (displayNutrition.carbs/
 
-                nutrition.targets.carbs)*100
+                displayTargets.carbs)*100
 
             ),
 
@@ -185,15 +278,17 @@ const loadNutrition = async (
 
                 100,
 
-                (nutrition.summary.fats/
+                (displayNutrition.fats/
 
-                nutrition.targets.fats)*100
+                displayTargets.fats)*100
 
             )
 
         };
 
     },[nutrition]);
+
+
 
 
     const remaining = useMemo(() => {
@@ -251,6 +346,8 @@ if (loading) {
                     xl: 4
                 }}
                 spacing={6}
+                width="100%"
+
             >
                 {Array.from({ length: 4 }).map((_, index) => (
                     <Skeleton
@@ -375,10 +472,16 @@ if (loading) {
 
                 title={`${periodTitle} Nutrition`}
 
-                // subtitle="Today's intake compared to target"
-                subtitle={`Nutrition intake for ${periodTitle.toLowerCase()}`}
-            >
+              
+                // subtitle={`Nutrition intake for ${periodTitle.toLowerCase()}`}
 
+                subtitle={
+    period === "today"
+        ? "Today's nutrition intake"
+        : `Total nutrition intake for ${periodTitle.toLowerCase()}`
+}
+            >
+{/* 
                 <SimpleGrid
 
                     columns={{
@@ -393,53 +496,63 @@ if (loading) {
 
                     spacing={6}
 
-                >
+                > */}
+                <Grid
+    templateColumns="repeat(auto-fit,minmax(280px,1fr))"
+    gap={6}
+    w="100%"
+>
 
                                     <MetricCard
                         title="Calories"
                         icon={FiZap}
-                        value={nutrition?.summary?.calories ?? 0}
-                        target={nutrition?.targets?.calories ?? 0}
-                        remaining={remaining?.calories ?? 0}
+                        value={displayNutrition.calories ?? 0}
+                        target={displayTargets?.calories ?? 0}
+                        remaining={displayRemaining?.calories ?? 0}
                         progress={completion?.calories ?? 0}
                         unit="kcal"
                         color="orange"
+                      
                     />
 
                     <MetricCard
                         title="Protein"
                         icon={FiTrendingUp}
-                        value={nutrition?.summary?.protein ?? 0}
-                        target={nutrition?.targets?.protein ?? 0}
-                        remaining={remaining?.protein ?? 0}
+                        value={displayNutrition?.protein ?? 0}
+                        target={displayTargets?.protein ?? 0}
+                        remaining={displayRemaining?.protein ?? 0}
                         progress={completion?.protein ?? 0}
                         unit="g"
                         color="green"
+                    
                     />
 
                     <MetricCard
                         title="Carbs"
                         icon={FiActivity}
-                        value={nutrition?.summary?.carbs ?? 0}
-                        target={nutrition?.targets?.carbs ?? 0}
-                        remaining={remaining?.carbs ?? 0}
+                        value={displayNutrition.carbs ?? 0}
+                        target={displayTargets?.carbs ?? 0}
+                        remaining={displayRemaining?.carbs ?? 0}
                         progress={completion?.carbs ?? 0}
                         unit="g"
                         color="blue"
+                    
                     />
 
                     <MetricCard
                         title="Fats"
                         icon={FiTarget}
-                        value={nutrition?.summary?.fats ?? 0}
-                        target={nutrition?.targets?.fats ?? 0}
-                        remaining={remaining?.fats ?? 0}
+                        value={displayNutrition?.fats ?? 0}
+                        target={displayTargets?.fats ?? 0}
+                        remaining={displayRemaining?.fats ?? 0}
                         progress={completion?.fats ?? 0}
                         unit="g"
                         color="purple"
+                        w="100%"
+                        minH="220px"
                     />
 
-                </SimpleGrid>
+                </Grid>
 
             </AppleSection>
 
@@ -465,29 +578,29 @@ if (loading) {
 
                             <SummaryRow
                                 label="Calories"
-                                consumed={nutrition.summary.calories}
-                                target={nutrition.targets.calories}
+                                consumed={displayNutrition.calories}
+                                target={displayTargets.calories}
                                 color="orange"
                             />
 
                             <SummaryRow
                                 label="Protein"
-                                consumed={nutrition.summary.protein}
-                                target={nutrition.targets.protein}
+                                consumed={displayNutrition.protein}
+                                target={displayTargets.protein}
                                 color="green"
                             />
 
                             <SummaryRow
                                 label="Carbohydrates"
-                                consumed={nutrition.summary.carbs}
-                                target={nutrition.targets.carbs}
+                                consumed={displayNutrition.carbs}
+                                target={displayTargets.carbs}
                                 color="blue"
                             />
 
                             <SummaryRow
                                 label="Fats"
-                                consumed={nutrition.summary.fats}
-                                target={nutrition.targets.fats}
+                                consumed={displayNutrition.fats}
+                                target={displayTargets.fats}
                                 color="purple"
                             />
 
@@ -496,6 +609,8 @@ if (loading) {
                     </GridItem>
 
                     <GridItem>
+
+                        {period === "today" && (
 
                         <Box
                             borderRadius="2xl"
@@ -513,7 +628,11 @@ if (loading) {
                             <Stat>
 
                                 <StatLabel>
-                                    Today's Fiber
+                                   { period === "today"
+
+                                    ? "Today's Fiber"
+
+                                    : "Average Daily Fiber" }
                                 </StatLabel>
 
                                 <StatNumber>
@@ -530,6 +649,9 @@ if (loading) {
 
                             <Divider my={5} />
 
+                            
+                                
+
                             <Heading
                                 size="sm"
                                 mb={3}
@@ -544,31 +666,35 @@ if (loading) {
 
                                 <RemainingRow
                                     label="Calories"
-                                    value={remaining.calories}
+                                    value={displayRemaining?.calories}
                                     unit="kcal"
                                 />
 
                                 <RemainingRow
                                     label="Protein"
-                                    value={remaining.protein}
+                                    value={displayRemaining?.protein}
                                     unit="g"
                                 />
 
                                 <RemainingRow
                                     label="Carbs"
-                                    value={remaining.carbs}
+                                    value={displayRemaining?.carbs}
                                     unit="g"
                                 />
 
                                 <RemainingRow
                                     label="Fats"
-                                    value={remaining.fats}
+                                    value={displayRemaining?.fats}
                                     unit="g"
                                 />
 
                             </VStack>
+                            
+
+                            
 
                         </Box>
+                        )}
 
                     </GridItem>
 
@@ -677,6 +803,8 @@ if (loading) {
                 </VStack>
 
             </AppleSection>
+{/* 
+            {period === "today" && (
 
             <AppleSection
 
@@ -881,6 +1009,234 @@ if (loading) {
                 </VStack>
 
             </AppleSection>
+            )} */}
+
+
+            {period === "today" && (
+    <AppleSection
+        title={`${periodTitle} Meals`}
+        subtitle={`${nutrition.meals.length} meals logged during ${periodTitle.toLowerCase()}`}
+    >
+        <Accordion allowMultiple>
+            {nutrition.meals.map((meal) => (
+                <AccordionItem
+                    key={meal.id}
+                    border="none"
+                    mb={4}
+                >
+                    <AppleCard>
+
+                        <AccordionButton
+                            px={0}
+                            py={2}
+                            _hover={{ bg: "transparent" }}
+                        >
+                            <Flex
+                                flex="1"
+                                justify="space-between"
+                                align="center"
+                            >
+
+                                {/* Left Side */}
+                                <HStack spacing={4}>
+
+                                    <Box
+                                        bg="blue.50"
+                                        p={3}
+                                        borderRadius="xl"
+                                    >
+                                        <Text fontSize="xl">
+                                            {meal.meal_type === "Breakfast"
+                                                ? "🍳"
+                                                : meal.meal_type === "Lunch"
+                                                ? "🍛"
+                                                : meal.meal_type === "Dinner"
+                                                ? "🍽️"
+                                                : "🥜"}
+                                        </Text>
+                                    </Box>
+
+                                    <VStack
+                                        align="start"
+                                        spacing={0}
+                                    >
+                                        <Heading size="sm">
+                                            {meal.meal_type}
+                                        </Heading>
+
+                                        <Text
+                                            fontSize="sm"
+                                            color="gray.500"
+                                        >
+                                            {meal.food_items.length} foods
+                                        </Text>
+                                    </VStack>
+
+                                </HStack>
+
+                                {/* Right Side */}
+                                <HStack spacing={5}>
+
+                                    <VStack
+                                        spacing={0}
+                                        align="end"
+                                    >
+                                        <Text
+                                            fontWeight="700"
+                                        >
+                                            {meal.calories} kcal
+                                        </Text>
+
+                                        <Text
+                                            fontSize="xs"
+                                            color="green.500"
+                                        >
+                                            {meal.protein} g Protein
+                                        </Text>
+                                    </VStack>
+
+                                    <AccordionIcon />
+
+                                </HStack>
+
+                            </Flex>
+
+                        </AccordionButton>
+
+                        <AccordionPanel
+                            px={0}
+                            pt={5}
+                        >
+
+                            {/* Meal Macros */}
+
+                            <SimpleGrid
+                                columns={{
+                                    base: 2,
+                                    md: 4
+                                }}
+                                spacing={4}
+                                mb={5}
+                            >
+
+                                <MiniMacro
+                                    title="Protein"
+                                    value={meal.protein}
+                                />
+
+                                <MiniMacro
+                                    title="Carbs"
+                                    value={meal.carbs}
+                                />
+
+                                <MiniMacro
+                                    title="Fats"
+                                    value={meal.fats}
+                                />
+
+                                <MiniMacro
+                                    title="Fiber"
+                                    value={meal.fiber}
+                                />
+
+                            </SimpleGrid>
+
+                            <Divider mb={5} />
+
+                            {/* Food List */}
+
+                            <VStack
+                                spacing={4}
+                                align="stretch"
+                            >
+
+                                {meal.food_items.map((food, index) => (
+
+                                    <Flex
+                                        key={index}
+                                        justify="space-between"
+                                        align="center"
+                                        p={3}
+                                        bg="gray.50"
+                                        borderRadius="xl"
+                                    >
+
+                                        <VStack
+                                            align="start"
+                                            spacing={0}
+                                        >
+                                            <Text
+                                                fontWeight="600"
+                                            >
+                                                {food.name}
+                                            </Text>
+
+                                            <Text
+                                                fontSize="sm"
+                                                color="gray.500"
+                                            >
+                                                {food.serving.label}
+                                            </Text>
+                                        </VStack>
+
+                                        <Badge
+                                            colorScheme="green"
+                                            borderRadius="full"
+                                            px={3}
+                                            py={1}
+                                        >
+                                            {food.calories} kcal
+                                        </Badge>
+
+                                    </Flex>
+
+                                ))}
+
+                            </VStack>
+
+                            <Divider my={5} />
+
+                            {/* Meal Total */}
+
+                            {/* <SimpleGrid
+                                columns={{
+                                    base: 2,
+                                    md: 4
+                                }}
+                                spacing={4}
+                            >
+
+                                <MiniMacro
+                                    title="Calories"
+                                    value={meal.calories}
+                                />
+
+                                <MiniMacro
+                                    title="Protein"
+                                    value={meal.protein}
+                                />
+
+                                <MiniMacro
+                                    title="Carbs"
+                                    value={meal.carbs}
+                                />
+
+                                <MiniMacro
+                                    title="Fats"
+                                    value={meal.fats}
+                                />
+
+                            </SimpleGrid> */}
+
+                        </AccordionPanel>
+
+                    </AppleCard>
+
+                </AccordionItem>
+            ))}
+        </Accordion>
+    </AppleSection>
+)}
 
         </VStack>
        
@@ -987,6 +1343,7 @@ const MetricCard = ({
                 color="gray.600"
             >
                 Remaining: {remaining} {unit}
+              
             </Text>
 
         </Box>

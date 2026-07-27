@@ -7,6 +7,7 @@ import {
 
 
 import { generateNutritionInsights } from "../../helpers/nutritionInsights.helper.js";
+import {generateNutritionScore} from "../../helpers/nutritionScore.helper.js";
 
 const getClientStatus = (
 
@@ -2274,6 +2275,14 @@ const insights = generateNutritionInsights(
     []
 );
 
+const nutritionScore =
+    generateNutritionScore(
+        "today",
+        summary,
+        targets,
+        []
+    );
+
 
     /* ---------------------------------------------
        RESPONSE
@@ -2290,6 +2299,8 @@ const insights = generateNutritionInsights(
         remaining,
 
         meals,
+
+        nutrition_score: nutritionScore,
 
         insights,
 
@@ -2516,6 +2527,13 @@ async function getWeeklyNutrition(
     days
 );
 
+const nutritionScore =
+    generateNutritionScore(
+        "week",
+        summary,
+        targets,
+        days
+    );
     /* ---------------------------------------------
        RESPONSE
     ---------------------------------------------- */
@@ -2531,6 +2549,8 @@ async function getWeeklyNutrition(
         days,
 
         insights,
+
+        nutrition_score: nutritionScore,
 
         meta: {
 
@@ -2781,6 +2801,14 @@ async function getMonthlyNutrition(
     days
 );
 
+const nutritionScore =
+    generateNutritionScore(
+        "month",
+        summary,
+        targets,
+        days
+    );
+
     /* ---------------------------------------------
        RESPONSE
     ---------------------------------------------- */
@@ -2796,6 +2824,8 @@ async function getMonthlyNutrition(
         days,
 
         insights,
+
+        nutrition_score: nutritionScore,
 
         meta: {
 

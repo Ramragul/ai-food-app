@@ -2619,11 +2619,11 @@ const nutritionScore =
 
     period: "week",
 
-    summary: average,
+    summary: summary.average,
 
-    average,
+    average: summary.average,
 
-    total,
+    total: summary.total,
 
     targets,
 
@@ -2940,12 +2940,11 @@ const nutritionScore =
     period: "month",
 
     // Primary values shown in the UI (average daily intake)
-    summary: average,
+    summary: summary.average,
 
-    // Explicit values for detailed sections
-    average,
+    average: summary.average,
 
-    total,
+    total: summary.total,
 
     targets,
 

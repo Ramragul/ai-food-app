@@ -33,6 +33,8 @@ import MyClientNutritionCard from "../../components/StaffUI/Clients/MyClientNutr
 import MyClientCoachNotes from "../../components/StaffUI/Clients/MyClientCoachNotes";
 import MyClientPermissions from "../../components/StaffUI/Clients/MyClientPermissions";
 
+import NutritionOverview from "../../components/StaffUI/Clients/Nutrition/NutritionOverview";
+
 
 import {
     useNavigate,
@@ -195,6 +197,10 @@ const MyClientPage = () => {
     <MyClientNutritionCard
         client={client}
     />
+
+    <NutritionOverview
+    memberId={Number(memberId)}
+/>
 
 </Grid>
 

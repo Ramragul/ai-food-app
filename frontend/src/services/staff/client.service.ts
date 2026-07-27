@@ -18,6 +18,10 @@ import type {
     DashboardClient
 } from "./dashboard.service";
 
+
+import type {
+    NutritionIntelligence
+} from "./client.types";
 /**
  * Get all clients assigned to the logged-in coach
  */
@@ -135,4 +139,23 @@ export const assignClientGoal = async (
   );
 
   return response.data;
+};
+
+
+export const getNutritionIntelligence = async (
+    memberId: number,
+    period: "today" | "week" | "month" | "history" = "today"
+): Promise<NutritionIntelligence> => {
+
+    const response = await api.get(
+        `/coach/client/${memberId}/nutrition-intelligence`,
+        {
+            params: {
+                period
+            }
+        }
+    );
+
+    return response.data.data;
+
 };

@@ -95,15 +95,15 @@ export interface ClientPermissions {
 
 }
 
-export interface CoachNote {
+// export interface CoachNote {
 
-    id: number;
+//     id: number;
 
-    note: string;
+//     note: string;
 
-    created_at: string;
+//     created_at: string;
 
-}
+// }
 
 export interface ClientDetails {
 
@@ -136,5 +136,116 @@ export interface CoachNote {
     coach_name: string;
 
     created_at: string;
+
+}
+
+
+export interface NutritionBreakdown {
+
+    calories: number;
+
+    protein: number;
+
+    fiber: number;
+
+    consistency: number;
+
+    balance: number;
+
+}
+
+export interface NutritionScore {
+
+    score: number;
+
+    grade: string;
+
+    status: string;
+
+    breakdown: NutritionBreakdown;
+
+}
+
+export interface NutritionInsight {
+
+    type: string;
+
+    title: string;
+
+    message: string;
+
+}
+
+export interface CoachInsight {
+
+    severity: "success" | "info" | "warning" | "error";
+
+    title: string;
+
+    message: string;
+
+}
+
+export interface DailyNutrition {
+
+    date: string;
+
+    calories: number;
+
+    protein: number;
+
+    carbs: number;
+
+    fats: number;
+
+    fiber: number;
+
+    calorie_completion: number;
+
+}
+
+export interface NutritionSummary {
+
+    calories: number;
+
+    protein: number;
+
+    carbs: number;
+
+    fats: number;
+
+    fiber: number;
+
+}
+
+export interface NutritionTargets {
+
+    calories: number;
+
+    protein: number;
+
+    carbs: number;
+
+    fats: number;
+
+}
+
+export interface NutritionIntelligence {
+
+    period: string;
+
+    summary: NutritionSummary;
+
+    targets: NutritionTargets;
+
+    nutrition_score: NutritionScore;
+
+    insights: NutritionInsight[];
+
+    coach_insights: CoachInsight[];
+
+    days?: DailyNutrition[];
+
+    history?: DailyNutrition[];
 
 }

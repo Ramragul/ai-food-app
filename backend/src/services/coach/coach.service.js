@@ -2296,31 +2296,63 @@ const nutritionScore =
        RESPONSE
     ---------------------------------------------- */
 
-    return {
+    // return {
 
-        period: "today",
+    //     period: "today",
 
-        summary,
+    //     summary,
 
-        targets,
+    //     targets,
 
-        remaining,
+    //     remaining,
 
-        meals,
+    //     meals,
 
-        nutrition_score: nutritionScore,
+    //     nutrition_score: nutritionScore,
 
-        insights,
+    //     insights,
 
-        coach_insights: coachInsights,
+    //     coach_insights: coachInsights,
 
-        meta: {
+    //     meta: {
 
-            generated_at: new Date().toISOString()
+    //         generated_at: new Date().toISOString()
 
-        }
+    //     }
 
-    };
+    // };
+
+return {
+
+    period: "today",
+
+    summary,
+
+    average: summary,
+
+    total: summary,
+
+    targets,
+
+    remaining,
+
+    meals,
+
+    timeline: [],
+
+    nutrition_score: nutritionScore,
+
+    insights,
+
+    coach_insights: coachInsights,
+
+    meta: {
+
+        generated_at: new Date().toISOString()
+
+    }
+
+};
 
 }
 
@@ -2555,33 +2587,69 @@ const nutritionScore =
        RESPONSE
     ---------------------------------------------- */
 
-    return {
+    // return {
 
-        period: "week",
+    //     period: "week",
 
-        summary,
+    //     summary,
 
-        targets,
+    //     targets,
 
-        days,
+    //     days,
 
-        insights,
+    //     insights,
 
-        coach_insights: coachInsights,
+    //     coach_insights: coachInsights,
 
-        nutrition_score: nutritionScore,
+    //     nutrition_score: nutritionScore,
 
-        meta: {
+    //     meta: {
 
-            generated_at: new Date().toISOString(),
+    //         generated_at: new Date().toISOString(),
 
-            start_date: days[0].date,
+    //         start_date: days[0].date,
 
-            end_date: days[days.length - 1].date
+    //         end_date: days[days.length - 1].date
 
-        }
+    //     }
 
-    };
+    // };
+
+  return {
+
+    period: "week",
+
+    summary: average,
+
+    average,
+
+    total,
+
+    targets,
+
+    remaining: null,
+
+    meals: [],
+
+    timeline: days,
+
+    insights,
+
+    coach_insights: coachInsights,
+
+    nutrition_score: nutritionScore,
+
+    meta: {
+
+        generated_at: new Date().toISOString(),
+
+        start_date: days[0].date,
+
+        end_date: days[days.length - 1].date
+
+    }
+
+};
 
 }
 
@@ -2839,33 +2907,72 @@ const nutritionScore =
        RESPONSE
     ---------------------------------------------- */
 
+    // return {
+
+    //     period: "month",
+
+    //     summary,
+
+    //     targets,
+
+    //     days,
+
+    //     insights,
+
+    //     coach_insights: coachInsights,
+
+    //     nutrition_score: nutritionScore,
+
+    //     meta: {
+
+    //         generated_at: new Date().toISOString(),
+
+    //         start_date: days[0].date,
+
+    //         end_date: days[days.length - 1].date
+
+    //     }
+
+    // };
+
     return {
 
-        period: "month",
+    period: "month",
 
-        summary,
+    // Primary values shown in the UI (average daily intake)
+    summary: average,
 
-        targets,
+    // Explicit values for detailed sections
+    average,
 
-        days,
+    total,
 
-        insights,
+    targets,
 
-        coach_insights: coachInsights,
+    // Keep response shape consistent
+    remaining: null,
 
-        nutrition_score: nutritionScore,
+    meals: [],
 
-        meta: {
+    timeline: days,
 
-            generated_at: new Date().toISOString(),
+    insights,
 
-            start_date: days[0].date,
+    coach_insights: coachInsights,
 
-            end_date: days[days.length - 1].date
+    nutrition_score: nutritionScore,
 
-        }
+    meta: {
 
-    };
+        generated_at: new Date().toISOString(),
+
+        start_date: days[0].date,
+
+        end_date: days[days.length - 1].date
+
+    }
+
+};
 
 }
 

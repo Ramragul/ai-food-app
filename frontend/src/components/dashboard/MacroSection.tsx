@@ -29,7 +29,12 @@ const MacroSection = ({
       </Text>
 
       <SimpleGrid
-        columns={2}
+        // columns={2}
+        columns={{
+    base: 2,
+    md: 2,
+    lg: 4,
+}}
         spacing={3}
       >
 

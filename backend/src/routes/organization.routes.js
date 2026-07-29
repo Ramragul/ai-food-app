@@ -3,7 +3,7 @@ import express from "express";
 import {
   createOrganization,getMyOrganizations , inviteEmployee, inviteClient,
    getMyInvitations, acceptInvitation, getOrganizationMembers,assignClient , getOrganizationDashboard, getEmployees,
-   getClients , getAssignments, getInvitations, getClientDetails, transferAssignment, removeAssignment
+   getClients , getAssignments, getInvitations, getClientDetails, transferAssignment, removeAssignment, declineInvitation
 } from "../controllers/organization.controller.js";
 
 import {
@@ -53,6 +53,13 @@ router.post(
   "/invitations/:token/accept",
   authMiddleware,
   acceptInvitation
+);
+
+
+router.post(
+  "/invitations/:token/decline",
+  authMiddleware,
+  declineInvitation
 );
 
 /* 🔥 GET ORGANIZATION MEMBERS */

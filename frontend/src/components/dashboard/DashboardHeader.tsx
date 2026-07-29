@@ -1,12 +1,22 @@
 import {
   Box,
+  HStack,
   Text
 } from "@chakra-ui/react";
 
+import WorkspaceSwitcher from "./WorkspaceSwitcher";
+
+// interface Props {
+//   user: any;
+//   goalInfo?: any;
+//   target?: number;
+// }
+
 interface Props {
-  user: any;
-  goalInfo?: any;
-  target?: number;
+    user: any;
+    goalInfo?: any;
+    target?: number;
+    streak?: number;
 }
 
 const DashboardHeader = ({
@@ -78,6 +88,8 @@ const DashboardHeader = ({
   {user?.nickname || user?.name}
 </Text>
 
+ <WorkspaceSwitcher />
+
 <Text
   mt={3}
   fontSize="sm"
@@ -102,7 +114,10 @@ const DashboardHeader = ({
 >
   Stay consistent. Results follow.
 </Text>
-     
+
+
+
+
 
     </Box>
   );

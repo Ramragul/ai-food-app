@@ -1647,6 +1647,160 @@ if (
 
 
 
+
+export const declineInvitationService = async (
+  userId,
+  invitationToken
+) => {
+
+  const client = await pool.connect();
+
+  try {
+
+    await client.query("BEGIN");
+
+    /* ---------------------------------------------
+       GET USER
+    ---------------------------------------------- */
+
+    const user = await getUser(
+      client,
+      userId
+    );
+
+    if (!user) {
+      throw new Error("User not found.");
+    }
+
+    /* ---------------------------------------------
+       LOAD INVITATION
+    ---------------------------------------------- */
+
+    const invitationResult =
+      await client.query(
+        `
+        SELECT *
+        FROM organization_invitations
+        WHERE invitation_token = $1
+        LIMIT 1
+        `,
+        [invitationToken]
+      );
+
+    if (!invitationResult.rows.length) {
+      throw new Error("Invitation not found.");
+    }
+
+    const invitation =
+      invitationResult.rows[0];
+
+    /* ---------------------------------------------
+       STATUS CHECK
+    ---------------------------------------------- */
+
+    if (invitation.status !== "PENDING") {
+      throw new Error(
+        "Invitation is no longer valid."
+      );
+    }
+
+    /* ---------------------------------------------
+       VERIFY USER
+    ---------------------------------------------- */
+
+    const mobileMatches =
+      invitation.invited_mobile === user.mobile;
+
+    const emailMatches =
+      invitation.invited_email &&
+      user.email &&
+      invitation.invited_email.toLowerCase() ===
+      user.email.toLowerCase();
+
+    if (!mobileMatches && !emailMatches) {
+
+      throw new Error(
+        "This invitation doesn't belong to your account."
+      );
+
+    }
+
+    /* ---------------------------------------------
+       DECLINE
+    ---------------------------------------------- */
+
+    await client.query(
+      `
+      UPDATE organization_invitations
+      SET
+        status = 'DECLINED',
+        accepted_at = NOW(),
+        accepted_by = $1
+      WHERE id = $2
+      `,
+      [
+        userId,
+        invitation.id
+      ]
+    );
+
+    /* ---------------------------------------------
+       ACTIVITY
+    ---------------------------------------------- */
+
+    await createActivityLog(
+      client,
+      {
+        organizationId:
+          invitation.organization_id,
+
+        actorUserId:
+          userId,
+
+        targetUserId:
+          userId,
+
+        entityType:
+          "INVITATION",
+
+        entityId:
+          invitation.id,
+
+        action:
+          "INVITATION_DECLINED",
+
+        description:
+          `${user.name} declined the workspace invitation.`,
+
+        metadata: {}
+      }
+    );
+
+    await client.query("COMMIT");
+
+    return {
+
+      invitation_id:
+        invitation.id
+
+    };
+
+  } catch (err) {
+
+    await client.query("ROLLBACK");
+
+    throw err;
+
+  } finally {
+
+    client.release();
+
+  }
+
+};
+
+
+
 /* ======================================================
    GET ORGANIZATION MEMBERS
 ====================================================== */

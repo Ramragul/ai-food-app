@@ -2,7 +2,7 @@ import {
   createOrganizationService,getMyOrganizationsService, inviteEmployeeService,
     inviteClientService,getMyInvitationsService, acceptInvitationService ,getOrganizationMembersService,
     assignClientService,getOrganizationDashboardService , getEmployeesService, getClientsService , getAssignmentsService,
-    getInvitationsService,getClientDetailsService, transferAssignmentService, removeAssignmentService
+    getInvitationsService,getClientDetailsService, transferAssignmentService, removeAssignmentService, declineInvitationService
 } from "../services/organization/organization.service.js";
 
 /* 🔥 CREATE ORGANIZATION */
@@ -220,6 +220,44 @@ async (req, res) => {
         "Invitation accepted successfully.",
 
       data: invitation
+
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    return res.status(500).json({
+
+      error: err.message
+
+    });
+
+  }
+
+};
+
+ // Decline Invitations
+
+export const declineInvitation =
+async (req, res) => {
+
+  try {
+
+    const result =
+      await declineInvitationService(
+        req.user.id,
+        req.params.token
+      );
+
+    return res.json({
+
+      success: true,
+
+      message:
+        "Invitation declined successfully.",
+
+      data: result
 
     });
 

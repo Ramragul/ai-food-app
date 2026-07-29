@@ -77,7 +77,10 @@ const DashboardHero = ({
         <Box textAlign="center">
 
           <Text
-            fontSize="5xl"
+            fontSize={{
+    base: "5xl",
+    md: "6xl",
+}}
             fontWeight="900"
             color="brand.500"
           >

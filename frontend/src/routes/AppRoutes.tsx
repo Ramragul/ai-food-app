@@ -157,6 +157,7 @@ import MyClientPage from "../pages/staff/MyClientPage";
 import StaffDashboardPage from "../pages/Staff/StaffDashboardPage";
 import StaffLayout from "../components/StaffUI/StaffLayout";
 import StaffClientsPage from "../pages/Staff/StaffClientsPage";
+import ClientInvitationsPage from "../pages/Client/ClientInvitationsPage";
 
 
 
@@ -222,6 +223,11 @@ const AppRoutes: React.FC = () => {
         <Route path="/fitness/guide/:id" element={<FitnessGuideDetailPage />}/>
 
         <Route path="/nutrition" element={<NutritonSearch />} />
+
+ <Route
+    path="/invitations"
+    element={<ClientInvitationsPage />}
+/>
 
        
       

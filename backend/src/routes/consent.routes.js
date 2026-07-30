@@ -3,7 +3,8 @@ import express from "express";
 import {
   getMyConsents,
   grantConsent,
-  revokeConsent
+  revokeConsent,
+
 } from "../controllers/consent.controller.js";
 
 import {
@@ -35,5 +36,8 @@ router.post(
   authMiddleware,
   revokeConsent
 );
+
+
+
 
 export default router;

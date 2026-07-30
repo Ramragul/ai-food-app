@@ -157,7 +157,9 @@ import MyClientPage from "../pages/staff/MyClientPage";
 import StaffDashboardPage from "../pages/Staff/StaffDashboardPage";
 import StaffLayout from "../components/StaffUI/StaffLayout";
 import StaffClientsPage from "../pages/Staff/StaffClientsPage";
-import ClientInvitationsPage from "../pages/Client/ClientInvitationsPage";
+import ClientInvitationsPage from "../pages/Client/Workspace/ClientInvitationsPage";
+import ConsentPage from "../pages/Workspace/ConsentPage";
+import ClientDashboardPage from "../pages/Client/Workspace/ClientDashboardPage";
 
 
 
@@ -229,6 +231,26 @@ const AppRoutes: React.FC = () => {
     element={<ClientInvitationsPage />}
 />
 
+{/* <Route
+    path="/client/workspace"
+    element={<ClientWorkspaceDashboard />}
+/> */}
+
+{/* <Route
+    path="/client/consent"
+    element={<ConsentPage />}
+/> */}
+
+<Route
+    path="/client/workspace"
+    element={<ClientDashboardPage />}
+/>
+
+<Route
+    path="/client/workspace/consent"
+    element={<ConsentPage />}
+/>
+
        
       
       </Route>
@@ -271,6 +293,11 @@ const AppRoutes: React.FC = () => {
     path="/workspace/invitations"
     element={<InvitationsPage />}
   />
+
+  {/* <Route
+    path="/workspace/consent"
+    element={<ConsentPage />}
+/> */}
 {/* 
     <Route
     path="/staff"

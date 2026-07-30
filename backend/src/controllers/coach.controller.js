@@ -1,6 +1,6 @@
 import {
   getMyClientsService , getDashboardService, getClientDetailsService , getCoachNotesService,createCoachNoteService,updateCoachNoteService, 
-  deleteCoachNoteService, getClientActivityService, assignClientGoalService, getNutritionIntelligenceService
+  deleteCoachNoteService, getClientActivityService, assignClientGoalService, getNutritionIntelligenceService, getMyCoachNotesService
 } from "../services/coach/coach.service.js";
 
 /* ==========================================
@@ -36,6 +36,36 @@ async (req, res) => {
     });
 
   }
+
+};
+
+/* ==========================================
+   CLIENT CENTRIC COACH NOTES API
+========================================== */
+
+
+export const getMyCoachNotes = async (req, res) => {
+
+    try {
+
+        const data = await getMyCoachNotesService(
+            req.user.id
+        );
+
+        return res.json({
+            success: true,
+            data
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        return res.status(500).json({
+            error: err.message
+        });
+
+    }
 
 };
 

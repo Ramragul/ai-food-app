@@ -1,7 +1,7 @@
 import express from "express";
 
 import {
-  getMyClients,  getDashboard, getClientDetails , getCoachNotes, createCoachNote , updateCoachNote,
+  getMyClients,  getDashboard, getClientDetails , getCoachNotes,getMyCoachNotes, createCoachNote , updateCoachNote,
    deleteCoachNote,getClientActivity,assignClientGoal, getNutritionIntelligence
 } from "../controllers/coach.controller.js";
 
@@ -39,6 +39,12 @@ router.get(
     "/client/:memberId/notes",
     authMiddleware,
     getCoachNotes
+);
+
+router.get(
+    "/coach-notes",
+    authMiddleware,
+    getMyCoachNotes
 );
 
 router.post(

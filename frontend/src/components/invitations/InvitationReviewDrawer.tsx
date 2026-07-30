@@ -74,9 +74,19 @@ const InvitationReviewDrawer = ({
 
             onClose();
 
+            // navigate(
+            //     `/workspace/consent/${invitation.id}`
+            // );
+
             navigate(
-                `/workspace/consent/${invitation.id}`
-            );
+    "/client/workspace/consent",
+    {
+        state: {
+            organizationId:
+                invitation.organization_id
+        }
+    }
+);
 
         } catch (err: any) {
 

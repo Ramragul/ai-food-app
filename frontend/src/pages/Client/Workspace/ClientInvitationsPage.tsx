@@ -10,16 +10,16 @@ import { useEffect, useState } from "react";
 
 import {
     getMyInvitations
-} from "../../services/client/invitation.service";
+} from "../../../services/client/invitation.service";
 
 import type {
     WorkspaceInvitation
-} from "../../types/invitation.types";
+} from "../../../types/invitation.types";
 
-import InvitationCard from "../../components/invitations/InvitationCard";
+import InvitationCard from "../../../components/invitations/InvitationCard";
 
 import InvitationReviewDrawer
-from "../../components/invitations/InvitationReviewDrawer";
+from "../../../components/invitations/InvitationReviewDrawer";
 
 const ClientInvitationsPage = () => {
 

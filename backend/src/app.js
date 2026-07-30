@@ -14,6 +14,7 @@ import fitnessRoutes from "./routes/fitness.routes.js";
 import organizationRoutes from "./routes/organization.routes.js";
 import coachRoutes from "./routes/coach.routes.js";
 import consentRoutes from "./routes/consent.routes.js";
+import clientRoutes from "./routes/client.routes.js";
 
 
 
@@ -39,6 +40,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/auth", authRoutes);
 
 app.use("/api/user", userRoutes);
+app.use("/api/client", clientRoutes);
 
 app.use("/api/meal-plan", mealPlanRoutes);
 

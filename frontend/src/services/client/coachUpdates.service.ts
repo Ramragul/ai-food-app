@@ -9,19 +9,9 @@ interface CoachUpdatesResponse {
 export const getCoachUpdates = async (): Promise<CoachUpdate[]> => {
 
     const response = await api.get<CoachUpdatesResponse>(
-        "/client/coach-updates"
+        "/client/coach-notes"
     );
 
     return response.data.data;
-
-};
-
-export const markAsRead = async (
-    updateId: number
-): Promise<void> => {
-
-    await api.patch(
-        `/client/coach-updates/${updateId}/read`
-    );
 
 };

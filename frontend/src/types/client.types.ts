@@ -1,21 +1,23 @@
 export interface CoachUpdate {
-    id: number;
+    id: string;
 
-    organizationId: number;
-
-    organizationName: string;
-
-    coachId: number;
-
-    coachName: string;
-
-    coachRole: string;
+    category: string;
 
     title: string;
 
-    message: string;
+    note: string;
 
-    isRead: boolean;
+    created_at: string;
 
-    createdAt: string;
+    updated_at: string;
+
+    organization_id: number;
+
+    organization_name: string;
+
+    organization_type: string;
+
+    coach_user_id: number;
+
+    coach_name: string;
 }

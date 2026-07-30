@@ -15,3 +15,5 @@ router.get(
     authMiddleware,
     getMyCoachNotes
 );
+
+export default router;

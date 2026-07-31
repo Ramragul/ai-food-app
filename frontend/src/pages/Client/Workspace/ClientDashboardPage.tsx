@@ -25,6 +25,9 @@ import {
   FiUsers,
 } from "react-icons/fi";
 
+import { FiMessageSquare } from "react-icons/fi";
+
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -255,14 +258,23 @@ const ClientDashboardPage = () => {
             }
           />
 
-          <WorkspaceFeatureCard
+          {/* <WorkspaceFeatureCard
             title="Activity"
             description="Recent workspace activities."
             icon={FiActivity}
             onClick={() =>
               navigate("/client/workspace/activity")
             }
-          />
+          /> */}
+
+          <WorkspaceFeatureCard
+    title="Coach Updates"
+    description="View advice and updates from your coaches."
+    icon={FiMessageSquare}
+    onClick={() =>
+        navigate("/client/workspace/coach-updates")
+    }
+/>
 
           <WorkspaceFeatureCard
             title="Settings"

@@ -160,6 +160,7 @@ import StaffClientsPage from "../pages/Staff/StaffClientsPage";
 import ClientInvitationsPage from "../pages/Client/Workspace/ClientInvitationsPage";
 import ConsentPage from "../pages/Workspace/ConsentPage";
 import ClientDashboardPage from "../pages/Client/Workspace/ClientDashboardPage";
+import CoachUpdatesPage from "../pages/Client/Workspace/CoachUpdatesPage";
 
 
 
@@ -249,6 +250,11 @@ const AppRoutes: React.FC = () => {
 <Route
     path="/client/workspace/consent"
     element={<ConsentPage />}
+/>
+
+<Route
+    path="/client/workspace/coach-updates"
+    element={<CoachUpdatesPage />}
 />
 
        

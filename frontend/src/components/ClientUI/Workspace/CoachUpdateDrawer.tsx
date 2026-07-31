@@ -1,3 +1,155 @@
+// Version 1
+
+// import {
+//     Avatar,
+//     Badge,
+//     Box,
+//     Divider,
+//     Drawer,
+//     DrawerBody,
+//     DrawerCloseButton,
+//     DrawerContent,
+//     DrawerHeader,
+//     DrawerOverlay,
+//     Heading,
+//     HStack,
+//     Text,
+//     VStack,
+// } from "@chakra-ui/react";
+
+
+
+
+// import type { CoachUpdate } from "../../../types/client.types";
+// import { formatDate } from "../../../utils/date";
+// import { getCategoryColor } from "../../../utils/coachNotes";
+
+// interface CoachUpdateDrawerProps {
+
+//     isOpen: boolean;
+
+//     onClose: () => void;
+
+//     update: CoachUpdate | null;
+
+// }
+
+// const CoachUpdateDrawer = ({
+//     isOpen,
+//     onClose,
+//     update,
+// }: CoachUpdateDrawerProps) => {
+
+//     if (!update) return null;
+
+//     return (
+
+//         <Drawer
+//             isOpen={isOpen}
+//             placement="bottom"
+//             size="lg"
+//             onClose={onClose}
+//         >
+
+//             <DrawerOverlay />
+
+//             <DrawerContent
+//                 borderTopRadius="2xl"
+//             >
+
+//                 <DrawerCloseButton />
+
+//                 <DrawerHeader>
+
+//                     Coach Update
+
+//                 </DrawerHeader>
+
+//                 <DrawerBody
+//                     pb={8}
+//                 >
+
+// <VStack
+//     align="stretch"
+//     spacing={5}
+// >
+
+//     <Badge
+//         alignSelf="start"
+//         colorScheme={getCategoryColor(update.category)}
+//     >
+//         {update.category}
+//     </Badge>
+
+//     <Heading size="md">
+//         {update.title}
+//     </Heading>
+
+//     <Text
+//         color="gray.600"
+//     >
+//         {update.organization_name}
+//     </Text>
+
+//     <Divider />
+
+//     <HStack>
+
+//         <Avatar
+//             size="sm"
+//             name={update.coach_name}
+//         />
+
+//         <Box>
+
+//             <Text fontWeight="bold">
+//                 {update.coach_name}
+//             </Text>
+
+//             <Text
+//                 fontSize="sm"
+//                 color="gray.500"
+//             >
+//                 Coach
+//             </Text>
+
+//         </Box>
+
+//     </HStack>
+
+//     <Text
+//         lineHeight="2"
+//         whiteSpace="pre-wrap"
+//     >
+//         {update.note}
+//     </Text>
+
+//     <Divider />
+
+//     <Text
+//         fontSize="sm"
+//         color="gray.500"
+//     >
+//         {formatDate(update.created_at)}
+//     </Text>
+
+// </VStack>
+
+//                 </DrawerBody>
+
+//             </DrawerContent>
+
+//         </Drawer>
+
+//     );
+
+// };
+
+// export default CoachUpdateDrawer;
+
+
+// Version 2
+
 import {
     Avatar,
     Badge,
@@ -10,20 +162,19 @@ import {
     DrawerHeader,
     DrawerOverlay,
     HStack,
+    Heading,
     Text,
     VStack,
 } from "@chakra-ui/react";
 
 import type { CoachUpdate } from "../../../types/client.types";
+import { formatDate } from "../../../utils/date";
+import { getCategoryColor } from "../../../utils/coachNotes";
 
 interface CoachUpdateDrawerProps {
-
     isOpen: boolean;
-
     onClose: () => void;
-
     update: CoachUpdate | null;
-
 }
 
 const CoachUpdateDrawer = ({
@@ -35,102 +186,97 @@ const CoachUpdateDrawer = ({
     if (!update) return null;
 
     return (
-
         <Drawer
             isOpen={isOpen}
             placement="bottom"
             size="lg"
             onClose={onClose}
         >
-
             <DrawerOverlay />
 
-            <DrawerContent
-                borderTopRadius="2xl"
-            >
+            <DrawerContent borderTopRadius="3xl">
 
                 <DrawerCloseButton />
 
                 <DrawerHeader>
-
                     Coach Update
-
                 </DrawerHeader>
 
-                <DrawerBody
-                    pb={8}
-                >
+                <DrawerBody pb={8}>
 
                     <VStack
-                        spacing={5}
                         align="stretch"
+                        spacing={6}
                     >
 
-                        <HStack>
+                        {/* Organization */}
+
+                        <HStack align="start" spacing={4}>
 
                             <Avatar
-                                size="md"
-                                name={update.coach_name}
+                                size="lg"
+                                name={update.organization_name}
                             />
 
-                            <Box>
+                            <Box flex="1">
 
                                 <Text
+                                    fontSize="lg"
                                     fontWeight="bold"
                                 >
-                                    {update.coach_name}
+                                    {update.organization_name}
                                 </Text>
 
                                 <Text
-                                    fontSize="sm"
                                     color="gray.500"
+                                    fontSize="sm"
                                 >
-                                    {update.coach_role}
+                                    Coach • {update.coach_name}
                                 </Text>
 
                             </Box>
 
                         </HStack>
 
+                        {/* Category */}
+
+                        <Badge
+                            alignSelf="flex-start"
+                            colorScheme={getCategoryColor(update.category)}
+                            borderRadius="full"
+                            px={3}
+                            py={1}
+                        >
+                            {update.category}
+                        </Badge>
+
+                        {/* Title */}
+
+                        <Heading size="md">
+                            {update.title}
+                        </Heading>
+
                         <Divider />
 
-                        <HStack
-                            justify="space-between"
-                        >
-
-                            <Text
-                                fontWeight="bold"
-                                fontSize="lg"
-                            >
-                                {update.title}
-                            </Text>
-
-                            <Badge
-                                colorScheme={
-                                    update.is_read
-                                        ? "gray"
-                                        : "blue"
-                                }
-                            >
-                                {update.is_read ? "Read" : "New"}
-                            </Badge>
-
-                        </HStack>
+                        {/* Message */}
 
                         <Text
+                            fontSize="md"
+                            lineHeight="2"
                             whiteSpace="pre-wrap"
-                            lineHeight="tall"
                         >
-                            {update.message}
+                            {update.note}
                         </Text>
 
                         <Divider />
+
+                        {/* Footer */}
 
                         <Text
                             fontSize="sm"
                             color="gray.500"
                         >
-                            {new Date(update.created_at).toLocaleString()}
+                            {formatDate(update.created_at)}
                         </Text>
 
                     </VStack>
@@ -140,9 +286,7 @@ const CoachUpdateDrawer = ({
             </DrawerContent>
 
         </Drawer>
-
     );
-
 };
 
 export default CoachUpdateDrawer;

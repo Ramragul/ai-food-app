@@ -201,6 +201,43 @@ export const getDashboardService = async (userId, type = "DAY") => {
   const user = profileRes.rows[0];
   const hasProfile = !!user;
 
+  /* ---------------- CLIENT WORKSPACE ---------------- */
+
+const workspaceRes = await pool.query(
+  `
+  SELECT
+
+      o.id,
+      o.name,
+      o.organization_type,
+      o.workspace_code
+
+  FROM organization_members om
+
+  INNER JOIN organization_roles r
+      ON r.id = om.role_id
+
+  INNER JOIN organizations o
+      ON o.id = om.organization_id
+
+  WHERE
+
+      om.user_id = $1
+
+      AND om.status = 'ACTIVE'
+
+      AND r.name = 'CLIENT'
+
+  LIMIT 1
+  `,
+  [userId]
+);
+
+const workspace =
+  workspaceRes.rows.length > 0
+    ? workspaceRes.rows[0]
+    : null;
+
 
 
     let target = 0;
@@ -588,9 +625,47 @@ const remaining = {
 
   /* ---------------- FINAL RESPONSE ---------------- */
 
+// return {
+
+//   hasProfile,
+
+//   consumed,
+
+//   protein,
+
+//   carbs,
+
+//   fats,
+
+//   fiber,
+
+// target:
+//   adjustedTarget,
+
+// targets:
+//   adjustedTargets,
+
+//   goalInfo,
+
+//   remaining,
+
+//   status,
+
+//   mealSplit,
+
+//   trend,
+
+//   streak,
+
+//   type
+
+// };
+
 return {
 
   hasProfile,
+
+  workspace,
 
   consumed,
 
@@ -602,11 +677,9 @@ return {
 
   fiber,
 
-target:
-  adjustedTarget,
+  target: adjustedTarget,
 
-targets:
-  adjustedTargets,
+  targets: adjustedTargets,
 
   goalInfo,
 

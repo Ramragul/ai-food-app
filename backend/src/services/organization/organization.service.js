@@ -4009,6 +4009,8 @@ export const getWorkspaceMembersService = async (userId) => {
         const membership =
             membershipResult.rows[0];
 
+            console.log("Membership:", membership);
+
 
 
         /* ---------------------------------------------

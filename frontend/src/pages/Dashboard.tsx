@@ -263,6 +263,7 @@ from "../components/dashboard/DashboardSkeleton";
 import theme from "../theme/theme";
 import QuickActions from "../components/dashboard/QuickActions";
 import WorkspaceSwitcher from "../components/dashboard/WorkspaceSwitcher";
+import ClientWorkspaceCard from "../components/dashboard/ClientWorkspaceCard";
 
 
 
@@ -352,6 +353,12 @@ const Dashboard = () => {
   remaining={data.remaining.calories}
   status={data.status}
 />
+
+{data.workspace && (
+    <ClientWorkspaceCard
+        workspace={data.workspace}
+    />
+)}
 
 <AddMealCTA
   mealCount={

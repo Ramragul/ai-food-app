@@ -3,7 +3,8 @@ import express from "express";
 import {
   createOrganization,getMyOrganizations , inviteEmployee, inviteClient,
    getMyInvitations, acceptInvitation, getOrganizationMembers,assignClient , getOrganizationDashboard, getEmployees,
-   getClients , getAssignments, getInvitations, getClientDetails, transferAssignment, removeAssignment, declineInvitation
+   getClients , getAssignments, getInvitations, getClientDetails, transferAssignment, removeAssignment, declineInvitation,
+   getWorkspaceMembers
 } from "../controllers/organization.controller.js";
 
 import {
@@ -144,6 +145,13 @@ router.get(
   "/invitations",
   authMiddleware,
   getInvitations
+);
+
+
+router.get(
+    "/members",
+    authMiddleware,
+    getWorkspaceMembers
 );
 
 export default router;

@@ -2202,72 +2202,7 @@ async (
     const organization =
       organizationResult.rows[0];
 
-    /* ---------------------------------------------
-       SUMMARY
-    ---------------------------------------------- */
 
-    // const summaryResult =
-    //   await client.query(
-    //     `
-    //     SELECT
-
-    //     (
-    //         SELECT COUNT(*)
-    //         FROM organization_members
-    //         WHERE
-    //           organization_id = $1
-    //           AND status='ACTIVE'
-    //           AND role_id IN
-    //           (
-    //             SELECT id
-    //             FROM organization_roles
-    //             WHERE
-    //               organization_id=$1
-    //               AND name<>'CLIENT'
-    //           )
-    //     ) AS employees,
-
-    //     (
-    //         SELECT COUNT(*)
-    //         FROM organization_members om
-    //         INNER JOIN organization_roles r
-    //         ON r.id=om.role_id
-    //         WHERE
-    //           om.organization_id=$1
-    //           AND om.status='ACTIVE'
-    //           AND r.name='CLIENT'
-    //     ) AS clients,
-
-    //     (
-    //         SELECT COUNT(*)
-    //         FROM organization_invitations
-    //         WHERE
-    //           organization_id=$1
-    //           AND invitation_type='EMPLOYEE'
-    //           AND status='PENDING'
-    //     ) AS pending_employee_invitations,
-
-    //     (
-    //         SELECT COUNT(*)
-    //         FROM organization_invitations
-    //         WHERE
-    //           organization_id=$1
-    //           AND invitation_type='CLIENT'
-    //           AND status='PENDING'
-    //     ) AS pending_client_invitations,
-
-    //     (
-    //         SELECT COUNT(*)
-    //         FROM organization_client_assignments
-    //         WHERE
-    //           organization_id=$1
-    //           AND is_active=true
-    //     ) AS active_assignments
-    //     `,
-    //     [
-    //       organization.id
-    //     ]
-    //   );
 
 
     const summaryResult =
@@ -4016,5 +3951,203 @@ async (
 
 };
 
+
+export const getOrganizationMembersService = async (userId) => {
+
+    const client = await pool.connect();
+
+    try {
+
+        /* ---------------------------------------------
+           FIND CURRENT USER MEMBERSHIP
+        ---------------------------------------------- */
+
+        const membershipResult =
+            await client.query(
+                `
+                SELECT
+
+                    om.organization_id,
+
+                    r.name AS role_name,
+
+                    o.name AS organization_name,
+
+                    o.organization_type,
+
+                    o.workspace_code
+
+                FROM organization_members om
+
+                INNER JOIN organization_roles r
+                    ON r.id = om.role_id
+
+                INNER JOIN organizations o
+                    ON o.id = om.organization_id
+
+                WHERE
+
+                    om.user_id = $1
+
+                    AND om.status = 'ACTIVE'
+
+                LIMIT 1
+                `,
+                [
+                    userId
+                ]
+            );
+
+        if (!membershipResult.rows.length) {
+
+            throw new Error(
+                "Organization membership not found."
+            );
+
+        }
+
+        const membership =
+            membershipResult.rows[0];
+
+
+
+        /* ---------------------------------------------
+           BUILD MEMBERS QUERY
+        ---------------------------------------------- */
+
+        let query = `
+            SELECT
+
+                om.id,
+
+                om.user_id,
+
+                om.joined_at,
+
+                u.name,
+
+                u.nickname,
+
+                u.email,
+
+                u.gender,
+
+                r.name AS role,
+
+                CASE
+                    WHEN om.user_id = $2
+                    THEN true
+                    ELSE false
+                END AS is_current_user
+
+            FROM organization_members om
+
+            INNER JOIN users u
+                ON u.id = om.user_id
+
+            INNER JOIN organization_roles r
+                ON r.id = om.role_id
+
+            WHERE
+
+                om.organization_id = $1
+
+                AND om.status = 'ACTIVE'
+        `;
+
+
+
+        /* ---------------------------------------------
+           CLIENT SHOULD NOT SEE OTHER CLIENTS
+        ---------------------------------------------- */
+
+        if (
+            membership.role_name === "CLIENT"
+        ) {
+
+            query += `
+                AND r.name <> 'CLIENT'
+            `;
+
+        }
+
+
+
+        /* ---------------------------------------------
+           SORT MEMBERS
+        ---------------------------------------------- */
+
+        query += `
+            ORDER BY
+
+            CASE
+
+                WHEN r.name = 'OWNER' THEN 1
+
+                WHEN r.name = 'ADMIN' THEN 2
+
+                WHEN r.name = 'TRAINER' THEN 3
+
+                WHEN r.name = 'DIETITIAN' THEN 4
+
+                WHEN r.name = 'RECEPTIONIST' THEN 5
+
+                WHEN r.name = 'CLIENT' THEN 6
+
+                ELSE 99
+
+            END,
+
+            u.name ASC
+        `;
+
+
+
+        const membersResult =
+            await client.query(
+                query,
+                [
+                    membership.organization_id,
+                    userId
+                ]
+            );
+
+
+
+        return {
+
+            organization: {
+
+                id:
+                    membership.organization_id,
+
+                name:
+                    membership.organization_name,
+
+                organization_type:
+                    membership.organization_type,
+
+                workspace_code:
+                    membership.workspace_code
+
+            },
+
+            viewer_role:
+                membership.role_name,
+
+            members:
+                membersResult.rows
+
+        };
+
+    }
+
+    finally {
+
+        client.release();
+
+    }
+
+};
 
 

@@ -2,7 +2,8 @@ import {
   createOrganizationService,getMyOrganizationsService, inviteEmployeeService,
     inviteClientService,getMyInvitationsService, acceptInvitationService ,getOrganizationMembersService,
     assignClientService,getOrganizationDashboardService , getEmployeesService, getClientsService , getAssignmentsService,
-    getInvitationsService,getClientDetailsService, transferAssignmentService, removeAssignmentService, declineInvitationService
+    getInvitationsService,getClientDetailsService, transferAssignmentService, removeAssignmentService, declineInvitationService,
+    getWorkspaceMembersService
 } from "../services/organization/organization.service.js";
 
 /* 🔥 CREATE ORGANIZATION */
@@ -704,5 +705,39 @@ async (
     });
 
   }
+
+};
+
+
+export const getWorkspaceMembers = async (req, res) => {
+
+    try {
+
+        const data =
+            await getWorkspaceMembersService(
+                req.user.id
+            );
+
+        return res.json({
+
+            success: true,
+
+            data
+
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: err.message
+
+        });
+
+    }
 
 };

@@ -18,14 +18,44 @@ interface Props {
     client: ClientDetails;
 }
 
-const formatGoal = (goal: string) =>
-    goal
+// const formatGoal = (goal: string) =>
+//     goal
+//         .split("_")
+//         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+//         .join(" ");
+
+const formatGoal = (goal?: string) => {
+
+    if (!goal) {
+        return "Not Available";
+    }
+
+    return goal
         .split("_")
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .map(
+            word =>
+                word.charAt(0).toUpperCase() +
+                word.slice(1)
+        )
         .join(" ");
 
-const capitalize = (value?: string) =>
-    value?.charAt(0).toUpperCase() + value?.slice(1);
+};
+
+// const capitalize = (value?: string) =>
+//     value?.charAt(0).toUpperCase() + value?.slice(1);
+
+const capitalize = (value?: string) => {
+
+    if (!value) {
+        return "Not Available";
+    }
+
+    return (
+        value.charAt(0).toUpperCase() +
+        value.slice(1)
+    );
+
+};
 
 const MyClientHeader = ({ client }: Props) => {
 

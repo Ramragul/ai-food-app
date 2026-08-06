@@ -88,7 +88,7 @@ const DashboardHeader = ({
   {user?.nickname || user?.name}
 </Text>
 
- <WorkspaceSwitcher />
+ {/* <WorkspaceSwitcher /> */}
 
 <Text
   mt={3}

@@ -63,6 +63,12 @@ router.post(
   declineInvitation
 );
 
+router.get(
+    "/workspace/members",
+    authMiddleware,
+    getWorkspaceMembers
+);
+
 /* 🔥 GET ORGANIZATION MEMBERS */
 router.get(
   "/:organizationId/members",
@@ -148,10 +154,6 @@ router.get(
 );
 
 
-router.get(
-    "/members",
-    authMiddleware,
-    getWorkspaceMembers
-);
+
 
 export default router;

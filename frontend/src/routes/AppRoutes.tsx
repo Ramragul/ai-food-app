@@ -162,6 +162,7 @@ import ConsentPage from "../pages/Workspace/ConsentPage";
 import ClientDashboardPage from "../pages/Client/Workspace/ClientDashboardPage";
 import CoachUpdatesPage from "../pages/Client/Workspace/CoachUpdatesPage";
 import MembersPage from "../pages/Client/Workspace/MembersPage";
+import CreateWorkspaceWizard from "../pages/Workspace/CreateWorkspaceWizard";
 
 
 
@@ -227,6 +228,15 @@ const AppRoutes: React.FC = () => {
         <Route path="/fitness/guide/:id" element={<FitnessGuideDetailPage />}/>
 
         <Route path="/nutrition" element={<NutritonSearch />} />
+            <Route
+
+    path="/workspace/create"
+
+    element={
+        <CreateWorkspaceWizard />
+    }
+
+/>
 
  <Route
     path="/invitations"
@@ -372,6 +382,8 @@ const AppRoutes: React.FC = () => {
         path="profile"
         element={<ProfilePage />}
     />
+
+
 
 </Route>
 

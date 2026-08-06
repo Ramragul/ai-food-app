@@ -2297,30 +2297,54 @@ async (
 
     const organizationResult =
       await client.query(
-        `
-        SELECT
+        // `
+        // SELECT
 
-          o.id,
+        //   o.id,
 
-          o.name,
+        //   o.name,
 
-          o.organization_type,
+        //   o.organization_type,
 
-          o.workspace_code
+        //   o.workspace_code
 
-        FROM organizations o
+        // FROM organizations o
 
-        INNER JOIN organization_members om
-          ON om.organization_id = o.id
+        // INNER JOIN organization_members om
+        //   ON om.organization_id = o.id
 
-        WHERE
+        // WHERE
 
-          om.user_id = $1
+        //   om.user_id = $1
 
-          AND om.status = 'ACTIVE'
+        //   AND om.status = 'ACTIVE'
 
-        LIMIT 1
-        `,
+        // LIMIT 1
+        // `,
+
+       ` SELECT
+
+    id,
+
+    name,
+
+    organization_type,
+
+    workspace_code
+
+FROM organizations
+
+WHERE
+
+    created_by = $1
+
+    AND status = 'ACTIVE'
+
+ORDER BY
+
+    created_at DESC
+
+LIMIT 1`,
         [
           userId
         ]

@@ -1403,62 +1403,173 @@ export const acceptInvitationService = async (
        ALREADY MEMBER?
     ---------------------------------------------- */
 
-    const existingMember =
-      await client.query(
-        `
-        SELECT id
-        FROM organization_members
-        WHERE
-          organization_id = $1
-          AND user_id = $2
-          AND status = 'ACTIVE'
-        LIMIT 1
-        `,
-        [
-          invitation.organization_id,
-          userId
-        ]
-      );
+    // const existingMember =
+    //   await client.query(
+    //     `
+    //     SELECT id
+    //     FROM organization_members
+    //     WHERE
+    //       organization_id = $1
+    //       AND user_id = $2
+    //       AND status = 'ACTIVE'
+    //     LIMIT 1
+    //     `,
+    //     [
+    //       invitation.organization_id,
+    //       userId
+    //     ]
+    //   );
 
-    if (existingMember.rows.length) {
+    // if (existingMember.rows.length) {
 
-      throw new Error(
-        "You are already a member of this workspace."
-      );
+    //   throw new Error(
+    //     "You are already a member of this workspace."
+    //   );
 
-    }
+    // }
+
+    // /* ---------------------------------------------
+    //    CREATE MEMBER
+    // ---------------------------------------------- */
+
+    // const memberResult =
+    //   await client.query(
+    //     `
+    //     INSERT INTO organization_members
+    //     (
+    //       organization_id,
+    //       user_id,
+    //       role_id,
+    //       status,
+    //       joined_at
+    //     )
+    //     VALUES
+    //     (
+    //       $1,
+    //       $2,
+    //       $3,
+    //       'ACTIVE',
+    //       NOW()
+    //     )
+    //     RETURNING *
+    //     `,
+    //     [
+    //       invitation.organization_id,
+    //       userId,
+    //       invitation.role_id
+    //     ]
+    //   );
+
 
     /* ---------------------------------------------
-       CREATE MEMBER
-    ---------------------------------------------- */
+   EXISTING MEMBERSHIP
+---------------------------------------------- */
 
-    const memberResult =
-      await client.query(
-        `
-        INSERT INTO organization_members
-        (
-          organization_id,
-          user_id,
-          role_id,
-          status,
-          joined_at
-        )
-        VALUES
-        (
-          $1,
-          $2,
-          $3,
-          'ACTIVE',
-          NOW()
-        )
-        RETURNING *
-        `,
-        [
-          invitation.organization_id,
-          userId,
-          invitation.role_id
-        ]
-      );
+const existingMember =
+  await client.query(
+    `
+    SELECT
+      id,
+      status
+    FROM organization_members
+    WHERE
+      organization_id = $1
+      AND user_id = $2
+    LIMIT 1
+    `,
+    [
+      invitation.organization_id,
+      userId
+    ]
+  );
+
+let memberResult;
+
+/* ---------------------------------------------
+   ALREADY ACTIVE
+---------------------------------------------- */
+
+if (
+  existingMember.rows.length &&
+  existingMember.rows[0].status === "ACTIVE"
+) {
+
+  throw new Error(
+    "You are already a member of this workspace."
+  );
+
+}
+
+/* ---------------------------------------------
+   REJOIN EXISTING MEMBER
+---------------------------------------------- */
+
+if (
+  existingMember.rows.length
+) {
+
+  memberResult =
+    await client.query(
+      `
+      UPDATE organization_members
+
+      SET
+
+        role_id = $1,
+
+        status = 'ACTIVE',
+
+        joined_at = NOW(),
+
+        left_at = NULL
+
+      WHERE id = $2
+
+      RETURNING *
+      `,
+      [
+        invitation.role_id,
+        existingMember.rows[0].id
+      ]
+    );
+
+}
+
+/* ---------------------------------------------
+   FIRST TIME JOIN
+---------------------------------------------- */
+
+else {
+
+  memberResult =
+    await client.query(
+      `
+      INSERT INTO organization_members
+      (
+        organization_id,
+        user_id,
+        role_id,
+        status,
+        joined_at
+      )
+      VALUES
+      (
+        $1,
+        $2,
+        $3,
+        'ACTIVE',
+        NOW()
+      )
+      RETURNING *
+      `,
+      [
+        invitation.organization_id,
+        userId,
+        invitation.role_id
+      ]
+    );
+
+}
 
 
       /* ---------------------------------------------
@@ -1528,9 +1639,7 @@ const consent =
     ]
   );
 
-if (
-  !consent.rows.length
-) {
+// if (!consent.rows.length) {
 
     await client.query(
       `
@@ -1557,7 +1666,35 @@ if (
       ]
     );
 
+} else {
+
+    await client.query(
+      `
+      UPDATE organization_consents
+
+      SET
+
+        granted = false,
+
+        granted_at = NULL,
+
+        revoked_at = NULL
+
+      WHERE
+
+        organization_id = $1
+
+        AND client_user_id = $2
+      `,
+      [
+        invitation.organization_id,
+        userId
+      ]
+    );
+
 }
+
+
 
 }
 

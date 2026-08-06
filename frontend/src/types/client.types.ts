@@ -21,3 +21,52 @@ export interface CoachUpdate {
 
     coach_name: string;
 }
+
+
+/* ===========================================
+   WORKSPACE MEMBERS
+=========================================== */
+
+export interface WorkspaceMember {
+
+    id: number;
+
+    user_id: number;
+
+    name: string;
+
+    nickname?: string;
+
+    email: string;
+
+    gender?: string;
+
+    role: string;
+
+    joined_at: string | null;
+
+    is_current_user: boolean;
+
+}
+
+export interface WorkspaceOrganization {
+
+    id: number;
+
+    name: string;
+
+    organization_type: string;
+
+    workspace_code: string;
+
+}
+
+export interface WorkspaceMembersResponse {
+
+    organization: WorkspaceOrganization;
+
+    viewer_role: string;
+
+    members: WorkspaceMember[];
+
+}

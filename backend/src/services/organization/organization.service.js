@@ -221,6 +221,12 @@ const hasPermission = async (
       ]
     );
 
+   
+console.log("Permission check:")
+console.log(result.rows);
+
+
+
   return result.rows.length > 0;
 
 };
@@ -1005,6 +1011,8 @@ export const inviteClientService = async (
     /* ---------------------------------------------
        CHECK PERMISSION
     ---------------------------------------------- */
+
+    
 
     const allowed =
       await hasPermission(

@@ -4290,3 +4290,232 @@ export const getWorkspaceMembersService = async (userId) => {
 };
 
 
+
+export const leaveWorkspaceService =
+async (
+  userId
+) => {
+
+  const client =
+    await pool.connect();
+
+  try {
+
+    await client.query(
+      "BEGIN"
+    );
+
+    /* ---------------------------------------------
+       FIND ACTIVE MEMBERSHIP
+    ---------------------------------------------- */
+
+    const membershipResult =
+      await client.query(
+        `
+        SELECT
+
+          om.id,
+
+          om.organization_id,
+
+          o.name
+
+        FROM organization_members om
+
+        INNER JOIN organizations o
+          ON o.id = om.organization_id
+
+        WHERE
+
+          om.user_id = $1
+
+          AND om.status = 'ACTIVE'
+
+        LIMIT 1
+        `,
+        [
+          userId
+        ]
+      );
+
+    if (
+      !membershipResult.rows.length
+    ) {
+
+      throw new Error(
+        "Active workspace not found."
+      );
+
+    }
+
+    const membership =
+      membershipResult.rows[0];
+
+      /* ---------------------------------------------
+   MARK MEMBERSHIP AS LEFT
+---------------------------------------------- */
+
+await client.query(
+  `
+  UPDATE organization_members
+
+  SET
+
+    status = 'LEFT',
+
+    left_at = NOW()
+
+  WHERE id = $1
+  `,
+  [
+    membership.id
+  ]
+);
+
+/* ---------------------------------------------
+   REVOKE CONSENT
+---------------------------------------------- */
+
+await client.query(
+  `
+  UPDATE organization_consents
+
+  SET
+
+    granted = false,
+
+    granted_at = NULL,
+
+    revoked_at = NOW()
+
+  WHERE
+
+    organization_id = $1
+
+    AND client_user_id = $2
+  `,
+  [
+    membership.organization_id,
+    userId
+  ]
+);
+
+/* ---------------------------------------------
+   END ACTIVE ASSIGNMENTS
+---------------------------------------------- */
+
+await client.query(
+  `
+  UPDATE organization_client_assignments
+
+  SET
+
+    is_active = false,
+
+    ended_at = NOW()
+
+  WHERE
+
+    organization_id = $1
+
+    AND client_member_id = $2
+
+    AND is_active = true
+  `,
+  [
+    membership.organization_id,
+    membership.id
+  ]
+);
+
+/* ---------------------------------------------
+   LOAD USER
+---------------------------------------------- */
+
+const userResult =
+  await client.query(
+    `
+    SELECT
+
+      name
+
+    FROM users
+
+    WHERE id = $1
+
+    LIMIT 1
+    `,
+    [
+      userId
+    ]
+  );
+
+const userName =
+  userResult.rows[0]?.name ??
+  "User";
+
+/* ---------------------------------------------
+   ACTIVITY LOG
+---------------------------------------------- */
+
+await createActivityLog(
+  client,
+  {
+
+    organizationId:
+      membership.organization_id,
+
+    actorUserId:
+      userId,
+
+    targetUserId:
+      userId,
+
+    entityType:
+      "MEMBERSHIP",
+
+    entityId:
+      membership.id,
+
+    action:
+      "CLIENT_LEFT_WORKSPACE",
+
+    description:
+      `${userName} left the workspace.`,
+
+    metadata: {
+
+      member_id:
+        membership.id
+
+    }
+
+  }
+);
+
+await client.query(
+  "COMMIT"
+);
+
+return {
+
+  message:
+    "Workspace left successfully."
+
+};
+
+} catch (err) {
+
+  await client.query(
+    "ROLLBACK"
+  );
+
+  throw err;
+
+} finally {
+
+  client.release();
+
+}
+
+};

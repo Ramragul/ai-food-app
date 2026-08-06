@@ -1639,7 +1639,7 @@ const consent =
     ]
   );
 
-// if (!consent.rows.length) {
+if (!consent.rows.length) {
 
     await client.query(
       `

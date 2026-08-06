@@ -3952,7 +3952,7 @@ async (
 };
 
 
-export const getOrganizationMembersService = async (userId) => {
+export const getWorkspaceMembersService = async (userId) => {
 
     const client = await pool.connect();
 

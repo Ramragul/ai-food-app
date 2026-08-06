@@ -4519,3 +4519,58 @@ return {
 }
 
 };
+
+
+export const getMyOwnedOrganizationsService =
+async (
+    userId
+) => {
+
+    const client =
+        await pool.connect();
+
+    try {
+
+        const result =
+            await client.query(
+                `
+                SELECT
+
+                    id,
+
+                    name,
+
+                    organization_type,
+
+                    workspace_code,
+
+                    logo_url,
+
+                    created_at
+
+                FROM organizations
+
+                WHERE
+
+                    created_by = $1
+
+                ORDER BY
+
+                    created_at DESC
+                `,
+                [
+                    userId
+                ]
+            );
+
+        return result.rows;
+
+    }
+
+    finally {
+
+        client.release();
+
+    }
+
+};

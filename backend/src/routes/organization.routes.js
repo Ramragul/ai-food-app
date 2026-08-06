@@ -4,7 +4,7 @@ import {
   createOrganization,getMyOrganizations , inviteEmployee, inviteClient,
    getMyInvitations, acceptInvitation, getOrganizationMembers,assignClient , getOrganizationDashboard, getEmployees,
    getClients , getAssignments, getInvitations, getClientDetails, transferAssignment, removeAssignment, declineInvitation,
-   getWorkspaceMembers, leaveWorkspace
+   getWorkspaceMembers, leaveWorkspace, getMyOwnedOrganizations
 } from "../controllers/organization.controller.js";
 
 import {
@@ -157,6 +157,12 @@ router.post(
   "/workspace/leave",
   authMiddleware,
   leaveWorkspace
+);
+
+router.get(
+  "/my-owned",
+  authMiddleware,
+  getMyOwnedOrganizations
 );
 
 

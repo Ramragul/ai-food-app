@@ -3,7 +3,7 @@ import {
     inviteClientService,getMyInvitationsService, acceptInvitationService ,getOrganizationMembersService,
     assignClientService,getOrganizationDashboardService , getEmployeesService, getClientsService , getAssignmentsService,
     getInvitationsService,getClientDetailsService, transferAssignmentService, removeAssignmentService, declineInvitationService,
-    getWorkspaceMembersService, leaveWorkspaceService
+    getWorkspaceMembersService, leaveWorkspaceService, getMyOwnedOrganizationsService
 } from "../services/organization/organization.service.js";
 
 /* 🔥 CREATE ORGANIZATION */
@@ -777,5 +777,42 @@ async (
     });
 
   }
+
+};
+
+
+export const getMyOwnedOrganizations = async (
+    req,
+    res
+) => {
+
+    try {
+
+        const organizations =
+            await getMyOwnedOrganizationsService(
+                req.user.id
+            );
+
+        res.json({
+
+            success: true,
+
+            data: organizations
+
+        });
+
+    }
+
+    catch (err) {
+
+        res.status(400).json({
+
+            success: false,
+
+            error: err.message
+
+        });
+
+    }
 
 };

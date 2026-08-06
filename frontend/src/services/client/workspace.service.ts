@@ -15,3 +15,17 @@ async (): Promise<WorkspaceMembersResponse> => {
     return response.data.data;
 
 };
+
+
+
+export const leaveWorkspace =
+async () => {
+
+    const response =
+        await api.post(
+            "/organizations/workspace/leave"
+        );
+
+    return response.data;
+
+};

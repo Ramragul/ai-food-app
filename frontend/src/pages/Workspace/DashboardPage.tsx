@@ -203,20 +203,33 @@
 import {
   SimpleGrid,
   VStack,
-  Heading
+  Heading,
+  IconButton,
+  HStack,
+  Button
 } from "@chakra-ui/react";
 
 import {
   Users,
   Heart,
   Target,
-  Mail
+  Mail,
+  ChevronLeftIcon
+  
 } from "lucide-react";
+
+// import {
+//     ChevronLeftIcon
+// } from "@chakra-ui/icons";
 
 import {
   useEffect,
   useState
 } from "react";
+
+import { ArrowBackIcon } from "@chakra-ui/icons";
+
+import { useNavigate } from "react-router-dom";
 
 import MetricCard from "../../components/WorkspaceUI/MetricCard";
 import PageHeader from "../../components/WorkspaceUI/PageHeader";
@@ -239,6 +252,8 @@ const DashboardPage = () => {
 
   const [error, setError] =
     useState("");
+
+    const navigate = useNavigate();
 
     // const {setOrganization} = useWorkspace();
 
@@ -319,14 +334,69 @@ const DashboardPage = () => {
         }
         subtitle="Monitor your workspace at a glance."
       /> */}
-      <PageHeader
+      {/* <PageHeader
     title={
         dashboard?.organization?.name ??
         "Dashboard"
     }
 
     subtitle={`${dashboard?.organization?.organization_type} • ${dashboard?.organization?.workspace_code}`}
- />
+ /> */}
+
+<VStack
+
+    align="stretch"
+
+    spacing={1}
+
+>
+
+    <Button
+
+        leftIcon={<ChevronLeftIcon />}
+
+        variant="ghost"
+
+        justifyContent="flex-start"
+
+        w="fit-content"
+
+        color="gray.500"
+
+        fontWeight="500"
+
+        size="sm"
+
+        _hover={{
+
+            bg: "transparent",
+
+            color: "blue.500"
+
+        }}
+
+        onClick={() =>
+            navigate("/home")
+        }
+
+    >
+
+        Back to NEKA
+
+    </Button>
+
+    <PageHeader
+
+        title={
+            dashboard?.organization?.name ??
+            "Dashboard"
+        }
+
+        subtitle={`${dashboard?.organization?.organization_type} • ${dashboard?.organization?.workspace_code}`}
+
+    />
+
+</VStack>
 
       <SimpleGrid
 

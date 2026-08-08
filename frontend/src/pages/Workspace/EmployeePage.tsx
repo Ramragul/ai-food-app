@@ -1,3 +1,5 @@
+
+
 // Version 1
 
 // import {
@@ -32,6 +34,12 @@
 //   type Employee
 // } from "../../services/workspace/employees.service";
 
+// import {
+//   useDisclosure
+// } from "@chakra-ui/react";
+
+// import InviteEmployeeDrawer from "../../components/WorkspaceUI/InviteEmployeeDrawer";
+
 // const EmployeesPage = () => {
 
 //   const [search, setSearch] =
@@ -45,6 +53,8 @@
 
 //   const [error, setError] =
 //     useState("");
+
+//     const {isOpen,onOpen,onClose} = useDisclosure();
 
 //   useEffect(() => {
 
@@ -122,6 +132,8 @@
 
 //     return (
 
+      
+
 //       <VStack
 //         spacing={6}
 //         align="stretch"
@@ -150,7 +162,7 @@
 //   }
 
 //   return (
-
+//     <>
 //     <VStack
 //       spacing={6}
 //       align="stretch"
@@ -174,19 +186,21 @@
 
 //         />
 
-//         <Button
+// <Button
 
-//           leftIcon={<Plus size={18} />}
+//   leftIcon={<Plus size={18} />}
 
-//           colorScheme="blue"
+//   colorScheme="blue"
 
-//           borderRadius="12px"
+//   borderRadius="12px"
 
-//         >
+//   onClick={onOpen}
 
-//           Invite Employee
+// >
 
-//         </Button>
+//   Employee
+
+// </Button>
 
 //       </HStack>
 
@@ -262,6 +276,18 @@
 //       )}
 
 //     </VStack>
+//     <InviteEmployeeDrawer
+
+//   isOpen={isOpen}
+
+//   onClose={onClose}
+
+//   onSuccess={loadEmployees}
+
+// />
+    
+//     </>
+    
 
 //   );
 
@@ -270,8 +296,7 @@
 // export default EmployeesPage;
 
 
-
-// Version 2 
+// Version 2
 
 import {
   VStack,
@@ -300,6 +325,9 @@ import {
 import PageHeader from "../../components/WorkspaceUI/PageHeader";
 import EmployeeCard from "../../components/WorkspaceUI/EmployeeCard";
 
+import EmployeeReviewDrawer
+  from "../../components/WorkspaceUI/EmployeeReviewDrawer";
+
 import {
   getEmployees,
   type Employee
@@ -326,6 +354,23 @@ const EmployeesPage = () => {
     useState("");
 
     const {isOpen,onOpen,onClose} = useDisclosure();
+
+    const {
+  isOpen: isInviteOpen,
+  onOpen: onInviteOpen,
+  onClose: onInviteClose
+} = useDisclosure();
+
+const {
+  isOpen: isReviewOpen,
+  onOpen: onReviewOpen,
+  onClose: onReviewClose
+} = useDisclosure();
+
+const [
+  selectedEmployee,
+  setSelectedEmployee
+] = useState<Employee | null>(null);
 
   useEffect(() => {
 
@@ -432,6 +477,16 @@ const EmployeesPage = () => {
 
   }
 
+  const handleViewEmployee = (
+  employee: Employee
+) => {
+
+  setSelectedEmployee(employee);
+
+  onReviewOpen();
+
+};
+
   return (
     <>
     <VStack
@@ -456,7 +511,7 @@ const EmployeesPage = () => {
           subtitle="Manage your organization employees."
 
         />
-
+{/* 
 <Button
 
   leftIcon={<Plus size={18} />}
@@ -470,6 +525,22 @@ const EmployeesPage = () => {
 >
 
   Employee
+
+</Button> */}
+
+<Button
+
+  leftIcon={<Plus size={18} />}
+
+  colorScheme="blue"
+
+  borderRadius="12px"
+
+  onClick={onInviteOpen}
+
+>
+
+  Invite Employee
 
 </Button>
 
@@ -532,12 +603,19 @@ const EmployeesPage = () => {
 
           {filteredEmployees.map((employee) => (
 
+            // <EmployeeCard
+
+            //   key={employee.member_id}
+
+            //   employee={employee}
+
+            
+            // />
+
             <EmployeeCard
-
               key={employee.member_id}
-
               employee={employee}
-
+              onView={handleViewEmployee}
             />
 
           ))}
@@ -547,11 +625,39 @@ const EmployeesPage = () => {
       )}
 
     </VStack>
-    <InviteEmployeeDrawer
+    {/* <InviteEmployeeDrawer
 
   isOpen={isOpen}
 
   onClose={onClose}
+
+  onSuccess={loadEmployees}
+
+/> */}
+
+<InviteEmployeeDrawer
+
+  isOpen={isInviteOpen}
+
+  onClose={onInviteClose}
+
+  onSuccess={loadEmployees}
+
+/>
+
+<EmployeeReviewDrawer
+
+  employee={selectedEmployee}
+
+  isOpen={isReviewOpen}
+
+  onClose={() => {
+
+    onReviewClose();
+
+    setSelectedEmployee(null);
+
+  }}
 
   onSuccess={loadEmployees}
 

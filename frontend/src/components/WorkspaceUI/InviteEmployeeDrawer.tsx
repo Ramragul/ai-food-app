@@ -8,7 +8,9 @@ import {
   Button,
   Stack,
   Text,
-  useToast
+  useToast,
+  Alert,
+  AlertIcon
 } from "@chakra-ui/react";
 
 import { useState } from "react";
@@ -194,14 +196,15 @@ const InviteEmployeeDrawer = ({
 
       });
 
-      toast({
+toast({
 
-        status: "success",
+    status:"success",
 
-        title:
-          "Employee invitation sent."
+    title:"Invitation sent",
 
-      });
+    description:"The invitation is now waiting for acceptance."
+
+});
 
       resetForm();
 
@@ -317,6 +320,19 @@ const InviteEmployeeDrawer = ({
           isRequired
           isInvalid={!!errors.invited_name}
         >
+          <Alert
+
+    status="info"
+
+    borderRadius="xl"
+
+>
+
+<AlertIcon/>
+
+The invited user will receive the invitation inside their NEKA account after signing in.
+
+</Alert>
 
           <FormLabel>
             Full Name

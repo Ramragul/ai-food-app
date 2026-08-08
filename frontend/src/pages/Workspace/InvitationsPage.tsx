@@ -24,6 +24,15 @@ import {
 import PageHeader from "../../components/WorkspaceUI/PageHeader";
 import InvitationsList from "../../components/WorkspaceUI/InvitationsList";
 
+import InviteMemberDrawer
+from "../../components/WorkspaceUI/InviteMemberDrawer";
+
+import InviteClientDrawer
+from "../../components/WorkspaceUI/InviteClientDrawer";
+
+import InviteEmployeeDrawer
+from "../../components/WorkspaceUI/InviteEmployeeDrawer";
+
 import {
   getInvitations,
   type Invitation
@@ -39,6 +48,15 @@ const InvitationsPage = () => {
 
   const [loading, setLoading] =
     useState(true);
+
+    const [isInviteDrawerOpen, setInviteDrawerOpen] =
+useState(false);
+
+const [isClientDrawerOpen, setClientDrawerOpen] =
+useState(false);
+
+const [isEmployeeDrawerOpen, setEmployeeDrawerOpen] =
+useState(false);
 
   const [error, setError] =
     useState("");
@@ -177,20 +195,23 @@ const InvitationsPage = () => {
           subtitle="Manage workspace invitations."
 
         />
+<Button
 
-        <Button
+  leftIcon={<Plus size={18} />}
 
-          leftIcon={<Plus size={18} />}
+  colorScheme="blue"
 
-          colorScheme="blue"
+  borderRadius="12px"
 
-          borderRadius="12px"
+  onClick={() =>
+    setInviteDrawerOpen(true)
+  }
 
-        >
+>
 
-          Invite Member
+  Invite Member
 
-        </Button>
+</Button>
 
       </HStack>
 
@@ -247,6 +268,66 @@ const InvitationsPage = () => {
         )
 
       }
+
+      <InviteMemberDrawer
+
+    isOpen={isInviteDrawerOpen}
+
+    onClose={() =>
+        setInviteDrawerOpen(false)
+    }
+
+    onSelect={(type) => {
+
+        setInviteDrawerOpen(false);
+
+        if (type === "CLIENT") {
+
+            setClientDrawerOpen(true);
+
+        }
+
+        else {
+
+            setEmployeeDrawerOpen(true);
+
+        }
+
+    }}
+
+/>
+
+<InviteClientDrawer
+
+    isOpen={isClientDrawerOpen}
+
+    onClose={() =>
+        setClientDrawerOpen(false)
+    }
+
+    onSuccess={() => {
+
+        void loadInvitations();
+
+    }}
+
+/>
+
+<InviteEmployeeDrawer
+
+    isOpen={isEmployeeDrawerOpen}
+
+    onClose={() =>
+        setEmployeeDrawerOpen(false)
+    }
+
+    onSuccess={() => {
+
+        void loadInvitations();
+
+    }}
+
+/>
 
     </VStack>
 

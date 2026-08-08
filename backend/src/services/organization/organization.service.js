@@ -4606,3 +4606,489 @@ async (
     }
 
 };
+
+/* ======================================================
+   CHANGE MEMBER ROLE
+====================================================== */
+
+export const changeOrganizationMemberRoleService = async (
+  userId,
+  memberId,
+  roleName
+) => {
+
+  const client = await pool.connect();
+
+  try {
+
+    await client.query("BEGIN");
+
+    /* ---------------------------------------------
+       LOAD TARGET MEMBER
+    ---------------------------------------------- */
+
+    const memberResult =
+      await client.query(
+        `
+        SELECT
+
+          om.id AS member_id,
+
+          om.organization_id,
+
+          om.user_id,
+
+          om.role_id,
+
+          om.status,
+
+          r.name AS current_role
+
+        FROM organization_members om
+
+        INNER JOIN organization_roles r
+          ON r.id = om.role_id
+
+        WHERE
+          om.id = $1
+
+        LIMIT 1
+        `,
+        [
+          memberId
+        ]
+      );
+
+    if (!memberResult.rows.length) {
+
+      throw new Error(
+        "Member not found."
+      );
+
+    }
+
+    const member =
+      memberResult.rows[0];
+
+
+    /* ---------------------------------------------
+       MEMBER MUST BE ACTIVE
+    ---------------------------------------------- */
+
+    if (
+      member.status !== "ACTIVE"
+    ) {
+
+      throw new Error(
+        "Member is not active."
+      );
+
+    }
+
+
+    /* ---------------------------------------------
+       PERMISSION CHECK
+    ---------------------------------------------- */
+
+    const allowed =
+      await hasPermission(
+        client,
+        member.organization_id,
+        userId,
+        "MANAGE_MEMBERS"
+      );
+
+    if (!allowed) {
+
+      throw new Error(
+        "Permission denied."
+      );
+
+    }
+
+
+    /* ---------------------------------------------
+       OWNER PROTECTION
+    ---------------------------------------------- */
+
+    if (
+      member.current_role === "OWNER"
+    ) {
+
+      throw new Error(
+        "Owner role cannot be changed."
+      );
+
+    }
+
+
+    /* ---------------------------------------------
+       GET TARGET ROLE
+    ---------------------------------------------- */
+
+    const roleResult =
+      await client.query(
+        `
+        SELECT
+
+          id,
+
+          name
+
+        FROM organization_roles
+
+        WHERE
+
+          organization_id = $1
+
+          AND name = $2
+
+        LIMIT 1
+        `,
+        [
+          member.organization_id,
+          roleName
+        ]
+      );
+
+    if (!roleResult.rows.length) {
+
+      throw new Error(
+        "Role not found."
+      );
+
+    }
+
+    const newRole =
+      roleResult.rows[0];
+
+
+    /* ---------------------------------------------
+       PREVENT OWNER ASSIGNMENT
+       THROUGH NORMAL ROLE CHANGE
+    ---------------------------------------------- */
+
+    if (
+      newRole.name === "OWNER"
+    ) {
+
+      throw new Error(
+        "Owner role cannot be assigned this way."
+      );
+
+    }
+
+
+    /* ---------------------------------------------
+       UPDATE ROLE
+    ---------------------------------------------- */
+
+    await client.query(
+      `
+      UPDATE organization_members
+
+      SET
+
+        role_id = $1,
+
+        updated_at = NOW()
+
+      WHERE
+
+        id = $2
+
+        AND status = 'ACTIVE'
+      `,
+      [
+        newRole.id,
+        memberId
+      ]
+    );
+
+
+    /* ---------------------------------------------
+       ACTIVITY LOG
+    ---------------------------------------------- */
+
+    await createActivityLog(
+      client,
+      {
+
+        organizationId:
+          member.organization_id,
+
+        actorUserId:
+          userId,
+
+        targetUserId:
+          member.user_id,
+
+        entityType:
+          "MEMBER",
+
+        entityId:
+          member.member_id,
+
+        action:
+          "MEMBER_ROLE_CHANGED",
+
+        description:
+          `Member role changed from ${member.current_role} to ${newRole.name}.`,
+
+        metadata: {
+
+          previous_role:
+            member.current_role,
+
+          new_role:
+            newRole.name
+
+        }
+
+      }
+    );
+
+
+    await client.query("COMMIT");
+
+
+    return {
+
+      member_id:
+        member.member_id,
+
+      role:
+        newRole.name
+
+    };
+
+  } catch (err) {
+
+    await client.query("ROLLBACK");
+
+    throw err;
+
+  } finally {
+
+    client.release();
+
+  }
+
+};
+
+
+/* ======================================================
+   REMOVE ORGANIZATION MEMBER
+====================================================== */
+
+export const removeOrganizationMemberService = async (
+  userId,
+  memberId
+) => {
+
+  const client = await pool.connect();
+
+  try {
+
+    await client.query("BEGIN");
+
+
+    /* ---------------------------------------------
+       LOAD TARGET MEMBER
+    ---------------------------------------------- */
+
+    const memberResult =
+      await client.query(
+        `
+        SELECT
+
+          om.id AS member_id,
+
+          om.organization_id,
+
+          om.user_id,
+
+          om.role_id,
+
+          om.status,
+
+          r.name AS role,
+
+          u.name AS name
+
+        FROM organization_members om
+
+        INNER JOIN organization_roles r
+          ON r.id = om.role_id
+
+        INNER JOIN users u
+          ON u.id = om.user_id
+
+        WHERE
+
+          om.id = $1
+
+        LIMIT 1
+        `,
+        [
+          memberId
+        ]
+      );
+
+    if (!memberResult.rows.length) {
+
+      throw new Error(
+        "Member not found."
+      );
+
+    }
+
+    const member =
+      memberResult.rows[0];
+
+
+    /* ---------------------------------------------
+       PERMISSION CHECK
+    ---------------------------------------------- */
+
+    const allowed =
+      await hasPermission(
+        client,
+        member.organization_id,
+        userId,
+        "REMOVE_MEMBER"
+      );
+
+    if (!allowed) {
+
+      throw new Error(
+        "Permission denied."
+      );
+
+    }
+
+
+    /* ---------------------------------------------
+       OWNER PROTECTION
+    ---------------------------------------------- */
+
+    if (
+      member.role === "OWNER"
+    ) {
+
+      throw new Error(
+        "Workspace owner cannot be removed."
+      );
+
+    }
+
+
+    /* ---------------------------------------------
+       STATUS CHECK
+    ---------------------------------------------- */
+
+    if (
+      member.status !== "ACTIVE"
+    ) {
+
+      throw new Error(
+        "Member is already inactive."
+      );
+
+    }
+
+
+    /* ---------------------------------------------
+       REMOVE MEMBER
+    ---------------------------------------------- */
+
+    await client.query(
+      `
+      UPDATE organization_members
+
+      SET
+
+        status = 'LEFT',
+
+        left_at = NOW(),
+
+        updated_at = NOW()
+
+      WHERE
+
+        id = $1
+
+        AND status = 'ACTIVE'
+      `,
+      [
+        memberId
+      ]
+    );
+
+
+    /* ---------------------------------------------
+       ACTIVITY LOG
+    ---------------------------------------------- */
+
+    await createActivityLog(
+      client,
+      {
+
+        organizationId:
+          member.organization_id,
+
+        actorUserId:
+          userId,
+
+        targetUserId:
+          member.user_id,
+
+        entityType:
+          "MEMBER",
+
+        entityId:
+          member.member_id,
+
+        action:
+          "MEMBER_REMOVED",
+
+        description:
+          `${member.name} was removed from the workspace.`,
+
+        metadata: {
+
+          role:
+            member.role
+
+        }
+
+      }
+    );
+
+
+    await client.query("COMMIT");
+
+
+    return {
+
+      member_id:
+        member.member_id,
+
+      status:
+        "LEFT"
+
+    };
+
+  } catch (err) {
+
+    await client.query("ROLLBACK");
+
+    throw err;
+
+  } finally {
+
+    client.release();
+
+  }
+
+};

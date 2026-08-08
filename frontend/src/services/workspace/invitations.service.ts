@@ -34,3 +34,15 @@ export const getInvitations = async () => {
   return response.data.data as Invitation[];
 
 };
+
+export const declineInvitation = async (
+    invitationToken: string
+) => {
+
+    const response = await api.post(
+        `/invitations/${invitationToken}/decline`
+    );
+
+    return response.data;
+
+};

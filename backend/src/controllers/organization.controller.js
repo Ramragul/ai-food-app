@@ -3,7 +3,7 @@ import {
     inviteClientService,getMyInvitationsService, acceptInvitationService ,getOrganizationMembersService,
     assignClientService,getOrganizationDashboardService , getEmployeesService, getClientsService , getAssignmentsService,
     getInvitationsService,getClientDetailsService, transferAssignmentService, removeAssignmentService, declineInvitationService,
-    getWorkspaceMembersService, leaveWorkspaceService, getMyOwnedOrganizationsService
+    getWorkspaceMembersService, leaveWorkspaceService, getMyOwnedOrganizationsService, changeOrganizationMemberRoleService, removeOrganizationMemberService
 } from "../services/organization/organization.service.js";
 
 /* 🔥 CREATE ORGANIZATION */
@@ -814,5 +814,113 @@ export const getMyOwnedOrganizations = async (
         });
 
     }
+
+};
+
+export const changeOrganizationMemberRole =
+async (req, res) => {
+
+  try {
+
+    const userId =
+      req.user.id;
+
+    const {
+      memberId
+    } = req.params;
+
+    const {
+      role
+    } = req.body;
+
+    if (!role) {
+
+      return res.status(400).json({
+        success: false,
+        message: "Role is required."
+      });
+
+    }
+
+    const result =
+      await changeOrganizationMemberRoleService(
+        userId,
+        Number(memberId),
+        role
+      );
+
+    return res.status(200).json({
+
+      success: true,
+
+      data: result
+
+    });
+
+  } catch (err) {
+
+    console.error(
+      "Change member role error:",
+      err
+    );
+
+    return res.status(400).json({
+
+      success: false,
+
+      message:
+        err.message ||
+        "Unable to change member role."
+
+    });
+
+  }
+
+};
+
+export const removeOrganizationMember =
+async (req, res) => {
+
+  try {
+
+    const userId =
+      req.user.id;
+
+    const {
+      memberId
+    } = req.params;
+
+    const result =
+      await removeOrganizationMemberService(
+        userId,
+        Number(memberId)
+      );
+
+    return res.status(200).json({
+
+      success: true,
+
+      data: result
+
+    });
+
+  } catch (err) {
+
+    console.error(
+      "Remove member error:",
+      err
+    );
+
+    return res.status(400).json({
+
+      success: false,
+
+      message:
+        err.message ||
+        "Unable to remove member."
+
+    });
+
+  }
 
 };

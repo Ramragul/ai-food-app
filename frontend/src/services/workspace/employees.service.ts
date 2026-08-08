@@ -46,6 +46,30 @@ export interface InviteEmployeeResponse {
 
 }
 
+export interface ChangeEmployeeRoleRequest {
+
+  role: string;
+
+}
+
+
+export interface ChangeEmployeeRoleResponse {
+
+  member_id: number;
+
+  role: string;
+
+}
+
+
+export interface RemoveEmployeeResponse {
+
+  member_id: number;
+
+  status: string;
+
+}
+
 export const getEmployees = async () => {
 
   const response = await api.get(
@@ -72,5 +96,50 @@ export const inviteEmployee = async (
     );
 
   return response.data.data as InviteEmployeeResponse;
+
+};
+
+
+
+
+
+/* ---------------------------------------------
+   CHANGE EMPLOYEE ROLE
+---------------------------------------------- */
+
+export const changeEmployeeRole = async (
+  memberId: number,
+  role: string
+) => {
+
+  const response =
+    await api.patch(
+      `/organizations/members/${memberId}/role`,
+      {
+        role
+      }
+    );
+
+  return response.data.data as
+    ChangeEmployeeRoleResponse;
+
+};
+
+
+/* ---------------------------------------------
+   REMOVE EMPLOYEE
+---------------------------------------------- */
+
+export const removeEmployee = async (
+  memberId: number
+) => {
+
+  const response =
+    await api.patch(
+      `/organizations/members/${memberId}/remove`
+    );
+
+  return response.data.data as
+    RemoveEmployeeResponse;
 
 };

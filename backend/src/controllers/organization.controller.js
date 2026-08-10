@@ -35,8 +35,7 @@ async (req, res) => {
 
     return res.status(201).json({
 
-      success: true,      await deleteOrganizationService(
-      
+      success: true,
 
       message:
         "Workspace created successfully 🚀",

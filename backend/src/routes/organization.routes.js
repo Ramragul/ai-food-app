@@ -4,7 +4,8 @@ import {
   createOrganization,getMyOrganizations , inviteEmployee, inviteClient,
    getMyInvitations, acceptInvitation, getOrganizationMembers,assignClient , getOrganizationDashboard, getEmployees,
    getClients , getAssignments, getInvitations, getClientDetails, transferAssignment, removeAssignment, declineInvitation,
-   getWorkspaceMembers, leaveWorkspace, getMyOwnedOrganizations, changeOrganizationMemberRole, removeOrganizationMember
+   getWorkspaceMembers, leaveWorkspace, getMyOwnedOrganizations, changeOrganizationMemberRole, removeOrganizationMember, getOrganizationSettings,
+updateOrganizationSettings, deleteOrganization
 } from "../controllers/organization.controller.js";
 
 import {
@@ -184,6 +185,26 @@ router.patch(
   "/members/:memberId/remove",
   authMiddleware,
   removeOrganizationMember
+);
+
+
+
+router.get(
+  "/settings",
+  authMiddleware,
+  getOrganizationSettings
+);
+
+router.put(
+  "/settings",
+  authMiddleware,
+  updateOrganizationSettings
+);
+
+router.delete(
+  "/settings",
+  authMiddleware,
+  deleteOrganization
 );
 
 

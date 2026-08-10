@@ -3,7 +3,8 @@ import {
     inviteClientService,getMyInvitationsService, acceptInvitationService ,getOrganizationMembersService,
     assignClientService,getOrganizationDashboardService , getEmployeesService, getClientsService , getAssignmentsService,
     getInvitationsService,getClientDetailsService, transferAssignmentService, removeAssignmentService, declineInvitationService,
-    getWorkspaceMembersService, leaveWorkspaceService, getMyOwnedOrganizationsService, changeOrganizationMemberRoleService, removeOrganizationMemberService
+    getWorkspaceMembersService, leaveWorkspaceService, getMyOwnedOrganizationsService, changeOrganizationMemberRoleService, removeOrganizationMemberService,
+    getOrganizationSettingsService, updateOrganizationSettingsService, deleteOrganizationService
 } from "../services/organization/organization.service.js";
 
 /* 🔥 CREATE ORGANIZATION */
@@ -34,7 +35,8 @@ async (req, res) => {
 
     return res.status(201).json({
 
-      success: true,
+      success: true,      await deleteOrganizationService(
+      
 
       message:
         "Workspace created successfully 🚀",
@@ -918,6 +920,107 @@ async (req, res) => {
       message:
         err.message ||
         "Unable to remove member."
+
+    });
+
+  }
+
+};
+
+
+export const getOrganizationSettings =
+async (req, res) => {
+
+  try {
+
+    const data =
+      await getOrganizationSettingsService(
+        req.user.id
+      );
+
+    return res.json({
+
+      success: true,
+
+      data
+
+    });
+
+  } catch (error) {
+
+    return res.status(400).json({
+
+      success: false,
+
+      message:
+        error.message
+
+    });
+
+  }
+
+};
+
+export const updateOrganizationSettings =
+async (req, res) => {
+
+  try {
+
+    const data =
+      await updateOrganizationSettingsService(
+        req.user.id,
+        req.body
+      );
+
+    return res.json({
+
+      success: true,
+
+      data
+
+    });
+
+  } catch (error) {
+
+    return res.status(400).json({
+
+      success: false,
+
+      message:
+        error.message
+
+    });
+
+  }
+
+};
+
+export const deleteOrganization =
+async (req, res) => {
+
+  try {
+
+    const data =
+      await deleteOrganizationService(
+        req.user.id
+      );
+
+    return res.json({
+
+      success: true,
+
+      data
+
+    });
+
+  } catch (error) {
+
+    return res.status(400).json({
+
+      success: false,
+
+      message:
+        error.message
 
     });
 

@@ -5092,3 +5092,533 @@ export const removeOrganizationMemberService = async (
   }
 
 };
+
+
+
+
+export const getOrganizationSettingsService = async (
+  userId
+) => {
+
+  const client =
+    await pool.connect();
+
+  try {
+
+    const result =
+      await client.query(
+        `
+        SELECT
+
+          o.id,
+
+          o.name,
+
+          o.organization_type,
+
+          o.logo_url,
+
+          o.email,
+
+          o.mobile,
+
+          o.website,
+
+          o.address,
+
+          o.city,
+
+          o.state,
+
+          o.country,
+
+          o.timezone,
+
+          o.currency,
+
+          o.subscription_plan,
+
+          o.workspace_code,
+
+          o.created_at
+
+        FROM organizations o
+
+        INNER JOIN organization_members om
+          ON om.organization_id = o.id
+
+        INNER JOIN organization_roles r
+          ON r.id = om.role_id
+
+        WHERE
+
+          om.user_id = $1
+
+          AND om.status = 'ACTIVE'
+
+          AND r.name = 'OWNER'
+
+          AND o.status = 'ACTIVE'
+
+        LIMIT 1
+        `,
+        [userId]
+      );
+
+    if (!result.rows.length) {
+
+      throw new Error(
+        "Workspace not found."
+      );
+
+    }
+
+    return result.rows[0];
+
+  } finally {
+
+    client.release();
+
+  }
+
+};
+
+
+
+
+export const updateOrganizationSettingsService =
+async (
+  userId,
+  {
+    name,
+    organization_type,
+    email,
+    mobile,
+    website,
+    address,
+    city,
+    state,
+    country,
+    timezone,
+    currency,
+    logo_url
+  }
+) => {
+
+  const client =
+    await pool.connect();
+
+  try {
+
+    await client.query("BEGIN");
+
+    const organizationResult =
+      await client.query(
+        `
+        SELECT
+
+          o.id
+
+        FROM organizations o
+
+        INNER JOIN organization_members om
+          ON om.organization_id = o.id
+
+        INNER JOIN organization_roles r
+          ON r.id = om.role_id
+
+        WHERE
+
+          om.user_id = $1
+
+          AND om.status = 'ACTIVE'
+
+          AND r.name = 'OWNER'
+
+          AND o.status = 'ACTIVE'
+
+        LIMIT 1
+        `,
+        [userId]
+      );
+
+    if (!organizationResult.rows.length) {
+
+      throw new Error(
+        "Workspace not found."
+      );
+
+    }
+
+    const organizationId =
+      organizationResult.rows[0].id;
+
+
+    const result =
+      await client.query(
+        `
+        UPDATE organizations
+
+        SET
+
+          name = COALESCE($1, name),
+
+          organization_type =
+            COALESCE($2, organization_type),
+
+          email =
+            COALESCE($3, email),
+
+          mobile =
+            COALESCE($4, mobile),
+
+          website =
+            COALESCE($5, website),
+
+          address =
+            COALESCE($6, address),
+
+          city =
+            COALESCE($7, city),
+
+          state =
+            COALESCE($8, state),
+
+          country =
+            COALESCE($9, country),
+
+          timezone =
+            COALESCE($10, timezone),
+
+          currency =
+            COALESCE($11, currency),
+
+          logo_url =
+            COALESCE($12, logo_url),
+
+          updated_at = NOW()
+
+        WHERE id = $13
+
+        RETURNING
+
+          id,
+
+          name,
+
+          organization_type,
+
+          logo_url,
+
+          email,
+
+          mobile,
+
+          website,
+
+          address,
+
+          city,
+
+          state,
+
+          country,
+
+          timezone,
+
+          currency,
+
+          subscription_plan,
+
+          workspace_code,
+
+          created_at,
+
+          updated_at
+        `,
+        [
+          name,
+          organization_type,
+          email,
+          mobile,
+          website,
+          address,
+          city,
+          state,
+          country,
+          timezone,
+          currency,
+          logo_url,
+          organizationId
+        ]
+      );
+
+
+    await createActivityLog(
+      client,
+      {
+
+        organizationId,
+
+        actorUserId:
+          userId,
+
+        entityType:
+          "ORGANIZATION",
+
+        entityId:
+          organizationId,
+
+        action:
+          "ORGANIZATION_SETTINGS_UPDATED",
+
+        description:
+          "Workspace settings updated.",
+
+        metadata: {}
+
+      }
+    );
+
+
+    await client.query("COMMIT");
+
+    return result.rows[0];
+
+  } catch (err) {
+
+    await client.query("ROLLBACK");
+
+    throw err;
+
+  } finally {
+
+    client.release();
+
+  }
+
+};
+
+
+export const deleteOrganizationService =
+async (
+  userId
+) => {
+
+  const client =
+    await pool.connect();
+
+  try {
+
+    await client.query("BEGIN");
+
+
+    /* ---------------------------------------------
+       FIND OWNER WORKSPACE
+    ---------------------------------------------- */
+
+    const organizationResult =
+      await client.query(
+        `
+        SELECT
+
+          o.id,
+
+          o.name
+
+        FROM organizations o
+
+        INNER JOIN organization_members om
+          ON om.organization_id = o.id
+
+        INNER JOIN organization_roles r
+          ON r.id = om.role_id
+
+        WHERE
+
+          om.user_id = $1
+
+          AND om.status = 'ACTIVE'
+
+          AND r.name = 'OWNER'
+
+          AND o.status = 'ACTIVE'
+
+        LIMIT 1
+
+        FOR UPDATE OF o
+        `,
+        [userId]
+      );
+
+
+    if (!organizationResult.rows.length) {
+
+      throw new Error(
+        "Workspace not found."
+      );
+
+    }
+
+
+    const organization =
+      organizationResult.rows[0];
+
+    const organizationId =
+      organization.id;
+
+
+    /* ---------------------------------------------
+       DEACTIVATE ASSIGNMENTS
+    ---------------------------------------------- */
+
+    await client.query(
+      `
+      UPDATE organization_client_assignments
+
+      SET
+
+        is_active = false,
+
+        ended_at = NOW()
+
+      WHERE
+
+        organization_id = $1
+
+        AND is_active = true
+      `,
+      [organizationId]
+    );
+
+
+    /* ---------------------------------------------
+       EXPIRE PENDING INVITATIONS
+    ---------------------------------------------- */
+
+    await client.query(
+      `
+      UPDATE organization_invitations
+
+      SET
+
+        status = 'EXPIRED'
+
+      WHERE
+
+        organization_id = $1
+
+        AND status = 'PENDING'
+      `,
+      [organizationId]
+    );
+
+
+    /* ---------------------------------------------
+       REMOVE MEMBER ACCESS
+    ---------------------------------------------- */
+
+    await client.query(
+      `
+      UPDATE organization_members
+
+      SET
+
+        status = 'LEFT',
+
+        left_at = COALESCE(
+          left_at,
+          NOW()
+        ),
+
+        updated_at = NOW()
+
+      WHERE
+
+        organization_id = $1
+
+        AND status = 'ACTIVE'
+      `,
+      [organizationId]
+    );
+
+
+    /* ---------------------------------------------
+       DELETE ORGANIZATION LOGIC
+    ---------------------------------------------- */
+
+    await client.query(
+      `
+      UPDATE organizations
+
+      SET
+
+        status = 'DELETED',
+
+        updated_at = NOW()
+
+      WHERE
+
+        id = $1
+      `,
+      [organizationId]
+    );
+
+
+    /* ---------------------------------------------
+       ACTIVITY LOG
+    ---------------------------------------------- */
+
+    await createActivityLog(
+      client,
+      {
+
+        organizationId,
+
+        actorUserId:
+          userId,
+
+        entityType:
+          "ORGANIZATION",
+
+        entityId:
+          organizationId,
+
+        action:
+          "ORGANIZATION_DELETED",
+
+        description:
+          `${organization.name} workspace was deleted.`,
+
+        metadata: {}
+
+      }
+    );
+
+
+    await client.query("COMMIT");
+
+
+    return {
+
+      organization_id:
+        organizationId,
+
+      status:
+        "DELETED"
+
+    };
+
+  } catch (err) {
+
+    await client.query("ROLLBACK");
+
+    throw err;
+
+  } finally {
+
+    client.release();
+
+  }
+
+};

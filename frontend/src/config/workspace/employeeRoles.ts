@@ -18,9 +18,9 @@ export const EMPLOYEE_ROLES: EmployeeRole[] = [
 
   {
 
-    label: "Dietician",
+    label: "Dietitian",
 
-    value: "DIETICIAN"
+    value: "DIETITIAN"
 
   },
 
@@ -29,6 +29,22 @@ export const EMPLOYEE_ROLES: EmployeeRole[] = [
     label: "Receptionist",
 
     value: "RECEPTIONIST"
+
+  },
+
+    {
+
+    label: "Admin",
+
+    value: "ADMIN"
+
+  },
+
+    {
+
+    label: "Client",
+
+    value: "CLIENT"
 
   }
 

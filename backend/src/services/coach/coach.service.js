@@ -758,6 +758,50 @@ export const getDashboardService = async (
         ]
       );
 
+
+      /* ---------------------------------------------
+   ORGANIZATION INFO
+---------------------------------------------- */
+
+const organizationResult =
+  await client.query(
+    `
+    SELECT
+
+      o.id,
+
+      o.name,
+
+      o.organization_type,
+
+      o.logo_url,
+
+      o.workspace_code,
+
+      o.timezone,
+
+      o.currency
+
+    FROM organization_members om
+
+    INNER JOIN organizations o
+      ON o.id = om.organization_id
+
+    WHERE
+
+      om.user_id = $1
+
+      AND om.status = 'ACTIVE'
+
+      AND o.status = 'ACTIVE'
+
+    LIMIT 1
+    `,
+    [
+      userId
+    ]
+  );
+
     /* ---------------------------------------------
        DASHBOARD SUMMARY
     ---------------------------------------------- */
@@ -874,6 +918,9 @@ export const getDashboardService = async (
 
       coach:
         coachResult.rows[0],
+
+      organization:
+         organizationResult.rows[0] ?? null,
 
       summary: {
 

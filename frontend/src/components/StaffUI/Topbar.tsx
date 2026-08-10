@@ -49,6 +49,8 @@ const Topbar = ({
 
     const { user } = useAuth();
 
+    console.log("User: " + JSON.stringify(user));
+
   const isDesktop =
     useBreakpointValue({
 

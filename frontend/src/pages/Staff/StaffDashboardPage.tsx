@@ -75,7 +75,13 @@ const StaffDashboardPage = () => {
 
   return (
 
-    <Box>
+    <Box
+    pt={{
+      base: "72px",
+      md: "80px",
+      lg: "88px"
+    }}
+    >
 
       <VStack
         spacing={8}

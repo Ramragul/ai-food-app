@@ -156,7 +156,7 @@ const Topbar = ({
         </HStack>
 
         <HStack spacing={5}>
-
+{/* 
           <Text
 
             color="gray.500"
@@ -173,9 +173,9 @@ const Topbar = ({
 
           >
 
-            Good Morning 👋
+            Good Day 👋
 
-          </Text>
+          </Text> */}
 
           <IconButton
 

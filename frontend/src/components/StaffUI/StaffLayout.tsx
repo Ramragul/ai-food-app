@@ -12,6 +12,7 @@ import MobileSidebar from "./MobileSidebar";
 import {
   STAFF_LAYOUT
 } from "../../config/layout/staff.layout";
+import Navbar from "../Navbar";
 
 const StaffLayout = () => {
 
@@ -32,9 +33,11 @@ const StaffLayout = () => {
         onClose={onClose}
       />
 
-      <Topbar
+      {/* <Topbar
         onMenuClick={onOpen}
-      />
+      /> */}
+
+      <Navbar />
 
       <Box
         ml={{

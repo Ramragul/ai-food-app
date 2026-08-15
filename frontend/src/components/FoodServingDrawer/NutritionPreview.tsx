@@ -62,11 +62,11 @@ const NutritionCard = ({
   </Box>
 );
 
-interface NutritionCardProps {
-  icon: string;
-  label: string;
-  value: string;
-}
+// interface NutritionCardProps {
+//   icon: string;
+//   label: string;
+//   value: string;
+// }
 
 const NutritionPreview = ({
   grams,

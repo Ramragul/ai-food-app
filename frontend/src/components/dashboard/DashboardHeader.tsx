@@ -1,10 +1,9 @@
 import {
   Box,
-  HStack,
   Text
 } from "@chakra-ui/react";
 
-import WorkspaceSwitcher from "./WorkspaceSwitcher";
+
 
 // interface Props {
 //   user: any;

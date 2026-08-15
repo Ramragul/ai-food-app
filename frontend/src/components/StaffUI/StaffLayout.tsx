@@ -6,7 +6,6 @@ import {
 import { Outlet } from "react-router-dom";
 
 import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
 import MobileSidebar from "./MobileSidebar";
 
 import {
@@ -18,7 +17,6 @@ const StaffLayout = () => {
 
   const {
     isOpen,
-    onOpen,
     onClose
   } = useDisclosure();
 

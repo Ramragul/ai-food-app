@@ -1,10 +1,10 @@
 import {
-  Avatar,
+
   Badge,
   Box,
-  Button,
+
   HStack,
-  Stack,
+
   Text,
   VStack
 } from "@chakra-ui/react";

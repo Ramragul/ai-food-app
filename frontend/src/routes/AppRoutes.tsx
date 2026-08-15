@@ -146,14 +146,14 @@ import FitnessGuideDetailPage from "../pages/fitness/FitnessGuideDetailPage";
 import LegalPage from "../pages/LegalPage";
 import NutritonSearch from "../pages/NutritionSearch";
 
-import WorkspaceLayout from "../Components/Layout/WorkspaceLayout";
+import WorkspaceLayout from "../components/Layout/WorkspaceLayout";
 import DashboardPage from "../pages/Workspace/DashboardPage";
 import EmployeesPage from "../pages/Workspace/EmployeePage";
 import ClientsPage from "../pages/Workspace/ClientsPage";
 import AssignmentsPage from "../pages/Workspace/AssignmentsPage";
 import InvitationsPage from "../pages/Workspace/InvitationsPage";
 import ClientDetailsPage from "../pages/Workspace/ClientDetailsPage";
-import MyClientPage from "../pages/staff/MyClientPage";
+import MyClientPage from "../pages/Staff/MyClientPage";
 import StaffDashboardPage from "../pages/Staff/StaffDashboardPage";
 import StaffLayout from "../components/StaffUI/StaffLayout";
 import StaffClientsPage from "../pages/Staff/StaffClientsPage";
@@ -177,18 +177,37 @@ const AppRoutes: React.FC = () => {
     <Routes>
 
       {/* 🔓 PUBLIC */}
-      <Route
+      {/* <Route
         path="/"
         element={user ? <Navigate to="/home" /> : <AuthPage />}
-      />
-      <Route path="/login" element={<Navigate to="/" />} />
+      /> */}
+
+    <Route
+  path="/"
+  element={
+    user
+      ? <Navigate to="/home" replace />
+      : <Navigate to="/nutrition" replace />
+  }
+/>
+
+      {/* <Route path="/login" element={<Navigate to="/" />} /> */}
+
+      <Route
+  path="/login"
+  element={
+    user
+      ? <Navigate to="/home" replace />
+      : <AuthPage />
+  }
+/>
 {/* 
         <Route
     path="/workspace"
     element={<DashboardPage />}
   /> */}
 
-       
+         <Route path="/nutrition" element={<NutritonSearch />} />
 
    
 
@@ -228,7 +247,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/fitness/:category" element={ <FitnessCategoryPage />}/>
         <Route path="/fitness/guide/:id" element={<FitnessGuideDetailPage />}/>
 
-        <Route path="/nutrition" element={<NutritonSearch />} />
+        {/* <Route path="/nutrition" element={<NutritonSearch />} /> */}
             <Route
 
     path="/workspace/create"

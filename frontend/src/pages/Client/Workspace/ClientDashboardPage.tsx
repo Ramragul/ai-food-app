@@ -27,7 +27,7 @@ import {
 } from "@chakra-ui/react";
 
 import {
-  FiActivity,
+
   FiBriefcase,
   FiSettings,
   FiShield,

@@ -3,7 +3,7 @@ import {
   Flex,
   Text
 } from "@chakra-ui/react";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 interface Props {
 

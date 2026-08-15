@@ -20,6 +20,8 @@ export interface Employee {
 
   joined_at: string;
 
+  assigned_clients: number;
+
 }
 
 export interface InviteEmployeeRequest {

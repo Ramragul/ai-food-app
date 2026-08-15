@@ -8,7 +8,6 @@ import {
     AccordionButton,
     AccordionPanel,
     AccordionIcon,
-    Collapse,
     Badge,
     Box,
     Divider,
@@ -19,7 +18,6 @@ import {
     HStack,
     Progress,
     SimpleGrid,
-    Spinner,
     Stat,
     StatHelpText,
     StatLabel,
@@ -29,9 +27,7 @@ import {
     VStack,    
     Tabs,
     TabList,
-    Tab,
-    TabPanels,
-    TabPanel
+    Tab
 } from "@chakra-ui/react";
 
 import {
@@ -48,6 +44,8 @@ import {
 } from "react-icons/fi";
 
 import type { IconType } from "react-icons";
+
+import { useToast } from "@chakra-ui/react";
 
 import AppleSection from "../../../Shared/Apple/AppleSection";
 import NutritionScoreCard from "./NutritionScoreCard";
@@ -92,6 +90,8 @@ const NutritionOverview=({
     const [period, setPeriod] = useState<
     "today" | "week" | "month"
 >("today");
+
+const toast = useToast();
 
 const periodTitle = {
 
@@ -140,10 +140,27 @@ const loadNutrition = async (
 
 };
 
+// const displayNutrition =
+//     period === "today"
+//         ? nutrition?.summary
+//         : nutrition?.total;
+
 const displayNutrition =
     period === "today"
-        ? nutrition?.summary
-        : nutrition?.total;
+        ? nutrition?.summary ?? {
+            calories: 0,
+            protein: 0,
+            carbs: 0,
+            fats: 0,
+            fiber: 0
+        }
+        : nutrition?.total ?? {
+            calories: 0,
+            protein: 0,
+            carbs: 0,
+            fats: 0,
+            fiber: 0
+        };
 
 const targetMultiplier =
     period === "today"
@@ -291,44 +308,44 @@ console.log("Backend Targets:", nutrition?.targets);
 
 
 
-    const remaining = useMemo(() => {
+//     const remaining = useMemo(() => {
 
-    if (!nutrition) {
-        return {
-            calories: 0,
-            protein: 0,
-            carbs: 0,
-            fats: 0
-        };
-    }
+//     if (!nutrition) {
+//         return {
+//             calories: 0,
+//             protein: 0,
+//             carbs: 0,
+//             fats: 0
+//         };
+//     }
 
-    return {
-        calories: Math.max(
-            0,
-            (nutrition.targets.calories ?? 0) -
-            (nutrition.summary.calories ?? 0)
-        ),
+//     return {
+//         calories: Math.max(
+//             0,
+//             (nutrition.targets.calories ?? 0) -
+//             (nutrition.summary.calories ?? 0)
+//         ),
 
-        protein: Math.max(
-            0,
-            (nutrition.targets.protein ?? 0) -
-            (nutrition.summary.protein ?? 0)
-        ),
+//         protein: Math.max(
+//             0,
+//             (nutrition.targets.protein ?? 0) -
+//             (nutrition.summary.protein ?? 0)
+//         ),
 
-        carbs: Math.max(
-            0,
-            (nutrition.targets.carbs ?? 0) -
-            (nutrition.summary.carbs ?? 0)
-        ),
+//         carbs: Math.max(
+//             0,
+//             (nutrition.targets.carbs ?? 0) -
+//             (nutrition.summary.carbs ?? 0)
+//         ),
 
-        fats: Math.max(
-            0,
-            (nutrition.targets.fats ?? 0) -
-            (nutrition.summary.fats ?? 0)
-        )
-    };
+//         fats: Math.max(
+//             0,
+//             (nutrition.targets.fats ?? 0) -
+//             (nutrition.summary.fats ?? 0)
+//         )
+//     };
 
-}, [nutrition]);
+// }, [nutrition]);
 
 if (loading) {
     return (
@@ -1254,6 +1271,8 @@ interface MetricCardProps {
     progress: number;
     unit: string;
     color: string;
+    w?: string;
+    minH?: string;
 }
 
 const MetricCard = ({
@@ -1613,3 +1632,5 @@ const MiniMacro=({
 );
 
 export default NutritionOverview;
+
+

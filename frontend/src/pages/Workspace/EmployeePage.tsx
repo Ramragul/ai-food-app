@@ -353,7 +353,7 @@ const EmployeesPage = () => {
   const [error, setError] =
     useState("");
 
-    const {isOpen,onOpen,onClose} = useDisclosure();
+    // const {isOpen,onOpen,onClose} = useDisclosure();
 
     const {
   isOpen: isInviteOpen,

@@ -173,6 +173,10 @@ export interface NutritionInsight {
     title: string;
 
     message: string;
+    severity: string;
+  category: string;
+
+  description: string;
 
 }
 
@@ -183,6 +187,8 @@ export interface CoachInsight {
     title: string;
 
     message: string;
+
+    description : string;
 
 }
 
@@ -230,13 +236,77 @@ export interface NutritionTargets {
 
 }
 
-export interface NutritionIntelligence {
 
+// Commented for build clear
+
+// export interface NutritionIntelligence {
+
+//     period: string;
+
+//     summary: NutritionSummary;
+    
+   
+
+//     targets: NutritionTargets;
+
+//     nutrition_score: NutritionScore;
+
+//     insights: NutritionInsight[];
+
+//     coach_insights: CoachInsight[];
+
+//     days?: DailyNutrition[];
+
+//     history?: DailyNutrition[];
+
+
+
+// }
+
+
+export interface NutritionMealFood {
+    name: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fats: number;
+    fiber: number;
+    grams: number;
+    serving: {
+        label: string;
+    };
+}
+
+export interface NutritionMeal {
+    id: number;
+    meal_type: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fats: number;
+    fiber: number;
+    food_items: NutritionMealFood[];
+}
+
+export interface NutritionIntelligence {
     period: string;
 
     summary: NutritionSummary;
 
+    total: NutritionSummary;
+
     targets: NutritionTargets;
+
+    remaining: {
+        calories: number;
+        protein: number;
+        carbs: number;
+        fats: number;
+    } | null;
+
+    meals: NutritionMeal[];
+
+    timeline: DailyNutrition[];
 
     nutrition_score: NutritionScore;
 
@@ -247,5 +317,4 @@ export interface NutritionIntelligence {
     days?: DailyNutrition[];
 
     history?: DailyNutrition[];
-
 }

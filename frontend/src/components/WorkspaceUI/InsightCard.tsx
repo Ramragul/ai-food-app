@@ -2,13 +2,11 @@ import {
   Box,
   Flex,
   Heading,
-  Icon,
+
   Text
 } from "@chakra-ui/react";
 
-import {
-  ArrowRight
-} from "lucide-react";
+
 
 interface InsightCardProps {
 

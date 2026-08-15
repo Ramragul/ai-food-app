@@ -260,7 +260,6 @@ import DashboardHeader from "../components/dashboard/DashboardHeader";
 
 import DashboardSkeleton
 from "../components/dashboard/DashboardSkeleton";
-import theme from "../theme/theme";
 import QuickActions from "../components/dashboard/QuickActions";
 import WorkspaceSwitcher from "../components/dashboard/WorkspaceSwitcher";
 import ClientWorkspaceCard from "../components/dashboard/ClientWorkspaceCard";

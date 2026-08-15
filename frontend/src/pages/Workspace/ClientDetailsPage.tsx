@@ -327,7 +327,8 @@ const ClientDetailsPage = () => {
       details.fitness_profile
         ?.goal_type
         ?.replaceAll("_", " ")
-        .replace(/\b\w/g, c => c.toUpperCase()) ??
+        // .replace(/\b\w/g, c => c.toUpperCase()) ??
+        .replace(/\b\w/g, (c: string) => c.toUpperCase()) ??
       "--"
     }
 

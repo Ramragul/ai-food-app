@@ -4,8 +4,6 @@ import {
 
   Flex,
 
-  Text,
-
   Avatar,
 
   HStack,
@@ -30,11 +28,9 @@ import {
 
 } from "../../config/layout/staff.layout";
 
-import { useLocation } from "react-router-dom";
 
-import {
-  staffNavigation
-} from "../../config/navigation/staff.navigation";
+
+
 import { useAuth } from "../../context/AuthContext";
 
 interface Props {
@@ -60,12 +56,12 @@ const Topbar = ({
 
     });
 
-    const location = useLocation();
+    // const location = useLocation();
 
-  const currentPage =
-    staffNavigation.find(
-      ({ path }) => path === location.pathname
-    );
+  // const currentPage =
+  //   staffNavigation.find(
+  //     ({ path }) => path === location.pathname
+  //   );
 
   return (
 

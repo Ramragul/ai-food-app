@@ -52,7 +52,7 @@ export const getMyInvitations = async () => {
 };
 
 export const acceptInvitation = async (
-    invitationId: number
+    invitationId: string
 ) => {
 
     const response = await api.post(
@@ -63,7 +63,7 @@ export const acceptInvitation = async (
 };
 
 export const declineInvitation = async (
-    invitationId: number
+    invitationId: string
 ) => {
 
     const response = await api.post(

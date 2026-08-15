@@ -12,6 +12,8 @@ export interface OrganizationConsent {
 
     created_at: string;
 
+    workspace_code: string;
+
 }
 
 export interface ConsentResponse {

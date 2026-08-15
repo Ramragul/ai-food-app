@@ -5,7 +5,6 @@ import {
     Button,
     HStack,
     Heading,
-    Icon,
     SimpleGrid,
     Spinner,
     Text,

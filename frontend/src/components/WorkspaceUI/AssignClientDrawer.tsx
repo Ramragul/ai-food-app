@@ -229,7 +229,7 @@ setClients(availableClients);
       await assignClient({
 
         organization_id:
-          organization.id,
+          organization!.id,
 
         trainer_member_id:
           Number(trainerId),

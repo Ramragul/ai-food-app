@@ -30,11 +30,9 @@ import {
 
 } from "../../config/layout/workspace.layout";
 
-import { useLocation } from "react-router-dom";
 
-import {
-  workspaceNavigation
-} from "../../config/navigation/workspace.navigation";
+
+
 
 interface Props {
 
@@ -55,12 +53,12 @@ const Topbar = ({
 
     });
 
-    const location = useLocation();
 
-  const currentPage =
-    workspaceNavigation.find(
-      ({ path }) => path === location.pathname
-    );
+
+  // const currentPage =
+  //   workspaceNavigation.find(
+  //     ({ path }) => path === location.pathname
+  //   );
 
   return (
 

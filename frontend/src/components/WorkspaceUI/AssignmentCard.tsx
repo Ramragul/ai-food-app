@@ -1,7 +1,6 @@
 import {
   Badge,
   Box,
-  Button,
   Divider,
   HStack,
   Text,

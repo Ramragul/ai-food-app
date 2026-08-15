@@ -204,8 +204,6 @@ import {
   SimpleGrid,
   VStack,
   Heading,
-  IconButton,
-  HStack,
   Button
 } from "@chakra-ui/react";
 
@@ -227,9 +225,9 @@ import {
   useState
 } from "react";
 
-import { ArrowBackIcon } from "@chakra-ui/icons";
 
-import { useNavigate } from "react-router-dom";
+
+
 
 import MetricCard from "../../components/WorkspaceUI/MetricCard";
 import PageHeader from "../../components/WorkspaceUI/PageHeader";
@@ -240,7 +238,8 @@ import {
   getWorkspaceDashboard,
   type OrganizationDashboard
 } from "../../services/workspace/dashboard.service";
-import { useWorkspace } from "../../context/WorkspaceContext";
+import { useNavigate } from "react-router-dom";
+
 
 const DashboardPage = () => {
 

@@ -1,6 +1,288 @@
+// Version 1
+
+// import {
+//   Badge,
+//   Box,
+//   Flex,
+//   Heading,
+//   HStack,
+//   Image,
+//   Text,
+//   VStack,
+//   Circle
+// } from "@chakra-ui/react";
+
+// import MacroGrid from "./MacroGrid";
+
+// interface Props {
+//   result: any;
+// }
+
+// const NutritionResultCard = ({
+//   result
+// }: Props) => {
+
+//   const data =
+//     result.data;
+
+//   const image =
+//     data.imageUrl ||
+//     "";
+
+//   return (
+
+// <Box
+// bg="white"
+// borderRadius="3xl"
+// boxShadow="
+// 0 12px 35px
+// rgba(0,0,0,.08)
+// "
+// overflow="hidden"
+// >
+
+// <Box
+// h="220px"
+// bg="gray.100"
+// display="flex"
+// justifyContent="center"
+// alignItems="center"
+// >
+
+// {
+
+// image ?
+
+// <Image
+// src={image}
+// w="100%"
+// h="100%"
+// objectFit="cover"
+// />
+
+// :
+
+// <Circle
+// size="120px"
+// bg="blue.50"
+// >
+
+// <Text
+// fontSize="5xl"
+// >
+
+// 🍽️
+
+// </Text>
+
+// </Circle>
+
+// }
+
+// </Box>
+
+// <Box p={6}>
+
+// <VStack
+// align="stretch"
+// spacing={5}
+// >
+
+// <HStack
+// justify="space-between"
+// align="flex-start"
+// >
+
+// <Box>
+
+// <Heading
+// size="lg"
+// >
+
+// {data.name}
+
+// </Heading>
+
+// <HStack
+// mt={2}
+// spacing={2}
+// >
+
+// <Badge
+// colorScheme={
+// result.entityType ===
+// "FOOD"
+
+// ?
+
+// "purple"
+
+// :
+
+// "green"
+// }
+// borderRadius="full"
+// px={3}
+// py={1}
+// >
+
+// {
+
+// result.entityType ===
+// "FOOD"
+
+// ?
+
+// "🍛 Food"
+
+// :
+
+// "🥬 Ingredient"
+
+// }
+
+// </Badge>
+
+// {
+
+// result.generated && (
+
+// <Badge
+// colorScheme="blue"
+// borderRadius="full"
+// px={3}
+// py={1}
+// >
+
+// ✨ Learned by AI
+
+// </Badge>
+
+// )
+
+// }
+
+// </HStack>
+
+// </Box>
+
+// <Box
+// textAlign="right"
+// >
+
+// <Text
+// fontSize="3xl"
+// fontWeight="800"
+// color="brand.500"
+// >
+
+// {data.calories}
+
+// </Text>
+
+// <Text
+// fontSize="sm"
+// color="gray.500"
+// >
+
+// kcal/{data.unit}
+
+// </Text>
+
+// </Box>
+
+// </HStack>
+
+// <MacroGrid
+// data={data}
+// />
+
+// <Box
+// bg="blue.50"
+// borderRadius="2xl"
+// p={4}
+// >
+
+// <Flex
+// justify="space-between"
+// >
+
+// <Text
+// fontWeight="600"
+// >
+
+// Serving Type
+
+// </Text>
+
+// <Text>
+
+// {
+
+// data.foodType
+// .replaceAll(
+// "_",
+// " "
+// )
+
+// }
+
+// </Text>
+
+// </Flex>
+
+// <Flex
+// justify="space-between"
+// mt={3}
+// >
+
+// <Text
+// fontWeight="600"
+// >
+
+// Typical Serving
+
+// </Text>
+
+// <Text>
+
+// {
+
+// data.typicalServingWeight
+
+// }
+
+// {
+
+// data.referenceUnit
+
+// }
+
+// </Text>
+
+// </Flex>
+
+// </Box>
+
+// </VStack>
+
+// </Box>
+
+// </Box>
+
+//   );
+
+// };
+
+// export default NutritionResultCard;
+
+
+// Version 2
+
 import {
   Badge,
   Box,
+  Button,
   Flex,
   Heading,
   HStack,
@@ -10,266 +292,294 @@ import {
   Circle
 } from "@chakra-ui/react";
 
+import { useNavigate } from "react-router-dom";
+
 import MacroGrid from "./MacroGrid";
 
 interface Props {
   result: any;
+  isAuthenticated?: boolean;
 }
 
 const NutritionResultCard = ({
-  result
+  result,
+  isAuthenticated = false
 }: Props) => {
 
-  const data =
-    result.data;
+  const navigate = useNavigate();
+
+  const data = result.data;
 
   const image =
     data.imageUrl ||
     "";
 
   return (
+    <Box
+      bg="white"
+      borderRadius="3xl"
+      boxShadow="
+        0 12px 35px
+        rgba(0,0,0,.08)
+      "
+      overflow="hidden"
+    >
+
+      <Box
+        h="220px"
+        bg="gray.100"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+      >
+
+        {image ? (
+
+          <Image
+            src={image}
+            w="100%"
+            h="100%"
+            objectFit="cover"
+          />
+
+        ) : (
+
+          <Circle
+            size="120px"
+            bg="blue.50"
+          >
+            <Text fontSize="5xl">
+              🍽️
+            </Text>
+          </Circle>
+
+        )}
+
+      </Box>
+
+      <Box p={6}>
+
+        <VStack
+          align="stretch"
+          spacing={5}
+        >
+
+          {/* FOOD HEADER */}
+
+          <HStack
+            justify="space-between"
+            align="flex-start"
+          >
+
+            <Box>
+
+              <Heading size="lg">
+                {data.name}
+              </Heading>
+
+              <HStack
+                mt={2}
+                spacing={2}
+              >
+
+                <Badge
+                  colorScheme={
+                    result.entityType === "FOOD"
+                      ? "purple"
+                      : "green"
+                  }
+                  borderRadius="full"
+                  px={3}
+                  py={1}
+                >
 
-<Box
-bg="white"
-borderRadius="3xl"
-boxShadow="
-0 12px 35px
-rgba(0,0,0,.08)
-"
-overflow="hidden"
->
+                  {result.entityType === "FOOD"
+                    ? "🍛 Food"
+                    : "🥬 Ingredient"}
 
-<Box
-h="220px"
-bg="gray.100"
-display="flex"
-justifyContent="center"
-alignItems="center"
->
+                </Badge>
 
-{
+                {result.generated && (
 
-image ?
+                  <Badge
+                    colorScheme="blue"
+                    borderRadius="full"
+                    px={3}
+                    py={1}
+                  >
+                    ✨ Learned by AI
+                  </Badge>
 
-<Image
-src={image}
-w="100%"
-h="100%"
-objectFit="cover"
-/>
+                )}
 
-:
+              </HStack>
 
-<Circle
-size="120px"
-bg="blue.50"
->
+            </Box>
 
-<Text
-fontSize="5xl"
->
+            <Box textAlign="right">
 
-🍽️
+              <Text
+                fontSize="3xl"
+                fontWeight="800"
+                color="brand.500"
+              >
+                {data.calories}
+              </Text>
 
-</Text>
+              <Text
+                fontSize="sm"
+                color="gray.500"
+              >
+                kcal/{data.unit}
+              </Text>
 
-</Circle>
+            </Box>
 
-}
+          </HStack>
 
-</Box>
 
-<Box p={6}>
+          {/* MACROS */}
 
-<VStack
-align="stretch"
-spacing={5}
->
+          <MacroGrid
+            data={data}
+          />
 
-<HStack
-justify="space-between"
-align="flex-start"
->
 
-<Box>
+          {/* SERVING INFO */}
 
-<Heading
-size="lg"
->
+          <Box
+            bg="blue.50"
+            borderRadius="2xl"
+            p={4}
+          >
 
-{data.name}
+            <Flex
+              justify="space-between"
+            >
 
-</Heading>
+              <Text fontWeight="600">
+                Serving Type
+              </Text>
 
-<HStack
-mt={2}
-spacing={2}
->
+              <Text>
+                {data.foodType.replaceAll("_", " ")}
+              </Text>
 
-<Badge
-colorScheme={
-result.entityType ===
-"FOOD"
+            </Flex>
 
-?
+            <Flex
+              justify="space-between"
+              mt={3}
+            >
 
-"purple"
+              <Text fontWeight="600">
+                Typical Serving
+              </Text>
 
-:
+              <Text>
+                {data.typicalServingWeight}
+                {data.referenceUnit}
+              </Text>
 
-"green"
-}
-borderRadius="full"
-px={3}
-py={1}
->
+            </Flex>
 
-{
+          </Box>
 
-result.entityType ===
-"FOOD"
 
-?
+          {/* 🔥 CONTEXTUAL ACTION */}
 
-"🍛 Food"
+          <Box
+            pt={2}
+            borderTop="1px solid"
+            borderColor="gray.100"
+          >
 
-:
+            {isAuthenticated ? (
 
-"🥬 Ingredient"
+              <VStack
+                spacing={3}
+                align="stretch"
+              >
 
-}
+                <Box>
 
-</Badge>
+                  <Text
+                    fontWeight="700"
+                    fontSize="md"
+                  >
+                    Add this to your nutrition
+                  </Text>
 
-{
+                  <Text
+                    fontSize="sm"
+                    color="gray.500"
+                    mt={1}
+                  >
+                    Keep your daily nutrition tracking up to date.
+                  </Text>
 
-result.generated && (
+                </Box>
 
-<Badge
-colorScheme="blue"
-borderRadius="full"
-px={3}
-py={1}
->
+                <Button
+                  colorScheme="blue"
+                  borderRadius="full"
+                  width="100%"
+                >
+                  + Add to Today's Intake
+                </Button>
 
-✨ Learned by AI
+              </VStack>
 
-</Badge>
+            ) : (
 
-)
+              <VStack
+                spacing={3}
+                align="stretch"
+              >
 
-}
+                <Box>
 
-</HStack>
+                  <Text
+                    fontWeight="700"
+                    fontSize="md"
+                  >
+                    Want to track this?
+                  </Text>
 
-</Box>
+                  <Text
+                    fontSize="sm"
+                    color="gray.500"
+                    mt={1}
+                    lineHeight="tall"
+                  >
+                    Create a free account to track your meals,
+                    set nutrition goals and get personalized
+                    AI-powered recommendations.
+                  </Text>
 
-<Box
-textAlign="right"
->
+                </Box>
 
-<Text
-fontSize="3xl"
-fontWeight="800"
-color="brand.500"
->
+                <Button
+                  colorScheme="blue"
+                  borderRadius="full"
+                  width="100%"
+                  onClick={() => navigate("/")}
+                >
+                  Create Free Account →
+                </Button>
 
-{data.calories}
+              </VStack>
 
-</Text>
+            )}
 
-<Text
-fontSize="sm"
-color="gray.500"
->
+          </Box>
 
-kcal/{data.unit}
+        </VStack>
 
-</Text>
+      </Box>
 
-</Box>
-
-</HStack>
-
-<MacroGrid
-data={data}
-/>
-
-<Box
-bg="blue.50"
-borderRadius="2xl"
-p={4}
->
-
-<Flex
-justify="space-between"
->
-
-<Text
-fontWeight="600"
->
-
-Serving Type
-
-</Text>
-
-<Text>
-
-{
-
-data.foodType
-.replaceAll(
-"_",
-" "
-)
-
-}
-
-</Text>
-
-</Flex>
-
-<Flex
-justify="space-between"
-mt={3}
->
-
-<Text
-fontWeight="600"
->
-
-Typical Serving
-
-</Text>
-
-<Text>
-
-{
-
-data.typicalServingWeight
-
-}
-
-{
-
-data.referenceUnit
-
-}
-
-</Text>
-
-</Flex>
-
-</Box>
-
-</VStack>
-
-</Box>
-
-</Box>
-
+    </Box>
   );
-
 };
 
 export default NutritionResultCard;

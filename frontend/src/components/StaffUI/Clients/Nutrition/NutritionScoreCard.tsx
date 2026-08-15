@@ -370,7 +370,7 @@ const NutritionScoreCard=({
 
                 <VStack align="center" justify="center">
 
-                    <CircularProgress
+                    {/* <CircularProgress
                         value={score}
                         size={{
                             base:"120px",
@@ -381,7 +381,17 @@ const NutritionScoreCard=({
                             md:"10px"
                         }}
                         color={`${color}.400`}
-                    >
+                    > */}
+
+                    <CircularProgress
+  value={score}
+  size={{
+    base: "120px",
+    md: "160px"
+  }}
+  thickness={8}
+  color={`${color}.400`}
+>
                         <CircularProgressLabel>
                             <VStack spacing={0}>
                                 <Heading

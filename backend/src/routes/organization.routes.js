@@ -208,7 +208,7 @@ router.delete(
 );
 
 router.get(
-    "/organizations/my-access",
+    "/my-access",
     authMiddleware,
     getMyOrganizationAccess
 );

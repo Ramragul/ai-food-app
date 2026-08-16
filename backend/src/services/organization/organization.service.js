@@ -4607,6 +4607,74 @@ async (
 
 };
 
+
+export const getMyOrganizationAccessService =
+async (userId) => {
+
+    const client =
+        await pool.connect();
+
+    try {
+
+        const result =
+            await client.query(
+                `
+                SELECT DISTINCT
+                    orl.name AS role_name
+
+                FROM organization_members om
+
+                INNER JOIN organization_roles orl
+                    ON orl.id = om.role_id
+
+                WHERE
+                    om.user_id = $1
+
+                    AND om.status = 'ACTIVE'
+
+                    AND om.left_at IS NULL
+
+                `,
+                [
+                    userId
+                ]
+            );
+
+        const roles =
+            result.rows.map(
+                row => row.role_name
+            );
+
+        const isClient =
+            roles.includes("CLIENT");
+
+        const isEmployee =
+            roles.some(
+                role =>
+                    role !== "OWNER" &&
+                    role !== "CLIENT"
+            );
+
+        return {
+
+            isClient,
+
+            isEmployee,
+
+            roles
+
+        };
+
+    }
+
+    finally {
+
+        client.release();
+
+    }
+
+};
+
 /* ======================================================
    CHANGE MEMBER ROLE
 ====================================================== */

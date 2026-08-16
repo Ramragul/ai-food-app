@@ -1,3 +1,679 @@
+// import {
+//   VStack,
+//   HStack,
+//   Box,
+//   Avatar,
+//   Text,
+//   Spinner,
+//   Center,
+//   Button,
+//   Badge,
+//   SimpleGrid
+// } from "@chakra-ui/react";
+
+// import {
+//   ArrowLeft
+// } from "lucide-react";
+
+// import {
+//   useEffect,
+//   useState
+// } from "react";
+
+// import {
+//   useNavigate,
+//   useParams
+// } from "react-router-dom";
+
+// import PageHeader from "../../components/WorkspaceUI/PageHeader";
+// import ConsentCard from "../../components/WorkspaceUI/ConsentCard";
+// import PersonalInfoCard from "../../components/WorkspaceUI/PersonalInfoCard";
+// import EmptyStateCard from "../../components/WorkspaceUI/EmptyStateCard";
+
+// import {
+//   getClientDetails,
+//   type ClientDetails
+// } from "../../services/workspace/clients.service";
+
+// import QuickStatsCard
+// from "../../components/WorkspaceUI/ClientDetails/QuickStatsCard";
+// import FitnessProfileCard from "../../components/WorkspaceUI/ClientDetails/FitnessProfileCard";
+// import TodayNutritionCard from "../../components/WorkspaceUI/ClientDetails/TodayNutritionCard";
+// import CoachNotesCard from "../../components/WorkspaceUI/ClientDetails/CoachNotesCard";
+
+// const ClientDetailsPage = () => {
+
+//   const navigate =
+//     useNavigate();
+
+//   const {
+//     memberId
+//   } = useParams();
+
+//   const [
+//     details,
+//     setDetails
+//   ] =
+//     useState<ClientDetails | null>(null);
+
+//   const [
+//     loading,
+//     setLoading
+//   ] =
+//     useState(true);
+
+//   const [
+//     error,
+//     setError
+//   ] =
+//     useState("");
+
+//   useEffect(() => {
+
+//     if (!memberId) {
+
+//       return;
+
+//     }
+
+//     void loadClient();
+
+//   }, [memberId]);
+
+//   const loadClient = async () => {
+
+//     try {
+
+//       setLoading(true);
+
+//       const response =
+//         await getClientDetails(
+//           Number(memberId)
+//         );
+
+//       setDetails(response);
+
+//     }
+
+//     catch {
+
+//       setError(
+//         "Unable to load client details."
+//       );
+
+//     }
+
+//     finally {
+
+//       setLoading(false);
+
+//     }
+
+//   };
+
+//   if (loading) {
+
+//     return (
+
+//       <Center h="300px">
+
+//         <Spinner
+
+//           size="xl"
+
+//           color="brand.500"
+
+//         />
+
+//       </Center>
+
+//     );
+
+//   }
+
+//   if (error || !details) {
+
+//     return (
+
+//       <Center py={20}>
+
+//         <Text color="red.500">
+
+//           {error}
+
+//         </Text>
+
+//       </Center>
+
+//     );
+
+//   }
+
+//   return (
+
+//     <VStack
+
+//       spacing={6}
+
+//       align="stretch"
+
+//     >
+
+//       <Button
+
+//         leftIcon={
+//           <ArrowLeft size={18} />
+//         }
+
+//         alignSelf="flex-start"
+
+//         variant="ghost"
+
+//         onClick={() =>
+//           navigate(-1)
+//         }
+
+//       >
+
+//         Back to Clients
+
+//       </Button>
+
+//       <PageHeader
+
+//         title="Client Details"
+
+//         subtitle="View client profile and health information."
+
+//       />
+
+//       {/* Profile Header */}
+
+//       <Box
+
+//         bg="white"
+
+//         borderRadius="20px"
+
+//         p={6}
+
+//         shadow="sm"
+
+//       >
+
+//         <HStack
+
+//           spacing={5}
+
+//           align="center"
+
+//         >
+
+//           <Avatar
+
+//             size="xl"
+
+//             name={
+//               details.client.name
+//             }
+
+//           />
+
+//           <VStack
+
+//             align="start"
+
+//             spacing={2}
+
+//           >
+
+//             <Text
+
+//               fontSize="2xl"
+
+//               fontWeight="700"
+
+//             >
+
+//               {details.client.name}
+
+//             </Text>
+
+//             <Text
+
+//               color="gray.500"
+
+//             >
+
+//               {details.client.nickname}
+
+//             </Text>
+
+//             <HStack>
+
+//               <Badge
+
+//                 colorScheme="blue"
+
+//               >
+
+//                 {details.client.gender}
+
+//               </Badge>
+
+//               <Badge
+
+//                 colorScheme="purple"
+
+//               >
+
+//                 {details.client.age_range}
+
+//               </Badge>
+
+//             </HStack>
+
+//           </VStack>
+
+//         </HStack>
+
+//       </Box>
+
+
+// <SimpleGrid
+
+//   columns={{
+//     base: 2,
+//     lg: 4
+//   }}
+
+//   spacing={5}
+
+// >
+
+//   <QuickStatsCard
+
+//     title="Calories"
+
+//     value={
+//       details.today?.consumed?.calories ?? 0
+//     }
+
+//     subtitle={`Target ${
+//       details.today?.target?.calories ?? 0
+//     } kcal`}
+
+//   />
+
+//   <QuickStatsCard
+
+//     title="Protein"
+
+//     value={`${(
+//       details.today?.consumed?.protein ?? 0
+//     ).toFixed(1)} g`}
+
+//     subtitle={`Target ${
+//       details.today?.target?.protein ?? 0
+//     } g`}
+
+//   />
+
+//   <QuickStatsCard
+
+//     title="Goal"
+
+//     value={
+//       details.fitness_profile
+//         ?.goal_type
+//         ?.replaceAll("_", " ")
+//         // .replace(/\b\w/g, c => c.toUpperCase()) ??
+//         .replace(/\b\w/g, (c: string) => c.toUpperCase()) ??
+//       "--"
+//     }
+
+//     subtitle="Current Goal"
+
+//   />
+
+//   <QuickStatsCard
+
+//     title="Consent"
+
+//     value={
+//       details.consent.granted
+//         ? "Granted"
+//         : "Pending"
+//     }
+
+//     subtitle={details.consent.status}
+
+//   />
+
+// </SimpleGrid>
+
+
+
+//       {/* Consent */}
+
+//       <ConsentCard
+
+//         consent={details.consent}
+
+//       />
+
+//       {/* Personal Information */}
+
+//       <PersonalInfoCard
+
+//         client={details.client}
+
+//       />
+
+//       {/* Fitness Profile */}
+
+//       {
+
+// details.fitness_profile ? (
+//   <FitnessProfileCard
+//     profile={details.fitness_profile}
+//   />
+// ) : (
+//   <EmptyStateCard
+//     title="Fitness Profile"
+//     message="No active fitness profile."
+//   />
+// )
+
+//       }
+
+//       {/* Today's Nutrition */}
+
+//       {
+// details.today ? (
+
+//     <TodayNutritionCard
+
+//       nutrition={details.today}
+
+//     />
+
+//   ) : (
+
+//     <EmptyStateCard
+
+//       title="Today's Nutrition"
+
+//       message="No nutrition data available for today."
+
+//     />
+
+//   )
+
+//       }
+
+//       {/* Coach Notes */}
+
+//       {
+
+//         details.coach_notes.length > 0 ? (
+
+//           <Box
+
+//             bg="white"
+
+//             p={6}
+
+//             borderRadius="20px"
+
+//             shadow="sm"
+
+//           >
+
+//             <Text
+
+//               fontWeight="700"
+
+//               fontSize="lg"
+
+//               mb={4}
+
+//             >
+
+//               Coach Notes
+
+//             </Text>
+
+//             {
+
+//               details.coach_notes.map(
+
+//                 (note: any) => (
+
+//                   <Box
+
+//                     key={note.id}
+
+//                     mb={3}
+
+//                   >
+
+//                     <Text>
+
+//                       {note.note}
+
+//                     </Text>
+
+//                   </Box>
+
+//                 )
+
+//               )
+
+//             }
+
+//           </Box>
+
+//         ) : (
+
+// <CoachNotesCard
+
+//   notes={details.coach_notes}
+
+// />
+
+//         )
+
+//       }
+
+//       {/* Permissions */}
+
+//       <Box
+
+//         bg="white"
+
+//         borderRadius="20px"
+
+//         p={6}
+
+//         shadow="sm"
+
+//       >
+
+//         <Text
+
+//           fontSize="lg"
+
+//           fontWeight="700"
+
+//           mb={5}
+
+//         >
+
+//           Permissions
+
+//         </Text>
+
+//         <VStack
+
+//           align="stretch"
+
+//           spacing={3}
+
+//         >
+
+//           <HStack
+
+//             justify="space-between"
+
+//           >
+
+//             <Text>
+
+//               View Profile
+
+//             </Text>
+
+//             <Badge
+
+//               colorScheme={
+//                 details.permissions.can_view_profile
+//                   ? "green"
+//                   : "red"
+//               }
+
+//             >
+
+//               {
+
+//                 details.permissions.can_view_profile
+//                   ? "Allowed"
+//                   : "Denied"
+
+//               }
+
+//             </Badge>
+
+//           </HStack>
+
+//           <HStack
+
+//             justify="space-between"
+
+//           >
+
+//             <Text>
+
+//               View Nutrition
+
+//             </Text>
+
+//             <Badge
+
+//               colorScheme={
+//                 details.permissions.can_view_nutrition
+//                   ? "green"
+//                   : "red"
+//               }
+
+//             >
+
+//               {
+
+//                 details.permissions.can_view_nutrition
+//                   ? "Allowed"
+//                   : "Denied"
+
+//               }
+
+//             </Badge>
+
+//           </HStack>
+
+//           <HStack
+
+//             justify="space-between"
+
+//           >
+
+//             <Text>
+
+//               Write Notes
+
+//             </Text>
+
+//             <Badge
+
+//               colorScheme={
+//                 details.permissions.can_write_notes
+//                   ? "green"
+//                   : "red"
+//               }
+
+//             >
+
+//               {
+
+//                 details.permissions.can_write_notes
+//                   ? "Allowed"
+//                   : "Denied"
+
+//               }
+
+//             </Badge>
+
+//           </HStack>
+
+//           <HStack
+
+//             justify="space-between"
+
+//           >
+
+//             <Text>
+
+//               Create Goal
+
+//             </Text>
+
+//             <Badge
+
+//               colorScheme={
+//                 details.permissions.can_create_goal
+//                   ? "green"
+//                   : "red"
+//               }
+
+//             >
+
+//               {
+
+//                 details.permissions.can_create_goal
+//                   ? "Allowed"
+//                   : "Denied"
+
+//               }
+
+//             </Badge>
+
+//           </HStack>
+
+//         </VStack>
+
+//       </Box>
+
+//     </VStack>
+
+//   );
+
+// };
+
+// export default ClientDetailsPage;
+
+
+
+// Version 2 
+
 import {
   VStack,
   HStack,
@@ -36,10 +712,17 @@ import {
 } from "../../services/workspace/clients.service";
 
 import QuickStatsCard
-from "../../components/WorkspaceUI/ClientDetails/QuickStatsCard";
-import FitnessProfileCard from "../../components/WorkspaceUI/ClientDetails/FitnessProfileCard";
-import TodayNutritionCard from "../../components/WorkspaceUI/ClientDetails/TodayNutritionCard";
-import CoachNotesCard from "../../components/WorkspaceUI/ClientDetails/CoachNotesCard";
+  from "../../components/WorkspaceUI/ClientDetails/QuickStatsCard";
+
+import FitnessProfileCard
+  from "../../components/WorkspaceUI/ClientDetails/FitnessProfileCard";
+
+import TodayNutritionCard
+  from "../../components/WorkspaceUI/ClientDetails/TodayNutritionCard";
+
+import CoachNotesCard
+  from "../../components/WorkspaceUI/ClientDetails/CoachNotesCard";
+
 
 const ClientDetailsPage = () => {
 
@@ -50,11 +733,13 @@ const ClientDetailsPage = () => {
     memberId
   } = useParams();
 
+
   const [
     details,
     setDetails
   ] =
     useState<ClientDetails | null>(null);
+
 
   const [
     loading,
@@ -62,15 +747,23 @@ const ClientDetailsPage = () => {
   ] =
     useState(true);
 
+
   const [
     error,
     setError
   ] =
     useState("");
 
+
   useEffect(() => {
 
     if (!memberId) {
+
+      setLoading(false);
+
+      setError(
+        "Client information is unavailable."
+      );
 
       return;
 
@@ -80,11 +773,14 @@ const ClientDetailsPage = () => {
 
   }, [memberId]);
 
+
   const loadClient = async () => {
 
     try {
 
       setLoading(true);
+
+      setError("");
 
       const response =
         await getClientDetails(
@@ -111,6 +807,7 @@ const ClientDetailsPage = () => {
 
   };
 
+
   if (loading) {
 
     return (
@@ -131,6 +828,7 @@ const ClientDetailsPage = () => {
 
   }
 
+
   if (error || !details) {
 
     return (
@@ -139,7 +837,7 @@ const ClientDetailsPage = () => {
 
         <Text color="red.500">
 
-          {error}
+          {error || "Client details are unavailable."}
 
         </Text>
 
@@ -148,6 +846,32 @@ const ClientDetailsPage = () => {
     );
 
   }
+
+
+  /*
+  ------------------------------------------------
+  SAFE DATA REFERENCES
+  ------------------------------------------------
+  */
+
+  const client =
+    details.client;
+
+  const consent =
+    details.consent;
+
+  const fitnessProfile =
+    details.fitness_profile;
+
+  const today =
+    details.today;
+
+  const coachNotes =
+    details.coach_notes ?? [];
+
+  const permissions =
+    details.permissions;
+
 
   return (
 
@@ -158,6 +882,11 @@ const ClientDetailsPage = () => {
       align="stretch"
 
     >
+
+
+      {/* ------------------------------------------
+          BACK
+      ------------------------------------------ */}
 
       <Button
 
@@ -179,6 +908,11 @@ const ClientDetailsPage = () => {
 
       </Button>
 
+
+      {/* ------------------------------------------
+          HEADER
+      ------------------------------------------ */}
+
       <PageHeader
 
         title="Client Details"
@@ -187,7 +921,10 @@ const ClientDetailsPage = () => {
 
       />
 
-      {/* Profile Header */}
+
+      {/* ------------------------------------------
+          PROFILE HEADER
+      ------------------------------------------ */}
 
       <Box
 
@@ -214,10 +951,11 @@ const ClientDetailsPage = () => {
             size="xl"
 
             name={
-              details.client.name
+              client?.name ?? ""
             }
 
           />
+
 
           <VStack
 
@@ -235,41 +973,56 @@ const ClientDetailsPage = () => {
 
             >
 
-              {details.client.name}
+              {client?.name || "--"}
 
             </Text>
 
-            <Text
 
-              color="gray.500"
+            {client?.nickname && (
 
-            >
+              <Text
 
-              {details.client.nickname}
+                color="gray.500"
 
-            </Text>
+              >
+
+                {client.nickname}
+
+              </Text>
+
+            )}
+
 
             <HStack>
 
-              <Badge
+              {client?.gender && (
 
-                colorScheme="blue"
+                <Badge
 
-              >
+                  colorScheme="blue"
 
-                {details.client.gender}
+                >
 
-              </Badge>
+                  {client.gender}
 
-              <Badge
+                </Badge>
 
-                colorScheme="purple"
+              )}
 
-              >
 
-                {details.client.age_range}
+              {client?.age_range && (
 
-              </Badge>
+                <Badge
+
+                  colorScheme="purple"
+
+                >
+
+                  {client.age_range}
+
+                </Badge>
+
+              )}
 
             </HStack>
 
@@ -280,213 +1033,267 @@ const ClientDetailsPage = () => {
       </Box>
 
 
-<SimpleGrid
+      {/* ------------------------------------------
+          QUICK STATS
+      ------------------------------------------ */}
 
-  columns={{
-    base: 2,
-    lg: 4
-  }}
+      <SimpleGrid
 
-  spacing={5}
+        columns={{
+          base: 2,
+          lg: 4
+        }}
 
->
+        spacing={5}
 
-  <QuickStatsCard
-
-    title="Calories"
-
-    value={
-      details.today?.consumed?.calories ?? 0
-    }
-
-    subtitle={`Target ${
-      details.today?.target?.calories ?? 0
-    } kcal`}
-
-  />
-
-  <QuickStatsCard
-
-    title="Protein"
-
-    value={`${(
-      details.today?.consumed?.protein ?? 0
-    ).toFixed(1)} g`}
-
-    subtitle={`Target ${
-      details.today?.target?.protein ?? 0
-    } g`}
-
-  />
-
-  <QuickStatsCard
-
-    title="Goal"
-
-    value={
-      details.fitness_profile
-        ?.goal_type
-        ?.replaceAll("_", " ")
-        // .replace(/\b\w/g, c => c.toUpperCase()) ??
-        .replace(/\b\w/g, (c: string) => c.toUpperCase()) ??
-      "--"
-    }
-
-    subtitle="Current Goal"
-
-  />
-
-  <QuickStatsCard
-
-    title="Consent"
-
-    value={
-      details.consent.granted
-        ? "Granted"
-        : "Pending"
-    }
-
-    subtitle={details.consent.status}
-
-  />
-
-</SimpleGrid>
+      >
 
 
+        <QuickStatsCard
 
-      {/* Consent */}
+          title="Calories"
 
-      <ConsentCard
+          value={
+            today?.consumed?.calories ?? 0
+          }
 
-        consent={details.consent}
+          subtitle={`Target ${
+            today?.target?.calories ?? 0
+          } kcal`}
 
-      />
+        />
 
-      {/* Personal Information */}
 
-      <PersonalInfoCard
+        <QuickStatsCard
 
-        client={details.client}
+          title="Protein"
 
-      />
+          value={`${(
+            today?.consumed?.protein ?? 0
+          ).toFixed(1)} g`}
 
-      {/* Fitness Profile */}
+          subtitle={`Target ${
+            today?.target?.protein ?? 0
+          } g`}
 
-      {
+        />
 
-details.fitness_profile ? (
-  <FitnessProfileCard
-    profile={details.fitness_profile}
-  />
-) : (
-  <EmptyStateCard
-    title="Fitness Profile"
-    message="No active fitness profile."
-  />
-)
 
-      }
+        <QuickStatsCard
 
-      {/* Today's Nutrition */}
+          title="Goal"
 
-      {
-details.today ? (
+          value={
 
-    <TodayNutritionCard
+            fitnessProfile?.goal_type
 
-      nutrition={details.today}
+              ? fitnessProfile.goal_type
+                  .replaceAll("_", " ")
+                  .replace(
+                    /\b\w/g,
+                    (c: string) =>
+                      c.toUpperCase()
+                  )
 
-    />
+              : "--"
 
-  ) : (
+          }
 
-    <EmptyStateCard
+          subtitle="Current Goal"
 
-      title="Today's Nutrition"
+        />
 
-      message="No nutrition data available for today."
 
-    />
+        <QuickStatsCard
 
-  )
+          title="Consent"
 
-      }
+          value={
 
-      {/* Coach Notes */}
+            consent?.granted
+              ? "Granted"
+              : "Pending"
 
-      {
+          }
 
-        details.coach_notes.length > 0 ? (
+          subtitle={
+            consent?.status ?? "--"
+          }
 
-          <Box
+        />
 
-            bg="white"
+      </SimpleGrid>
 
-            p={6}
 
-            borderRadius="20px"
+      {/* ------------------------------------------
+          CONSENT
+      ------------------------------------------ */}
 
-            shadow="sm"
+      {consent ? (
+
+        <ConsentCard
+
+          consent={consent}
+
+        />
+
+      ) : (
+
+        <EmptyStateCard
+
+          title="Consent"
+
+          message="Consent information is unavailable."
+
+        />
+
+      )}
+
+
+      {/* ------------------------------------------
+          PERSONAL INFORMATION
+      ------------------------------------------ */}
+
+      {client ? (
+
+        <PersonalInfoCard
+
+          client={client}
+
+        />
+
+      ) : (
+
+        <EmptyStateCard
+
+          title="Personal Information"
+
+          message="Personal information is unavailable."
+
+        />
+
+      )}
+
+
+      {/* ------------------------------------------
+          FITNESS PROFILE
+      ------------------------------------------ */}
+
+      {fitnessProfile ? (
+
+        <FitnessProfileCard
+
+          profile={fitnessProfile}
+
+        />
+
+      ) : (
+
+        <EmptyStateCard
+
+          title="Fitness Profile"
+
+          message="No active fitness profile."
+
+        />
+
+      )}
+
+
+      {/* ------------------------------------------
+          TODAY'S NUTRITION
+      ------------------------------------------ */}
+
+      {today ? (
+
+        <TodayNutritionCard
+
+          nutrition={today}
+
+        />
+
+      ) : (
+
+        <EmptyStateCard
+
+          title="Today's Nutrition"
+
+          message="No nutrition data available for today."
+
+        />
+
+      )}
+
+
+      {/* ------------------------------------------
+          COACH NOTES
+      ------------------------------------------ */}
+
+      {coachNotes.length > 0 ? (
+
+        <Box
+
+          bg="white"
+
+          p={6}
+
+          borderRadius="20px"
+
+          shadow="sm"
+
+        >
+
+          <Text
+
+            fontWeight="700"
+
+            fontSize="lg"
+
+            mb={4}
 
           >
 
-            <Text
+            Coach Notes
 
-              fontWeight="700"
+          </Text>
 
-              fontSize="lg"
 
-              mb={4}
+          {coachNotes.map((note) => (
+
+            <Box
+
+              key={note.id}
+
+              mb={3}
 
             >
 
-              Coach Notes
+              <Text>
 
-            </Text>
+                {note.note}
 
-            {
+              </Text>
 
-              details.coach_notes.map(
+            </Box>
 
-                (note: any) => (
+          ))}
 
-                  <Box
+        </Box>
 
-                    key={note.id}
+      ) : (
 
-                    mb={3}
+        <CoachNotesCard
 
-                  >
+          notes={coachNotes}
 
-                    <Text>
+        />
 
-                      {note.note}
+      )}
 
-                    </Text>
 
-                  </Box>
-
-                )
-
-              )
-
-            }
-
-          </Box>
-
-        ) : (
-
-<CoachNotesCard
-
-  notes={details.coach_notes}
-
-/>
-
-        )
-
-      }
-
-      {/* Permissions */}
+      {/* ------------------------------------------
+          PERMISSIONS
+      ------------------------------------------ */}
 
       <Box
 
@@ -514,158 +1321,204 @@ details.today ? (
 
         </Text>
 
-        <VStack
 
-          align="stretch"
+        {!permissions ? (
 
-          spacing={3}
+          <Text
 
-        >
+            color="gray.500"
 
-          <HStack
-
-            justify="space-between"
+            fontSize="sm"
 
           >
 
-            <Text>
+            Permission information is unavailable.
 
-              View Profile
+          </Text>
 
-            </Text>
+        ) : (
 
-            <Badge
+          <VStack
 
-              colorScheme={
-                details.permissions.can_view_profile
-                  ? "green"
-                  : "red"
-              }
+            align="stretch"
 
-            >
-
-              {
-
-                details.permissions.can_view_profile
-                  ? "Allowed"
-                  : "Denied"
-
-              }
-
-            </Badge>
-
-          </HStack>
-
-          <HStack
-
-            justify="space-between"
+            spacing={3}
 
           >
 
-            <Text>
 
-              View Nutrition
+            {/* View Profile */}
 
-            </Text>
+            <HStack
 
-            <Badge
-
-              colorScheme={
-                details.permissions.can_view_nutrition
-                  ? "green"
-                  : "red"
-              }
+              justify="space-between"
 
             >
 
-              {
+              <Text>
 
-                details.permissions.can_view_nutrition
-                  ? "Allowed"
-                  : "Denied"
+                View Profile
 
-              }
+              </Text>
 
-            </Badge>
 
-          </HStack>
+              <Badge
 
-          <HStack
+                colorScheme={
 
-            justify="space-between"
+                  permissions.can_view_profile
+                    ? "green"
+                    : "red"
 
-          >
+                }
 
-            <Text>
+              >
 
-              Write Notes
+                {
 
-            </Text>
+                  permissions.can_view_profile
+                    ? "Allowed"
+                    : "Denied"
 
-            <Badge
+                }
 
-              colorScheme={
-                details.permissions.can_write_notes
-                  ? "green"
-                  : "red"
-              }
+              </Badge>
 
-            >
+            </HStack>
 
-              {
 
-                details.permissions.can_write_notes
-                  ? "Allowed"
-                  : "Denied"
+            {/* View Nutrition */}
 
-              }
+            <HStack
 
-            </Badge>
-
-          </HStack>
-
-          <HStack
-
-            justify="space-between"
-
-          >
-
-            <Text>
-
-              Create Goal
-
-            </Text>
-
-            <Badge
-
-              colorScheme={
-                details.permissions.can_create_goal
-                  ? "green"
-                  : "red"
-              }
+              justify="space-between"
 
             >
 
-              {
+              <Text>
 
-                details.permissions.can_create_goal
-                  ? "Allowed"
-                  : "Denied"
+                View Nutrition
 
-              }
+              </Text>
 
-            </Badge>
 
-          </HStack>
+              <Badge
 
-        </VStack>
+                colorScheme={
+
+                  permissions.can_view_nutrition
+                    ? "green"
+                    : "red"
+
+                }
+
+              >
+
+                {
+
+                  permissions.can_view_nutrition
+                    ? "Allowed"
+                    : "Denied"
+
+                }
+
+              </Badge>
+
+            </HStack>
+
+
+            {/* Write Notes */}
+
+            <HStack
+
+              justify="space-between"
+
+            >
+
+              <Text>
+
+                Write Notes
+
+              </Text>
+
+
+              <Badge
+
+                colorScheme={
+
+                  permissions.can_write_notes
+                    ? "green"
+                    : "red"
+
+                }
+
+              >
+
+                {
+
+                  permissions.can_write_notes
+                    ? "Allowed"
+                    : "Denied"
+
+                }
+
+              </Badge>
+
+            </HStack>
+
+
+            {/* Create Goal */}
+
+            <HStack
+
+              justify="space-between"
+
+            >
+
+              <Text>
+
+                Create Goal
+
+              </Text>
+
+
+              <Badge
+
+                colorScheme={
+
+                  permissions.can_create_goal
+                    ? "green"
+                    : "red"
+
+                }
+
+              >
+
+                {
+
+                  permissions.can_create_goal
+                    ? "Allowed"
+                    : "Denied"
+
+                }
+
+              </Badge>
+
+            </HStack>
+
+
+          </VStack>
+
+        )}
 
       </Box>
+
 
     </VStack>
 
   );
 
 };
+
 
 export default ClientDetailsPage;

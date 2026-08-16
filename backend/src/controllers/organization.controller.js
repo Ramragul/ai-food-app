@@ -4,7 +4,7 @@ import {
     assignClientService,getOrganizationDashboardService , getEmployeesService, getClientsService , getAssignmentsService,
     getInvitationsService,getClientDetailsService, transferAssignmentService, removeAssignmentService, declineInvitationService,
     getWorkspaceMembersService, leaveWorkspaceService, getMyOwnedOrganizationsService, changeOrganizationMemberRoleService, removeOrganizationMemberService,
-    getOrganizationSettingsService, updateOrganizationSettingsService, deleteOrganizationService
+    getOrganizationSettingsService, updateOrganizationSettingsService, deleteOrganizationService, getMyOrganizationAccessService
 } from "../services/organization/organization.service.js";
 
 /* 🔥 CREATE ORGANIZATION */
@@ -811,6 +811,49 @@ export const getMyOwnedOrganizations = async (
             success: false,
 
             error: err.message
+
+        });
+
+    }
+
+};
+
+export const getMyOrganizationAccess =
+async (req, res) => {
+
+    try {
+
+        const userId =
+            req.user.id;
+
+        const access =
+            await getMyOrganizationAccessService(
+                userId
+            );
+
+        return res.status(200).json({
+
+            success: true,
+
+            data: access
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error fetching organization access:",
+            error
+        );
+
+        return res.status(500).json({
+
+            success: false,
+
+            message:
+                "Failed to fetch organization access"
 
         });
 

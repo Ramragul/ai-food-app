@@ -11,3 +11,16 @@ async () => {
     return response.data.data;
 
 };
+
+
+export const getMyOrganizationAccess =
+async () => {
+
+    const response =
+        await api.get(
+            "/organizations/my-access"
+        );
+
+    return response.data.data;
+
+};

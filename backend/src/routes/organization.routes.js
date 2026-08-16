@@ -5,7 +5,7 @@ import {
    getMyInvitations, acceptInvitation, getOrganizationMembers,assignClient , getOrganizationDashboard, getEmployees,
    getClients , getAssignments, getInvitations, getClientDetails, transferAssignment, removeAssignment, declineInvitation,
    getWorkspaceMembers, leaveWorkspace, getMyOwnedOrganizations, changeOrganizationMemberRole, removeOrganizationMember, getOrganizationSettings,
-updateOrganizationSettings, deleteOrganization
+updateOrganizationSettings, deleteOrganization, getMyOrganizationAccess
 } from "../controllers/organization.controller.js";
 
 import {
@@ -205,6 +205,12 @@ router.delete(
   "/settings",
   authMiddleware,
   deleteOrganization
+);
+
+router.get(
+    "/organizations/my-access",
+    authMiddleware,
+    getMyOrganizationAccess
 );
 
 

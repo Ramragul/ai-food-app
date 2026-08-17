@@ -1007,7 +1007,7 @@ ownedOrganizations.length > 0 ?
                 </Text>
             }
             onClick={() =>
-                navigate("/clients")
+                navigate("/client/workspace")
             }
         >
             Client Dashboard

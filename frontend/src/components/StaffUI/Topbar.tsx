@@ -1,37 +1,245 @@
+// version 1
+
+// import {
+
+//   Box,
+
+//   Flex,
+
+//   Avatar,
+
+//   HStack,
+
+//   IconButton,
+
+//   useBreakpointValue
+
+// } from "@chakra-ui/react";
+
+// import {
+
+//   FiBell,
+
+//   FiMenu
+
+// } from "react-icons/fi";
+
+// import {
+
+//   STAFF_LAYOUT
+
+// } from "../../config/layout/staff.layout";
+
+
+
+
+// import { useAuth } from "../../context/AuthContext";
+
+// interface Props {
+
+//   onMenuClick: () => void;
+
+// }
+
+// const Topbar = ({
+//   onMenuClick
+// }: Props) => {
+
+//     const { user } = useAuth();
+
+//     console.log("User: " + JSON.stringify(user));
+
+//   const isDesktop =
+//     useBreakpointValue({
+
+//       base: false,
+
+//       lg: true
+
+//     });
+
+//     // const location = useLocation();
+
+//   // const currentPage =
+//   //   staffNavigation.find(
+//   //     ({ path }) => path === location.pathname
+//   //   );
+
+//   return (
+
+//     <Box
+
+//       position="fixed"
+
+//       top={0}
+
+//       right={0}
+
+//       left={{
+
+//         base: 0,
+
+//         lg: STAFF_LAYOUT.sidebar.width
+
+//       }}
+
+//       h={STAFF_LAYOUT.topbar.height}
+
+//       bg="rgba(255,255,255,.82)"
+
+//       backdropFilter="blur(18px)"
+
+//       borderBottom="1px solid"
+
+//       borderColor="gray.100"
+
+//       zIndex={100}
+
+//     >
+
+//       <Flex
+
+//         h="100%"
+
+//         align="center"
+
+//         justify="space-between"
+
+//         px={6}
+
+//       >
+
+//         <HStack spacing={4}>
+
+//           {
+
+//             !isDesktop && (
+
+
+
+//               <IconButton
+
+//                 aria-label="Menu"
+
+//                 icon={<FiMenu />}
+
+//                 variant="ghost"
+
+//                 onClick={onMenuClick}
+
+//             />
+
+//             )
+
+//           }
+
+//            {/* <Box>
+
+//           <Text
+//             fontSize="2xl"
+//             fontWeight="700"
+//           >
+//             {currentPage?.label ?? "Workspace"}
+//           </Text>
+
+//           <Text
+//             fontSize="sm"
+//             color="gray.500"
+//           >
+//             {currentPage?.subtitle}
+//           </Text>
+
+//           </Box>  */}
+
+//         </HStack>
+
+//         <HStack spacing={5}>
+// {/* 
+//           <Text
+
+//             color="gray.500"
+
+//             fontWeight="500"
+
+//             display={{
+
+//               base: "none",
+
+//               md: "block"
+
+//             }}
+
+//           >
+
+//             Good Day 👋
+
+//           </Text> */}
+
+//           <IconButton
+
+//             aria-label="Notifications"
+
+//             icon={<FiBell />}
+
+//             variant="ghost"
+
+//             borderRadius="full"
+
+//           />
+//     <Avatar
+//         name={user?.name}
+//         size="sm"
+//     />
+     
+
+//         </HStack>
+
+//       </Flex>
+
+//     </Box>
+
+//   );
+
+// };
+
+// export default Topbar;
+
+
+// Version 2
+
 import {
-
   Box,
-
   Flex,
-
   Avatar,
-
   HStack,
-
   IconButton,
-
-  useBreakpointValue
-
+  useBreakpointValue,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuDivider,
+  Text
 } from "@chakra-ui/react";
 
 import {
-
   FiBell,
-
-  FiMenu
-
+  FiMenu,
+  FiHome
 } from "react-icons/fi";
 
 import {
+  useNavigate
+} from "react-router-dom";
 
+import {
   STAFF_LAYOUT
-
 } from "../../config/layout/staff.layout";
 
+import {
+  useAuth
+} from "../../context/AuthContext";
 
-
-
-import { useAuth } from "../../context/AuthContext";
 
 interface Props {
 
@@ -39,29 +247,32 @@ interface Props {
 
 }
 
+
 const Topbar = ({
   onMenuClick
 }: Props) => {
 
-    const { user } = useAuth();
+  const {
+    user
+  } = useAuth();
 
-    console.log("User: " + JSON.stringify(user));
+  const navigate =
+    useNavigate();
+
 
   const isDesktop =
     useBreakpointValue({
-
       base: false,
-
       lg: true
-
     });
 
-    // const location = useLocation();
 
-  // const currentPage =
-  //   staffNavigation.find(
-  //     ({ path }) => path === location.pathname
-  //   );
+  const handleHome = () => {
+
+    navigate("/home");
+
+  };
+
 
   return (
 
@@ -74,14 +285,13 @@ const Topbar = ({
       right={0}
 
       left={{
-
         base: 0,
-
         lg: STAFF_LAYOUT.sidebar.width
-
       }}
 
-      h={STAFF_LAYOUT.topbar.height}
+      h={
+        STAFF_LAYOUT.topbar.height
+      }
 
       bg="rgba(255,255,255,.82)"
 
@@ -107,88 +317,170 @@ const Topbar = ({
 
       >
 
+        {/* Left */}
+
         <HStack spacing={4}>
 
-          {
+          {!isDesktop && (
 
-            !isDesktop && (
+            <IconButton
 
+              aria-label="Menu"
 
+              icon={
+                <FiMenu />
+              }
 
-              <IconButton
+              variant="ghost"
 
-                aria-label="Menu"
-
-                icon={<FiMenu />}
-
-                variant="ghost"
-
-                onClick={onMenuClick}
+              onClick={
+                onMenuClick
+              }
 
             />
 
-            )
-
-          }
-
-           {/* <Box>
-
-          <Text
-            fontSize="2xl"
-            fontWeight="700"
-          >
-            {currentPage?.label ?? "Workspace"}
-          </Text>
-
-          <Text
-            fontSize="sm"
-            color="gray.500"
-          >
-            {currentPage?.subtitle}
-          </Text>
-
-          </Box>  */}
+          )}
 
         </HStack>
 
-        <HStack spacing={5}>
-{/* 
-          <Text
 
-            color="gray.500"
+        {/* Right */}
 
-            fontWeight="500"
-
-            display={{
-
-              base: "none",
-
-              md: "block"
-
-            }}
-
-          >
-
-            Good Day 👋
-
-          </Text> */}
+        <HStack spacing={4}>
 
           <IconButton
 
             aria-label="Notifications"
 
-            icon={<FiBell />}
+            icon={
+              <FiBell />
+            }
 
             variant="ghost"
 
             borderRadius="full"
 
           />
-    <Avatar
-        name={user?.name}
-        size="sm"
-    />
-     
+
+
+          <Menu>
+
+            <MenuButton
+
+              as={IconButton}
+
+              aria-label="Open profile menu"
+
+              icon={
+
+                <Avatar
+
+                  name={
+                    user?.name
+                  }
+
+                  size="sm"
+
+                />
+
+              }
+
+              variant="ghost"
+
+              borderRadius="full"
+
+              p={0}
+
+              _hover={{
+                bg: "gray.100"
+              }}
+
+            />
+
+
+            <MenuList
+
+              minW="220px"
+
+              borderRadius="16px"
+
+              p={2}
+
+              boxShadow="lg"
+
+            >
+
+              {/* User info */}
+
+              <Box
+
+                px={3}
+
+                py={2}
+
+              >
+
+                <Text
+
+                  fontWeight="600"
+
+                  fontSize="sm"
+
+                >
+
+                  {user?.name}
+
+                </Text>
+
+
+                {user?.nickname && (
+
+                  <Text
+
+                    fontSize="xs"
+
+                    color="gray.500"
+
+                    mt={1}
+
+                  >
+
+                    {user.nickname}
+
+                  </Text>
+
+                )}
+
+              </Box>
+
+
+              <MenuDivider />
+
+
+              {/* Main Dashboard */}
+
+              <MenuItem
+
+                icon={
+                  <FiHome />
+                }
+
+                borderRadius="10px"
+
+                onClick={
+                  handleHome
+                }
+
+              >
+
+                NEKA Dashboard
+
+              </MenuItem>
+
+
+            </MenuList>
+
+          </Menu>
 
         </HStack>
 
@@ -199,5 +491,6 @@ const Topbar = ({
   );
 
 };
+
 
 export default Topbar;

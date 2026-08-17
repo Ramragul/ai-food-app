@@ -295,6 +295,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 import MacroGrid from "./MacroGrid";
+import NutritionInsight from "./NutritionInsight";
 
 interface Props {
   result: any;
@@ -441,6 +442,10 @@ const NutritionResultCard = ({
           {/* MACROS */}
 
           <MacroGrid
+            data={data}
+          />
+
+          <NutritionInsight
             data={data}
           />
 

@@ -204,7 +204,7 @@ import {
   SimpleGrid,
   VStack,
   Heading,
-  Button
+
 } from "@chakra-ui/react";
 
 import {
@@ -212,7 +212,7 @@ import {
   Heart,
   Target,
   Mail,
-  ChevronLeftIcon
+
   
 } from "lucide-react";
 
@@ -238,7 +238,7 @@ import {
   getWorkspaceDashboard,
   type OrganizationDashboard
 } from "../../services/workspace/dashboard.service";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 
 const DashboardPage = () => {
@@ -252,7 +252,7 @@ const DashboardPage = () => {
   const [error, setError] =
     useState("");
 
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     // const {setOrganization} = useWorkspace();
 
@@ -342,7 +342,7 @@ const DashboardPage = () => {
     subtitle={`${dashboard?.organization?.organization_type} • ${dashboard?.organization?.workspace_code}`}
  /> */}
 
-<VStack
+{/* <VStack
 
     align="stretch"
 
@@ -395,7 +395,7 @@ const DashboardPage = () => {
 
     />
 
-</VStack>
+</VStack> */}
 
       <SimpleGrid
 

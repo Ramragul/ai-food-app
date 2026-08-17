@@ -8,6 +8,18 @@ export interface Goal {
 
 }
 
+export interface StaffOrganization {
+
+  id: number;
+  name: string;
+  organization_type: string;
+  logo_url: string | null;
+  workspace_code: string;
+  timezone: string;
+  currency: string;
+
+}
+
 export interface ClientStatus {
 
   code: string;
@@ -103,6 +115,8 @@ export interface CoachDashboard {
     mobile: string;
 
   };
+
+  organization: StaffOrganization;
 
   summary: DashboardSummary;
 

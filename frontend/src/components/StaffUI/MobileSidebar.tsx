@@ -1,3 +1,77 @@
+// import {
+//   Drawer,
+//   DrawerOverlay,
+//   DrawerContent,
+//   useBreakpointValue
+// } from "@chakra-ui/react";
+
+// import Sidebar from "./Sidebar";
+
+// interface Props {
+
+//   isOpen: boolean;
+
+//   onClose: () => void;
+
+// }
+
+// const MobileSidebar = ({
+//   isOpen,
+//   onClose
+// }: Props) => {
+
+//   const isDesktop =
+//     useBreakpointValue({
+//       base: false,
+//       lg: true
+//     });
+
+//   if (isDesktop) {
+
+//     return null;
+
+//   }
+
+//   return (
+
+//     <Drawer
+
+//       isOpen={isOpen}
+
+//       placement="left"
+
+//       onClose={onClose}
+
+//       size="xs"
+
+//     >
+
+//       <DrawerOverlay />
+
+//       <DrawerContent>
+
+//         <Sidebar
+
+//          mobile
+
+//         onNavigate={onClose}
+
+// />
+
+//       </DrawerContent>
+
+//     </Drawer>
+
+//   );
+
+// };
+
+// export default MobileSidebar;
+
+
+
+// Version 2
+
 import {
   Drawer,
   DrawerOverlay,
@@ -5,7 +79,13 @@ import {
   useBreakpointValue
 } from "@chakra-ui/react";
 
-import Sidebar from "./Sidebar";
+import Sidebar
+  from "./Sidebar";
+
+import type {
+  StaffOrganization
+} from "./StaffLayout";
+
 
 interface Props {
 
@@ -13,11 +93,16 @@ interface Props {
 
   onClose: () => void;
 
+  organization:
+    StaffOrganization | null;
+
 }
+
 
 const MobileSidebar = ({
   isOpen,
-  onClose
+  onClose,
+  organization
 }: Props) => {
 
   const isDesktop =
@@ -26,11 +111,13 @@ const MobileSidebar = ({
       lg: true
     });
 
+
   if (isDesktop) {
 
     return null;
 
   }
+
 
   return (
 
@@ -52,11 +139,17 @@ const MobileSidebar = ({
 
         <Sidebar
 
-         mobile
+          mobile
 
-        onNavigate={onClose}
+          onNavigate={
+            onClose
+          }
 
-/>
+          organization={
+            organization
+          }
+
+        />
 
       </DrawerContent>
 
@@ -65,5 +158,6 @@ const MobileSidebar = ({
   );
 
 };
+
 
 export default MobileSidebar;

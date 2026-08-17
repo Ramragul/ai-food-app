@@ -1,47 +1,280 @@
-import {
+//  Verion 1
 
-  Box,
+// import {
 
-  VStack,
+//   Box,
 
-  Text,
+//   VStack,
 
-  Flex,
+//   Text,
 
-  Divider,
+//   Flex,
 
-  Avatar,
+//   Divider,
 
-  Spacer
+//   Avatar,
 
-} from "@chakra-ui/react";
+//   Spacer
 
-import NavigationItem from "./NavigationItem";
+// } from "@chakra-ui/react";
 
-import {
+// import NavigationItem from "./NavigationItem";
 
-  staffNavigation
+// import {
 
-} from "../../config/navigation/staff.navigation";
+//   staffNavigation
 
-import {
+// } from "../../config/navigation/staff.navigation";
 
-  STAFF_LAYOUT
+// import {
 
-} from "../../config/layout/staff.layout";
+//   STAFF_LAYOUT
 
-import { useAuth } from "../../context/AuthContext";
-import { useWorkspace } from "../../context/WorkspaceContext";
+// } from "../../config/layout/staff.layout";
+
+// import { useAuth } from "../../context/AuthContext";
+// import { useWorkspace } from "../../context/WorkspaceContext";
+
+// // interface Props {
+
+// //   mobile?: boolean;
+
+// // }
+
+// // const Sidebar = ({
+// //   mobile = false
+// // }: Props) => {
 
 // interface Props {
 
 //   mobile?: boolean;
 
+//   onNavigate?: () => void;
+
 // }
 
 // const Sidebar = ({
-//   mobile = false
+//   mobile = false,
+//   onNavigate
 // }: Props) => {
+
+//     const { user } = useAuth();
+
+    
+//     const { organization } = useWorkspace();
+
+//     console.log("User: " + JSON.stringify(user));
+//     console.log("Organization: " + JSON.stringify(organization));
+
+//   return (
+// <Box
+
+//   w={STAFF_LAYOUT.sidebar.width}
+
+//   h="100vh"
+
+//   bg="white"
+
+//   borderRight="1px solid"
+
+//   borderColor="gray.100"
+
+//   position={
+//     mobile
+//       ? "relative"
+//       : "fixed"
+//   }
+
+//   left={0}
+
+//   top={0}
+
+//   display={{
+//     base: mobile ? "flex" : "none",
+//     lg: "flex"
+//   }}
+
+//   flexDirection="column"
+
+// >
+
+//       {/* Logo */}
+
+//       <Flex
+
+//         h={STAFF_LAYOUT.topbar.height}
+
+//         align="center"
+
+//         px={6}
+
+//       >
+
+//         <Box>
+
+//           <Text
+
+//             fontSize="2xl"
+
+//             fontWeight="800"
+
+//             color="brand.600"
+
+//           >
+
+//             NEKA
+
+//           </Text>
+
+//           <Text
+
+//             fontSize="sm"
+
+//             color="gray.500"
+
+//           >
+
+//             Coach Portal
+
+//           </Text>
+
+//         </Box>
+
+//       </Flex>
+
+//       <Divider />
+
+//       {/* Navigation */}
+
+//       <VStack
+
+//         spacing={2}
+
+//         align="stretch"
+
+//         p={4}
+
+//       >
+
+//         {
+
+//           staffNavigation.map(
+
+//             item => (
+
+//               <NavigationItem
+
+//                 key={item.id}
+
+//                 item={item}
+//                 onNavigate={onNavigate}
+
+//               />
+
+//             )
+
+//           )
+
+//         }
+
+//       </VStack>
+
+//       <Spacer />
+
+//       <Divider />
+
+//       {/* Footer */}
+
+//       <Flex
+
+//         p={5}
+
+//         align="center"
+
+//         gap={3}
+
+//       >
+
+// <Flex
+//     p={5}
+//     align="center"
+//     gap={3}
+// >
+
+//     <Avatar
+//         name={user?.name}
+//         size="sm"
+//     />
+
+//     <Box>
+
+//         <Text
+//             fontWeight="600"
+//             fontSize="sm"
+//         >
+//             {user?.name}
+//         </Text>
+
+//         <Text
+//             fontSize="xs"
+//             color="gray.500"
+//         >
+//             {user?.role}
+//         </Text>
+
+//         <Text
+//             fontSize="xs"
+//             color="gray.400"
+//         >
+//             {organization?.name}
+//         </Text>
+
+//     </Box>
+
+// </Flex>
+
+//       </Flex>
+
+//     </Box>
+
+//   );
+
+// };
+
+// export default Sidebar;
+
+
+// Version 2
+
+import {
+  Box,
+  VStack,
+  Text,
+  Flex,
+  Divider,
+  Avatar,
+  Spacer
+} from "@chakra-ui/react";
+
+import NavigationItem
+  from "./NavigationItem";
+
+import {
+  staffNavigation
+} from "../../config/navigation/staff.navigation";
+
+import {
+  STAFF_LAYOUT
+} from "../../config/layout/staff.layout";
+
+import {
+  useAuth
+} from "../../context/AuthContext";
+
+import type {
+  StaffOrganization
+} from "./StaffLayout";
+
 
 interface Props {
 
@@ -49,55 +282,69 @@ interface Props {
 
   onNavigate?: () => void;
 
+  organization:
+    StaffOrganization | null;
+
 }
+
 
 const Sidebar = ({
   mobile = false,
-  onNavigate
+  onNavigate,
+  organization
 }: Props) => {
 
-    const { user } = useAuth();
+  const {
+    user
+  } = useAuth();
 
-    
-    const { organization } = useWorkspace();
 
   return (
-<Box
 
-  w={STAFF_LAYOUT.sidebar.width}
+    <Box
 
-  h="100vh"
+      w={
+        STAFF_LAYOUT.sidebar.width
+      }
 
-  bg="white"
+      h="100vh"
 
-  borderRight="1px solid"
+      bg="white"
 
-  borderColor="gray.100"
+      borderRight="1px solid"
 
-  position={
-    mobile
-      ? "relative"
-      : "fixed"
-  }
+      borderColor="gray.100"
 
-  left={0}
+      position={
+        mobile
+          ? "relative"
+          : "fixed"
+      }
 
-  top={0}
+      left={0}
 
-  display={{
-    base: mobile ? "flex" : "none",
-    lg: "flex"
-  }}
+      top={0}
 
-  flexDirection="column"
+      display={{
+        base:
+          mobile
+            ? "flex"
+            : "none",
 
->
+        lg: "flex"
+      }}
+
+      flexDirection="column"
+
+    >
 
       {/* Logo */}
 
       <Flex
 
-        h={STAFF_LAYOUT.topbar.height}
+        h={
+          STAFF_LAYOUT.topbar.height
+        }
 
         align="center"
 
@@ -117,7 +364,8 @@ const Sidebar = ({
 
           >
 
-            NEKA
+            {/* NEKA  */}
+            {organization?.name}
 
           </Text>
 
@@ -137,7 +385,9 @@ const Sidebar = ({
 
       </Flex>
 
+
       <Divider />
+
 
       {/* Navigation */}
 
@@ -154,7 +404,6 @@ const Sidebar = ({
         {
 
           staffNavigation.map(
-
             item => (
 
               <NavigationItem
@@ -162,21 +411,26 @@ const Sidebar = ({
                 key={item.id}
 
                 item={item}
-                onNavigate={onNavigate}
+
+                onNavigate={
+                  onNavigate
+                }
 
               />
 
             )
-
           )
 
         }
 
       </VStack>
 
+
       <Spacer />
 
+
       <Divider />
+
 
       {/* Footer */}
 
@@ -190,43 +444,61 @@ const Sidebar = ({
 
       >
 
-<Flex
-    p={5}
-    align="center"
-    gap={3}
->
+        <Avatar
 
-    <Avatar
-        name={user?.name}
-        size="sm"
-    />
+          name={
+            user?.name
+          }
 
-    <Box>
+          size="sm"
 
-        <Text
+        />
+
+
+        <Box>
+
+          <Text
+
             fontWeight="600"
+
             fontSize="sm"
-        >
+
+          >
+
             {user?.name}
-        </Text>
 
-        <Text
+          </Text>
+
+
+          <Text
+
             fontSize="xs"
+
             color="gray.500"
-        >
+
+          >
+
             {user?.role}
-        </Text>
 
-        <Text
+          </Text>
+
+
+          <Text
+
             fontSize="xs"
+
             color="gray.400"
-        >
-            {organization?.name}
-        </Text>
 
-    </Box>
+            noOfLines={1}
 
-</Flex>
+          >
+
+            {organization?.name ??
+              "Loading workspace..."}
+
+          </Text>
+
+        </Box>
 
       </Flex>
 
@@ -235,5 +507,6 @@ const Sidebar = ({
   );
 
 };
+
 
 export default Sidebar;

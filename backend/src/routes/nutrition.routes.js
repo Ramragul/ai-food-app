@@ -59,6 +59,14 @@ import {
 from "../controllers/nutritionLookup.controller.js";
 
 
+import {
+  scanMeal
+} from "../controllers/mealScan.controller.js";
+
+import {
+  mealImageUpload
+} from "../middleware/mealUpload.middleware.js";
+
 
 
 
@@ -92,6 +100,12 @@ router.post(
 router.post(
   "/lookup",
   lookupNutrition
+);
+
+router.post(
+  "/scan-meal",
+  mealImageUpload.single("image"),
+  scanMeal
 );
 
 export default router;

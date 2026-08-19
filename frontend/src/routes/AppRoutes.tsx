@@ -164,6 +164,7 @@ import CoachUpdatesPage from "../pages/Client/Workspace/CoachUpdatesPage";
 import MembersPage from "../pages/Client/Workspace/MembersPage";
 import CreateWorkspaceWizard from "../pages/Workspace/CreateWorkspaceWizard";
 import SettingsPage from "../pages/Workspace/SettingsPage";
+import ScanMeal from "../pages/ScanMeal";
 
 
 
@@ -227,6 +228,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/order-success" element={<OrderSuccess />} />
         <Route path="/track-meal1" element={<TrackMealPage />} />
         <Route path="/add-meal" element={<AddMeal />} />
+        <Route path="/scan-meal" element={<ScanMeal />}/>
         <Route path="/home" element={<Dashboard />} />
         <Route path="/goal-setup" element={<GoalSetup />} />
 

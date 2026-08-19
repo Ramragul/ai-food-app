@@ -65,7 +65,9 @@ import {
 
 import {
   mealImageUpload
-} from "../middleware/mealUpload.middleware.js";
+} from "../middlewares/mealUpload.middleware.js";
+
+
 
 
 

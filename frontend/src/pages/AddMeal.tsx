@@ -1201,3 +1201,790 @@ setDrawerOpen(
 };
 
 export default AddMeal;
+
+
+
+
+// Version 4 : Enhancement to v3 with scan meal integrations
+
+// import {
+//   Box,
+//   Text,
+//   VStack,
+//   Spinner,
+//   useToast
+// } from "@chakra-ui/react";
+
+// import { useState } from "react";
+
+// import api from "../utils/api";
+
+// import MealHero from "../components/meal/MealHero";
+// import MealTypeSelector from "../components/meal/MealTypeSelector";
+// import FoodSearchInput from "../components/meal/FoodSearchInput";
+// import SelectedFoodsSection from "../components/meal/SelectedFoodsSection";
+// import MealComposer from "../components/meal/MealComposer";
+// import FoodServingDrawer from "../components/meal/FoodServingDrawer";
+// import AIFoodReviewDrawer from "../components/meal/AIFoodReviewDrawer";
+// import { useAuth } from "../context/AuthContext";
+
+// import MealScanDrawer from "../components/meal/MealScanDrawer";
+
+
+
+
+// const AddMeal = () => {
+
+//     const { user } = useAuth();
+//   const userId = user.id;
+//   const toast = useToast();
+
+//   const [mealType, setMealType] =
+//     useState("BREAKFAST");
+
+//   const [selectedFoods, setSelectedFoods] =
+//     useState<any[]>([]);
+
+//   const [loading, setLoading] =
+//     useState(false);
+
+//   const [drawerOpen, setDrawerOpen] =
+//     useState(false);
+
+//   const [selectedFood, setSelectedFood] =
+//     useState<any>(null);
+
+//     const [aiFood,setAiFood] =
+//   useState(null);
+
+// const [aiDrawerOpen,
+//   setAiDrawerOpen] =
+//   useState(false);
+
+
+//   // Scan states
+
+//   const [
+//   scanOpen,
+//   setScanOpen
+// ] = useState(false);
+
+// const [
+//   scanLoading,
+//   setScanLoading
+// ] = useState(false);
+
+// const [
+//   scanImageUrl,
+//   setScanImageUrl
+// ] = useState<string | null>(null);
+
+// const [
+//   scannedItems,
+//   setScannedItems
+// ] = useState<any[]>([]);
+
+// const [
+//   scannedTotal,
+//   setScannedTotal
+// ] = useState({
+//   calories: 0,
+//   protein: 0,
+//   carbs: 0,
+//   fats: 0,
+//   fiber: 0
+// });
+
+// const handleMealScan =
+// async (
+//   file: File
+// ) => {
+
+//   try {
+
+//     setScanLoading(true);
+
+
+//     /*
+//     ----------------------------------------
+//     PREVIEW IMAGE
+//     ----------------------------------------
+//     */
+
+//     const previewUrl =
+//       URL.createObjectURL(
+//         file
+//       );
+
+//     setScanImageUrl(
+//       previewUrl
+//     );
+
+
+//     /*
+//     ----------------------------------------
+//     SEND IMAGE
+//     ----------------------------------------
+//     */
+
+//     const formData =
+//       new FormData();
+
+//     formData.append(
+//       "image",
+//       file
+//     );
+
+
+//     const response =
+//       await api.post(
+//         "/nutrition/scan-meal",
+//         formData,
+//         {
+//           headers: {
+//             "Content-Type":
+//               "multipart/form-data"
+//           }
+//         }
+//       );
+
+
+//     const result =
+//       response.data;
+
+
+//     if (
+//       !result.mealDetected ||
+//       !result.items?.length
+//     ) {
+
+//       toast({
+
+//         title:
+//           "No meal detected",
+
+//         description:
+//           "Try taking a clearer photo of your meal.",
+
+//         status:
+//           "warning",
+
+//         duration:
+//           3000,
+
+//         isClosable:
+//           true
+
+//       });
+
+//       return;
+
+//     }
+
+
+//     setScannedItems(
+//       result.items
+//     );
+
+
+//     setScannedTotal(
+//       result.total
+//     );
+
+
+//     setScanOpen(
+//       true
+//     );
+
+
+//   } catch (error) {
+
+//     console.error(
+//       "Meal scan failed:",
+//       error
+//     );
+
+
+//     toast({
+
+//       title:
+//         "Couldn't analyze your meal",
+
+//       description:
+//         "Please try another photo.",
+
+//       status:
+//         "error",
+
+//       duration:
+//         3000,
+
+//       isClosable:
+//         true
+
+//     });
+
+//   } finally {
+
+//     setScanLoading(false);
+
+//   }
+
+// };
+
+// const handleScannedMealConfirm =
+// (
+//   items: any[]
+// ) => {
+
+//   /*
+//   ----------------------------------------
+//   DON'T DUPLICATE EXISTING FOODS
+//   ----------------------------------------
+//   */
+
+//   const newItems =
+//     items.filter(
+//       scanned =>
+//         !selectedFoods.some(
+//           existing =>
+//             existing.foodId ===
+//             scanned.foodId &&
+//             scanned.foodId !== null
+//         )
+//     );
+
+
+//   setSelectedFoods(
+//     prev => [
+//       ...prev,
+//       ...newItems
+//     ]
+//   );
+
+
+//   setScanOpen(
+//     false
+//   );
+
+
+//   toast({
+
+//     title:
+//       "Meal scanned successfully",
+
+//     description:
+//       `${newItems.length} food item${
+//         newItems.length === 1
+//           ? ""
+//           : "s"
+//       } added to your meal.`,
+
+//     status:
+//       "success",
+
+//     duration:
+//       2000,
+
+//     isClosable:
+//       true
+
+//   });
+
+// };
+
+//   const handleFoodSelect =
+//     async (food: any) => {
+
+//       try {
+
+//         const res =
+//           await api.get(
+//             `/nutrition/food-details/${food.id}`
+//           );
+
+//           console.log("Response Data stored in selectedfoods is : " +JSON.stringify(res.data))
+
+//         setSelectedFood(
+//           res.data
+//         );
+
+//         setDrawerOpen(
+//           true
+//         );
+
+//       } catch (err) {
+
+//         console.error(err);
+
+//         toast({
+//           title:
+//             "Failed to load food details",
+//           status: "error",
+//           duration: 2000,
+//           isClosable: true
+//         });
+//       }
+//     };
+
+//   const handleFoodSave =
+//     (foodSelection: any) => {
+
+//       const exists =
+//         selectedFoods.some(
+//           (f) =>
+//             f.foodId ===
+//             foodSelection.foodId
+//         );
+
+//       if (exists) {
+//         toast({
+//           title:
+//             "Food already added",
+//           status: "info",
+//           duration: 1500,
+//           isClosable: true
+//         });
+
+//         return;
+//       }
+
+//       setSelectedFoods(
+//         (prev) => [
+//           ...prev,
+//           foodSelection
+//         ]
+//       );
+
+//       setDrawerOpen(
+//         false
+//       );
+
+//       toast({
+//         title:
+//           `${foodSelection.name} added`,
+//         status: "success",
+//         duration: 1200,
+//         isClosable: true
+//       });
+//     };
+
+
+// const handleSaveMeal =
+// async () => {
+
+//   try {
+
+//     setLoading(
+//       true
+//     );
+
+//     const total = {
+
+//       calories:
+//         mealTotals.calories,
+
+//       protein:
+//         mealTotals.protein,
+
+//       carbs:
+//         mealTotals.carbs,
+
+//       fats:
+//         mealTotals.fats,
+      
+//       fiber:
+//         mealTotals.fiber || 0
+
+//     };
+
+//     await api.post(
+//       "/nutrition/confirm-meal",
+//       {
+
+//         userId,
+
+//         mealType,
+
+//         items:
+//           selectedFoods,
+
+//         total
+
+//       }
+//     );
+
+//     toast({
+
+//       title:
+//         "Meal saved successfully",
+
+//       status:
+//         "success",
+
+//       duration:
+//         2000,
+
+//       isClosable:
+//         true
+
+//     });
+
+//     setSelectedFoods(
+//       []
+//     );
+
+//   } catch (err) {
+
+//     console.error(
+//       err
+//     );
+
+//     toast({
+
+//       title:
+//         "Failed to save meal",
+
+//       status:
+//         "error",
+
+//       duration:
+//         2000,
+
+//       isClosable:
+//         true
+
+//     });
+
+//   } finally {
+
+//     setLoading(
+//       false
+//     );
+
+//   }
+// };
+//   const handleFoodRemove =
+//     (foodId: number) => {
+
+//       setSelectedFoods(
+//         (prev) =>
+//           prev.filter(
+//             (food) =>
+//               food.foodId !==
+//               foodId
+//           )
+//       );
+//     };
+
+//     const handleQuantityUpdate =
+// (
+//   foodId:number,
+//   change:number
+// ) => {
+
+//   setSelectedFoods(
+//     prev =>
+//       prev.map(
+//         food => {
+
+//           if(
+//             food.foodId !==
+//             foodId
+//           ){
+//             return food;
+//           }
+
+//           const newQuantity =
+//             Math.max(
+//               1,
+//               food.quantity +
+//               change
+//             );
+
+//           const ratio =
+//             newQuantity /
+//             food.quantity;
+
+//           return {
+
+//             ...food,
+
+//             quantity:
+//               newQuantity,
+
+//             grams:
+//               Math.round(
+//                 food.grams *
+//                 ratio
+//               ),
+
+//             calories:
+//               Math.round(
+//                 food.calories *
+//                 ratio
+//               ),
+
+//             protein:
+//               Number(
+//                 (
+//                   food.protein *
+//                   ratio
+//                 ).toFixed(1)
+//               ),
+
+//             carbs:
+//               Number(
+//                 (
+//                   food.carbs *
+//                   ratio
+//                 ).toFixed(1)
+//               ),
+
+//             fats:
+//               Number(
+//                 (
+//                   food.fats *
+//                   ratio
+//                 ).toFixed(1)
+//               ),
+
+//             fiber:
+//               Number(
+//                 (
+//                   food.fiber *
+//                   ratio
+//                 ).toFixed(1)
+//               )
+//           };
+//         }
+//       )
+//   );
+// };
+
+
+//     const mealTotals =
+// selectedFoods.reduce(
+//   (acc, food) => {
+
+//     acc.calories +=
+//       food.calories || 0;
+
+//     acc.protein +=
+//       food.protein || 0;
+
+//     acc.carbs +=
+//       food.carbs || 0;
+
+//     acc.fats +=
+//       food.fats || 0;
+
+//         acc.fiber +=
+//       food.fiber || 0;
+
+//     return acc;
+
+//   },
+//   {
+//     calories: 0,
+//     protein: 0,
+//     carbs: 0,
+//     fats: 0,
+//     fiber:0
+//   }
+// );
+
+
+
+// const handleGenerateFood =
+// async (
+//   foodName:string
+// ) => {
+
+//   try {
+
+//     const res =
+//       await api.post(
+//         "/nutrition/generate-food",
+//         {
+//           foodName
+//         }
+//       );
+
+//     setAiFood(
+//       res.data
+//     );
+
+//     setAiDrawerOpen(
+//       true
+//     );
+
+//   } catch(err){
+
+//     console.error(err);
+//   }
+// };
+
+// const handleSaveAIFood =
+// async (
+//   food:any
+// ) => {
+
+//   try {
+
+//     const res =
+//       await api.post(
+//         "/nutrition/create-food",
+//         food
+//       );
+
+//     console.log(
+//       res.data
+//     );
+//     const foodDetails =
+// await api.get(
+//   `/nutrition/food-details/${res.data.foodReferenceId}`
+// );
+
+// setAiDrawerOpen(
+//   false
+// );
+
+// setSelectedFood(
+//   foodDetails.data
+// );
+
+// setDrawerOpen(
+//   true
+// );
+
+//   } catch(err){
+
+//     console.error(err);
+//   }
+// };
+
+//   return (
+//     <Box
+//       minH="100vh"
+//       bg="linear-gradient(
+//         180deg,
+//         #ffffff 0%,
+//         #f4f9ff 100%
+//       )"
+//     >
+//       <Box
+//         maxW="420px"
+//         mx="auto"
+//         px={5}
+//         pt={8}
+//         pb="180px"
+//       >
+//         <MealHero />
+
+//         <MealTypeSelector
+//           mealType={mealType}
+//           setMealType={
+//             setMealType
+//           }
+//         />
+
+//         <VStack
+//           align="stretch"
+//           spacing={3}
+//           mt={2}
+//         >
+//           <Text
+//             fontWeight="700"
+//             fontSize="lg"
+//           >
+//             Search Food
+//           </Text>
+
+//           <FoodSearchInput
+//             onSelectFood={
+//               handleFoodSelect
+//             }
+//             onGenerateFood={
+//             handleGenerateFood
+//            }
+//           />
+//         </VStack>
+// {/* 
+//         <SelectedFoodsSection
+//           foods={selectedFoods}
+//           onRemove={
+//             handleFoodRemove
+//           }
+//         /> */}
+
+//         <SelectedFoodsSection
+//   foods={selectedFoods}
+//   onRemove={
+//     handleFoodRemove
+//   }
+//   onQuantityUpdate={
+//     handleQuantityUpdate
+//   }
+// />
+
+// <MealComposer
+//   foods={selectedFoods}
+//   totals={mealTotals}
+//   loading={loading}
+//   onSave={handleSaveMeal}
+// />
+
+//         {loading && (
+//           <Box
+//             mt={8}
+//             textAlign="center"
+//           >
+//             <Spinner
+//               size="lg"
+//               color="brand.500"
+//             />
+
+//             <Text mt={3}>
+//               Loading...
+//             </Text>
+//           </Box>
+//         )}
+//       </Box>
+
+//       <FoodServingDrawer
+//         isOpen={
+//           drawerOpen
+//         }
+//         onClose={() =>
+//           setDrawerOpen(
+//             false
+//           )
+//         }
+//         food={
+//           selectedFood
+//         }
+//         onSave={
+//           handleFoodSave
+//         }
+//       />
+
+//       <AIFoodReviewDrawer
+//   isOpen={
+//     aiDrawerOpen
+//   }
+//   onClose={() =>
+//     setAiDrawerOpen(
+//       false
+//     )
+//   }
+//   food={aiFood}
+//     onSave={
+//     handleSaveAIFood
+//   }
+// />
+//     </Box>
+//   );
+// };
+
+// export default AddMeal;

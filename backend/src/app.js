@@ -66,7 +66,7 @@ app.get("/", (req, res) => {
   res.send("AI Food API running...");
 });
 
-app.use("/workout",workoutRoutes);
+app.use("/api/workout",workoutRoutes);
 
 
 

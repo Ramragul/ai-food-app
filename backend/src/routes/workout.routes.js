@@ -1,6 +1,6 @@
 import express from "express";
 
-import authMiddleware from "../middleware/authMiddleware.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 import {
   getMuscleGroups,

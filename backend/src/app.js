@@ -16,7 +16,7 @@ import coachRoutes from "./routes/coach.routes.js";
 import consentRoutes from "./routes/consent.routes.js";
 import clientRoutes from "./routes/client.routes.js";
 
-import workoutRoutes from "./workout/workout.routes.js";
+import workoutRoutes from "./routes/workout.routes.js";
 
 
 

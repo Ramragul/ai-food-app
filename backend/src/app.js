@@ -16,6 +16,8 @@ import coachRoutes from "./routes/coach.routes.js";
 import consentRoutes from "./routes/consent.routes.js";
 import clientRoutes from "./routes/client.routes.js";
 
+import workoutRoutes from "./workout/workout.routes.js";
+
 
 
 
@@ -63,6 +65,8 @@ app.use(
 app.get("/", (req, res) => {
   res.send("AI Food API running...");
 });
+
+app.use("/workout",workoutRoutes);
 
 
 

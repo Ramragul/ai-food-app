@@ -254,13 +254,6 @@ import {
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
-// import {
-//   BarChart3,
-//   PlusCircle,
-//   Target,
-//   Utensils
-// } from "lucide-react";
-
 
 
 const MotionBox = motion(Box);

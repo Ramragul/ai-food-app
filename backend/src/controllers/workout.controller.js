@@ -242,6 +242,7 @@
 
 import {
   getMuscleGroupsService,
+  getWorkoutTrainingGoalsService,
   getEquipmentService,
   getExercisesService,
   getExerciseByIdService,
@@ -277,6 +278,17 @@ export const getMuscleGroups = async (req, res) => {
 /* ======================================================
    EQUIPMENT
 ====================================================== */
+
+export const getWorkoutTrainingGoals = async (req, res) => {
+  try {
+    const data = await getWorkoutTrainingGoalsService();
+    return res.json({ success: true, data });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+};
+
 
 export const getEquipment = async (req, res) => {
   try {
@@ -603,3 +615,4 @@ export const reorderWorkoutTemplateExercises = async (req, res) => {
     return res.status(400).json({ success: false, error: err.message });
   }
 };
+

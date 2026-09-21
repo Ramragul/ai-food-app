@@ -2210,12 +2210,12 @@ export const getWorkoutTemplatesService = async (
     WHERE
       wt.organization_id = $1
       AND wt.is_active = true
-    GROUP BY wt.id
+    GROUP BY wt.id , tg.name, pmg.name
     ORDER BY wt.updated_at DESC, wt.id DESC
     `,
     [organizationId]
   );
-
+// Change done at group by 
   return result.rows;
 };
 
@@ -2652,6 +2652,75 @@ export const addWorkoutTemplateExerciseService = async (
 };
 
 
+// export const updateWorkoutTemplateExerciseService = async (
+//   userId,
+//   organizationId,
+//   templateId,
+//   templateExerciseId,
+//   data
+// ) => {
+
+//   await getWorkoutMembership(
+//     userId,
+//     Number(organizationId),
+//     "EDIT_WORKOUT"
+//   );
+
+//   const item = validateTemplateExercise(data);
+
+//   const result = await pool.query(
+//     `
+//     UPDATE workout_template_exercises wte
+//     SET
+//       exercise_id = $1,
+//       display_order = COALESCE($2, display_order),
+//       target_sets = $3,
+//       target_reps = $4,
+//       target_weight = $5,
+//       target_duration_seconds = $6,
+//       target_distance = $7,
+//       rest_seconds = $8,
+//       notes = $9
+//     FROM workout_templates wt
+//     INNER JOIN exercises e
+//       ON e.id = $1 AND e.is_active = true
+//     WHERE
+//       wte.id = $10
+//       AND wte.workout_template_id = wt.id
+//       AND wt.id = $11
+//       AND wt.organization_id = $12
+//       AND wt.is_active = true
+//     RETURNING wte.*
+//     `,
+//     [
+//       item.exerciseId,
+//       item.displayOrder,
+//       item.targetSets,
+//       item.targetReps,
+//       item.targetWeight,
+//       item.targetDurationSeconds,
+//       item.targetDistance,
+//       item.restSeconds,
+//       item.notes,
+//       templateExerciseId,
+//       templateId,
+//       organizationId
+//     ]
+//   );
+
+//   if (!result.rows.length) {
+//     throw new Error("Workout template exercise not found.");
+//   }
+
+//   await pool.query(
+//     `UPDATE workout_templates SET updated_at = NOW() WHERE id = $1`,
+//     [templateId]
+//   );
+
+//   return result.rows[0];
+// };
+
+
 export const updateWorkoutTemplateExerciseService = async (
   userId,
   organizationId,
@@ -2666,14 +2735,152 @@ export const updateWorkoutTemplateExerciseService = async (
     "EDIT_WORKOUT"
   );
 
-  const item = validateTemplateExercise(data);
+  // First get the existing template exercise
+  const existingResult = await pool.query(
+    `
+    SELECT
+      wte.id,
+      wte.exercise_id,
+      wte.display_order,
+      wte.target_sets,
+      wte.target_reps,
+      wte.target_weight,
+      wte.target_duration_seconds,
+      wte.target_distance,
+      wte.rest_seconds,
+      wte.notes
+    FROM workout_template_exercises wte
+    INNER JOIN workout_templates wt
+      ON wt.id = wte.workout_template_id
+    WHERE
+      wte.id = $1
+      AND wte.workout_template_id = $2
+      AND wt.organization_id = $3
+      AND wt.is_active = true
+    LIMIT 1
+    `,
+    [
+      templateExerciseId,
+      templateId,
+      organizationId
+    ]
+  );
+
+  if (!existingResult.rows.length) {
+    throw new Error("Workout template exercise not found.");
+  }
+
+  const existing = existingResult.rows[0];
+
+  // Keep existing exercise if exerciseId is not supplied
+  const exerciseId =
+    data.exerciseId === undefined || data.exerciseId === null
+      ? existing.exercise_id
+      : Number(data.exerciseId);
+
+  if (!Number.isInteger(exerciseId) || exerciseId <= 0) {
+    throw new Error("A valid exerciseId is required.");
+  }
+
+  // Validate only fields that are actually supplied
+  const numericFields = [
+    ["displayOrder", data.displayOrder],
+    ["targetSets", data.targetSets],
+    ["targetReps", data.targetReps],
+    ["targetWeight", data.targetWeight],
+    ["targetDurationSeconds", data.targetDurationSeconds],
+    ["targetDistance", data.targetDistance],
+    ["restSeconds", data.restSeconds]
+  ];
+
+  for (const [field, value] of numericFields) {
+    if (
+      value !== undefined &&
+      value !== null &&
+      (!Number.isFinite(Number(value)) || Number(value) < 0)
+    ) {
+      throw new Error(`${field} must be a non-negative number.`);
+    }
+  }
+
+  const displayOrder =
+    data.displayOrder !== undefined
+      ? data.displayOrder === null
+        ? existing.display_order
+        : Number(data.displayOrder)
+      : existing.display_order;
+
+  const targetSets =
+    data.targetSets !== undefined
+      ? data.targetSets === null
+        ? existing.target_sets
+        : Number(data.targetSets)
+      : existing.target_sets;
+
+  const targetReps =
+    data.targetReps !== undefined
+      ? data.targetReps === null
+        ? existing.target_reps
+        : Number(data.targetReps)
+      : existing.target_reps;
+
+  const targetWeight =
+    data.targetWeight !== undefined
+      ? data.targetWeight === null
+        ? existing.target_weight
+        : Number(data.targetWeight)
+      : existing.target_weight;
+
+  const targetDurationSeconds =
+    data.targetDurationSeconds !== undefined
+      ? data.targetDurationSeconds === null
+        ? existing.target_duration_seconds
+        : Number(data.targetDurationSeconds)
+      : existing.target_duration_seconds;
+
+  const targetDistance =
+    data.targetDistance !== undefined
+      ? data.targetDistance === null
+        ? existing.target_distance
+        : Number(data.targetDistance)
+      : existing.target_distance;
+
+  const restSeconds =
+    data.restSeconds !== undefined
+      ? data.restSeconds === null
+        ? existing.rest_seconds
+        : Number(data.restSeconds)
+      : existing.rest_seconds;
+
+  const notes =
+    data.notes !== undefined
+      ? data.notes === null || data.notes.trim() === ""
+        ? null
+        : data.notes.trim()
+      : existing.notes;
+
+  // Verify exercise exists and is active
+  const exerciseResult = await pool.query(
+    `
+    SELECT id
+    FROM exercises
+    WHERE id = $1
+      AND is_active = true
+    LIMIT 1
+    `,
+    [exerciseId]
+  );
+
+  if (!exerciseResult.rows.length) {
+    throw new Error("Exercise not found or inactive.");
+  }
 
   const result = await pool.query(
     `
-    UPDATE workout_template_exercises wte
+    UPDATE workout_template_exercises
     SET
       exercise_id = $1,
-      display_order = COALESCE($2, display_order),
+      display_order = $2,
       target_sets = $3,
       target_reps = $4,
       target_weight = $5,
@@ -2681,45 +2888,37 @@ export const updateWorkoutTemplateExerciseService = async (
       target_distance = $7,
       rest_seconds = $8,
       notes = $9
-    FROM workout_templates wt
-    INNER JOIN exercises e
-      ON e.id = $1 AND e.is_active = true
     WHERE
-      wte.id = $10
-      AND wte.workout_template_id = wt.id
-      AND wt.id = $11
-      AND wt.organization_id = $12
-      AND wt.is_active = true
-    RETURNING wte.*
+      id = $10
+      AND workout_template_id = $11
+    RETURNING *
     `,
     [
-      item.exerciseId,
-      item.displayOrder,
-      item.targetSets,
-      item.targetReps,
-      item.targetWeight,
-      item.targetDurationSeconds,
-      item.targetDistance,
-      item.restSeconds,
-      item.notes,
+      exerciseId,
+      displayOrder,
+      targetSets,
+      targetReps,
+      targetWeight,
+      targetDurationSeconds,
+      targetDistance,
+      restSeconds,
+      notes,
       templateExerciseId,
-      templateId,
-      organizationId
+      templateId
     ]
   );
 
-  if (!result.rows.length) {
-    throw new Error("Workout template exercise not found.");
-  }
-
   await pool.query(
-    `UPDATE workout_templates SET updated_at = NOW() WHERE id = $1`,
+    `
+    UPDATE workout_templates
+    SET updated_at = NOW()
+    WHERE id = $1
+    `,
     [templateId]
   );
 
   return result.rows[0];
 };
-
 
 export const deleteWorkoutTemplateExerciseService = async (
   userId,

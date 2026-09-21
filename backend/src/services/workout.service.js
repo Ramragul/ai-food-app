@@ -1031,6 +1031,28 @@ export const getEquipmentService = async () => {
 
 
 /* ======================================================
+   TRAINING GOALS
+====================================================== */
+
+export const getWorkoutTrainingGoalsService = async () => {
+
+  const result = await pool.query(`
+    SELECT
+      id,
+      goal_key,
+      name,
+      description,
+      display_order
+    FROM workout_training_goals
+    WHERE is_active = true
+    ORDER BY display_order ASC, name ASC
+  `);
+
+  return result.rows;
+};
+
+
+/* ======================================================
    EXERCISES
 ====================================================== */
 
@@ -2012,7 +2034,9 @@ const validateTemplateData = (data = {}) => {
     name,
     goalType,
     environment,
-    estimatedDurationMinutes
+    estimatedDurationMinutes,
+    trainingGoalId,
+    primaryMuscleGroupId
   } = data;
 
   if (!name?.trim()) {
@@ -2035,6 +2059,14 @@ const validateTemplateData = (data = {}) => {
     name: name.trim(),
     goalType: goalType || null,
     environment: environment ? String(environment).toUpperCase() : null,
+    trainingGoalId:
+      trainingGoalId === undefined || trainingGoalId === null || trainingGoalId === ""
+        ? null
+        : Number(trainingGoalId),
+    primaryMuscleGroupId:
+      primaryMuscleGroupId === undefined || primaryMuscleGroupId === null || primaryMuscleGroupId === ""
+        ? null
+        : Number(primaryMuscleGroupId),
     estimatedDurationMinutes:
       estimatedDurationMinutes === undefined || estimatedDurationMinutes === null
         ? null
@@ -2158,6 +2190,10 @@ export const getWorkoutTemplatesService = async (
       wt.name,
       wt.description,
       wt.goal_type,
+      wt.training_goal_id,
+      tg.name AS training_goal_name,
+      wt.primary_muscle_group_id,
+      pmg.name AS primary_muscle_group,
       wt.environment,
       wt.estimated_duration_minutes,
       wt.is_active,
@@ -2167,6 +2203,10 @@ export const getWorkoutTemplatesService = async (
     FROM workout_templates wt
     LEFT JOIN workout_template_exercises wte
       ON wte.workout_template_id = wt.id
+    LEFT JOIN workout_training_goals tg
+      ON tg.id = wt.training_goal_id
+    LEFT JOIN workout_muscle_groups pmg
+      ON pmg.id = wt.primary_muscle_group_id
     WHERE
       wt.organization_id = $1
       AND wt.is_active = true
@@ -2205,12 +2245,20 @@ export const getWorkoutTemplateByIdService = async (
         wt.name,
         wt.description,
         wt.goal_type,
+        wt.training_goal_id,
+        tg.name AS training_goal_name,
+        wt.primary_muscle_group_id,
+        pmg.name AS primary_muscle_group,
         wt.environment,
         wt.estimated_duration_minutes,
         wt.is_active,
         wt.created_at,
         wt.updated_at
       FROM workout_templates wt
+      LEFT JOIN workout_training_goals tg
+        ON tg.id = wt.training_goal_id
+      LEFT JOIN workout_muscle_groups pmg
+        ON pmg.id = wt.primary_muscle_group_id
       WHERE
         wt.id = $1
         AND wt.organization_id = $2
@@ -2269,11 +2317,13 @@ export const createWorkoutTemplateService = async (
         name,
         description,
         goal_type,
+        training_goal_id,
+        primary_muscle_group_id,
         environment,
         estimated_duration_minutes,
         is_active
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,true)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,true)
       RETURNING *
       `,
       [
@@ -2282,6 +2332,8 @@ export const createWorkoutTemplateService = async (
         template.name,
         data.description?.trim() || null,
         template.goalType,
+        template.trainingGoalId,
+        template.primaryMuscleGroupId,
         template.environment,
         template.estimatedDurationMinutes
       ]
@@ -2387,7 +2439,9 @@ export const updateWorkoutTemplateService = async (
     name: data.name,
     goalType: data.goalType,
     environment: data.environment,
-    estimatedDurationMinutes: data.estimatedDurationMinutes
+    estimatedDurationMinutes: data.estimatedDurationMinutes,
+    trainingGoalId: data.trainingGoalId,
+    primaryMuscleGroupId: data.primaryMuscleGroupId
   });
 
   const result = await pool.query(
@@ -2397,16 +2451,20 @@ export const updateWorkoutTemplateService = async (
       name = $1,
       description = $2,
       goal_type = $3,
-      environment = $4,
-      estimated_duration_minutes = $5,
+      training_goal_id = $4,
+      primary_muscle_group_id = $5,
+      environment = $6,
+      estimated_duration_minutes = $7,
       updated_at = NOW()
-    WHERE id = $6 AND organization_id = $7
+    WHERE id = $8 AND organization_id = $9
     RETURNING *
     `,
     [
       template.name,
       data.description?.trim() || null,
       template.goalType,
+      template.trainingGoalId,
+      template.primaryMuscleGroupId,
       template.environment,
       template.estimatedDurationMinutes,
       templateId,

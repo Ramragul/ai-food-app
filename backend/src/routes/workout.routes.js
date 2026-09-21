@@ -75,6 +75,7 @@ import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 import {
   getMuscleGroups,
+  getWorkoutTrainingGoals,
   getEquipment,
   getExercises,
   getExerciseById,
@@ -100,6 +101,7 @@ const router = express.Router();
 ====================================================== */
 
 router.get("/muscle-groups", authMiddleware, getMuscleGroups);
+router.get("/training-goals", authMiddleware, getWorkoutTrainingGoals);
 router.get("/equipment", authMiddleware, getEquipment);
 router.get("/exercises", authMiddleware, getExercises);
 router.get("/exercises/:id", authMiddleware, getExerciseById);
@@ -148,4 +150,3 @@ router.put(
 
 
 export default router;
-

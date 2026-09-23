@@ -2652,73 +2652,7 @@ export const addWorkoutTemplateExerciseService = async (
 };
 
 
-// export const updateWorkoutTemplateExerciseService = async (
-//   userId,
-//   organizationId,
-//   templateId,
-//   templateExerciseId,
-//   data
-// ) => {
 
-//   await getWorkoutMembership(
-//     userId,
-//     Number(organizationId),
-//     "EDIT_WORKOUT"
-//   );
-
-//   const item = validateTemplateExercise(data);
-
-//   const result = await pool.query(
-//     `
-//     UPDATE workout_template_exercises wte
-//     SET
-//       exercise_id = $1,
-//       display_order = COALESCE($2, display_order),
-//       target_sets = $3,
-//       target_reps = $4,
-//       target_weight = $5,
-//       target_duration_seconds = $6,
-//       target_distance = $7,
-//       rest_seconds = $8,
-//       notes = $9
-//     FROM workout_templates wt
-//     INNER JOIN exercises e
-//       ON e.id = $1 AND e.is_active = true
-//     WHERE
-//       wte.id = $10
-//       AND wte.workout_template_id = wt.id
-//       AND wt.id = $11
-//       AND wt.organization_id = $12
-//       AND wt.is_active = true
-//     RETURNING wte.*
-//     `,
-//     [
-//       item.exerciseId,
-//       item.displayOrder,
-//       item.targetSets,
-//       item.targetReps,
-//       item.targetWeight,
-//       item.targetDurationSeconds,
-//       item.targetDistance,
-//       item.restSeconds,
-//       item.notes,
-//       templateExerciseId,
-//       templateId,
-//       organizationId
-//     ]
-//   );
-
-//   if (!result.rows.length) {
-//     throw new Error("Workout template exercise not found.");
-//   }
-
-//   await pool.query(
-//     `UPDATE workout_templates SET updated_at = NOW() WHERE id = $1`,
-//     [templateId]
-//   );
-
-//   return result.rows[0];
-// };
 
 
 export const updateWorkoutTemplateExerciseService = async (
@@ -3045,4 +2979,470 @@ export const reorderWorkoutTemplateExercisesService = async (
   } finally {
     client.release();
   }
+};
+
+
+/* ======================================================
+   WORKOUT ASSIGNMENTS
+====================================================== */
+
+/**
+ * Create a workout assignment for one of the trainer's own clients.
+ *
+ * Important:
+ * A trainer can only assign workouts to clients who are
+ * currently assigned to that trainer through
+ * organization_client_assignments.
+ */
+export const createWorkoutAssignmentService = async (
+  userId,
+  organizationId,
+  data
+) => {
+
+  const normalizedOrganizationId =
+    Number(organizationId);
+
+  if (
+    !Number.isInteger(normalizedOrganizationId) ||
+    normalizedOrganizationId <= 0
+  ) {
+    throw new Error("Valid organizationId is required.");
+  }
+
+
+  /* ---------------------------------------------
+     PERMISSION + ACTIVE MEMBERSHIP
+  ---------------------------------------------- */
+
+  const membership =
+    await getWorkoutMembership(
+      userId,
+      normalizedOrganizationId,
+      "ASSIGN_WORKOUT"
+    );
+
+
+  const {
+    templateId,
+    clientMemberId,
+    startDate,
+    endDate,
+    scheduledDays = []
+  } = data;
+
+
+  const normalizedTemplateId =
+    Number(templateId);
+
+  const normalizedClientMemberId =
+    Number(clientMemberId);
+
+
+  if (
+    !Number.isInteger(normalizedTemplateId) ||
+    normalizedTemplateId <= 0
+  ) {
+    throw new Error("A valid templateId is required.");
+  }
+
+
+  if (
+    !Number.isInteger(normalizedClientMemberId) ||
+    normalizedClientMemberId <= 0
+  ) {
+    throw new Error("A valid clientMemberId is required.");
+  }
+
+
+  if (!startDate) {
+    throw new Error("startDate is required.");
+  }
+
+
+  /* ---------------------------------------------
+     VALIDATE SCHEDULED DAYS
+  ---------------------------------------------- */
+
+  const allowedDays = [
+    "MON",
+    "TUE",
+    "WED",
+    "THU",
+    "FRI",
+    "SAT",
+    "SUN"
+  ];
+
+
+  if (!Array.isArray(scheduledDays)) {
+    throw new Error("scheduledDays must be an array.");
+  }
+
+
+  const normalizedScheduledDays =
+    scheduledDays
+      .map((day) =>
+        String(day).trim().toUpperCase()
+      )
+      .filter(Boolean);
+
+
+  const invalidDays =
+    normalizedScheduledDays.filter(
+      (day) => !allowedDays.includes(day)
+    );
+
+
+  if (invalidDays.length) {
+    throw new Error(
+      `Invalid scheduled day(s): ${invalidDays.join(", ")}.`
+    );
+  }
+
+
+  if (
+    new Set(normalizedScheduledDays).size !==
+    normalizedScheduledDays.length
+  ) {
+    throw new Error(
+      "Duplicate scheduled days are not allowed."
+    );
+  }
+
+
+  /* ---------------------------------------------
+     DATE VALIDATION
+  ---------------------------------------------- */
+
+  if (endDate && endDate < startDate) {
+    throw new Error(
+      "endDate cannot be before startDate."
+    );
+  }
+
+
+  const client =
+    await pool.connect();
+
+
+  try {
+
+    await client.query("BEGIN");
+
+
+    /* ---------------------------------------------
+       VERIFY TEMPLATE
+    ---------------------------------------------- */
+
+    const templateResult =
+      await client.query(
+        `
+        SELECT
+          id,
+          organization_id,
+          name,
+          is_active
+        FROM workout_templates
+        WHERE
+          id = $1
+          AND organization_id = $2
+          AND is_active = true
+        LIMIT 1
+        `,
+        [
+          normalizedTemplateId,
+          normalizedOrganizationId
+        ]
+      );
+
+
+    if (!templateResult.rows.length) {
+      throw new Error(
+        "Workout template not found."
+      );
+    }
+
+
+    const template =
+      templateResult.rows[0];
+
+
+    /* ---------------------------------------------
+       VERIFY CLIENT IS ACTIVE + CLIENT ROLE
+    ---------------------------------------------- */
+
+    const clientResult =
+      await client.query(
+        `
+        SELECT
+          om.id,
+          om.user_id,
+          om.organization_id,
+          r.name AS role_name,
+          u.name AS client_name
+        FROM organization_members om
+
+        INNER JOIN organization_roles r
+          ON r.id = om.role_id
+
+        INNER JOIN users u
+          ON u.id = om.user_id
+
+        WHERE
+          om.id = $1
+          AND om.organization_id = $2
+          AND om.status = 'ACTIVE'
+        LIMIT 1
+        `,
+        [
+          normalizedClientMemberId,
+          normalizedOrganizationId
+        ]
+      );
+
+
+    if (!clientResult.rows.length) {
+      throw new Error(
+        "Client not found."
+      );
+    }
+
+
+    const clientMember =
+      clientResult.rows[0];
+
+
+    if (
+      clientMember.role_name !== "CLIENT"
+    ) {
+      throw new Error(
+        "Selected member is not a client."
+      );
+    }
+
+
+    /* ---------------------------------------------
+       CRITICAL:
+       CLIENT MUST BELONG TO THIS TRAINER
+    ---------------------------------------------- */
+
+    const trainerClientResult =
+      await client.query(
+        `
+        SELECT
+          id
+        FROM organization_client_assignments
+        WHERE
+          organization_id = $1
+          AND trainer_member_id = $2
+          AND client_member_id = $3
+          AND is_active = true
+        LIMIT 1
+        `,
+        [
+          normalizedOrganizationId,
+          membership.member_id,
+          normalizedClientMemberId
+        ]
+      );
+
+
+    if (!trainerClientResult.rows.length) {
+      throw new Error(
+        "You can only assign workouts to your own active clients."
+      );
+    }
+
+
+    /* ---------------------------------------------
+       PREVENT DUPLICATE ACTIVE ASSIGNMENT
+       FOR SAME TEMPLATE + CLIENT
+    ---------------------------------------------- */
+
+    const existingAssignment =
+      await client.query(
+        `
+        SELECT
+          id
+        FROM workout_assignments
+        WHERE
+          organization_id = $1
+          AND workout_template_id = $2
+          AND trainer_member_id = $3
+          AND client_member_id = $4
+          AND status = 'ACTIVE'
+        LIMIT 1
+        `,
+        [
+          normalizedOrganizationId,
+          normalizedTemplateId,
+          membership.member_id,
+          normalizedClientMemberId
+        ]
+      );
+
+
+    if (existingAssignment.rows.length) {
+      throw new Error(
+        "This workout is already actively assigned to this client."
+      );
+    }
+
+
+    /* ---------------------------------------------
+       CREATE ASSIGNMENT
+    ---------------------------------------------- */
+
+    const assignmentResult =
+      await client.query(
+        `
+        INSERT INTO workout_assignments (
+          organization_id,
+          workout_template_id,
+          trainer_member_id,
+          client_member_id,
+          start_date,
+          end_date,
+          scheduled_days,
+          status
+        )
+        VALUES (
+          $1,
+          $2,
+          $3,
+          $4,
+          $5,
+          $6,
+          $7::text[],
+          'ACTIVE'
+        )
+        RETURNING *
+        `,
+        [
+          normalizedOrganizationId,
+          normalizedTemplateId,
+          membership.member_id,
+          normalizedClientMemberId,
+          startDate,
+          endDate || null,
+          normalizedScheduledDays
+        ]
+      );
+
+
+    await client.query("COMMIT");
+
+
+    return {
+      ...assignmentResult.rows[0],
+      template_name: template.name,
+      client_name: clientMember.client_name
+    };
+
+
+  } catch (err) {
+
+    await client.query("ROLLBACK");
+
+    throw err;
+
+  } finally {
+
+    client.release();
+
+  }
+
+};
+
+
+/* ======================================================
+   GET MY WORKOUT ASSIGNMENTS
+====================================================== */
+
+export const getMyWorkoutAssignmentsService = async (
+  userId,
+  organizationId
+) => {
+
+  const normalizedOrganizationId =
+    Number(organizationId);
+
+
+  const membership =
+    await getWorkoutMembership(
+      userId,
+      normalizedOrganizationId,
+      "VIEW_WORKOUT"
+    );
+
+
+  const result =
+    await pool.query(
+      `
+      SELECT
+
+        wa.id,
+
+        wa.organization_id,
+
+        wa.workout_template_id,
+
+        wa.trainer_member_id,
+
+        wa.client_member_id,
+
+        wa.start_date,
+
+        wa.end_date,
+
+        wa.scheduled_days,
+
+        wa.status,
+
+        wa.created_at,
+
+        wt.name AS workout_name,
+
+        wt.description AS workout_description,
+
+        wt.training_goal_id,
+
+        tg.name AS training_goal_name,
+
+        u.name AS client_name,
+
+        u.nickname AS client_nickname
+
+      FROM workout_assignments wa
+
+      INNER JOIN workout_templates wt
+        ON wt.id = wa.workout_template_id
+
+      LEFT JOIN workout_training_goals tg
+        ON tg.id = wt.training_goal_id
+
+      INNER JOIN organization_members clientMember
+        ON clientMember.id = wa.client_member_id
+
+      INNER JOIN users u
+        ON u.id = clientMember.user_id
+
+      WHERE
+        wa.organization_id = $1
+        AND wa.trainer_member_id = $2
+
+      ORDER BY
+        wa.status ASC,
+        wa.start_date DESC,
+        u.name ASC
+      `,
+      [
+        normalizedOrganizationId,
+        membership.member_id
+      ]
+    );
+
+
+  return result.rows;
 };

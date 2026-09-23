@@ -166,6 +166,9 @@ import CreateWorkspaceWizard from "../pages/Workspace/CreateWorkspaceWizard";
 import SettingsPage from "../pages/Workspace/SettingsPage";
 import ScanMeal from "../pages/ScanMeal";
 
+import StaffWorkoutsPage from "../pages/Staff/StaffWorkoutsPage";
+import WorkoutTemplateBuilderPage from "../pages/Staff/WorkoutTemplateBuilderPage";
+
 
 
 
@@ -390,6 +393,8 @@ const AppRoutes: React.FC = () => {
         element={<MyClientPage />}
     />
 
+
+
     {/* <Route
         path="goals"
         element={<GoalsPage />}
@@ -404,6 +409,21 @@ const AppRoutes: React.FC = () => {
         path="reports"
         element={<ReportsPage />}
     /> */}
+
+    <Route
+    path="workouts"
+    element={<StaffWorkoutsPage />}
+/>
+
+<Route
+    path="workouts/templates/new"
+    element={<WorkoutTemplateBuilderPage />}
+/>
+
+<Route
+    path="workouts/templates/:id"
+    element={<WorkoutTemplateBuilderPage />}
+/>
 
     <Route
         path="profile"

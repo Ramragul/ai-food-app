@@ -4,7 +4,8 @@ import {
   FiTarget,
   FiFileText,
   FiBarChart2,
-  FiUser
+  FiUser,
+  FiActivity
 } from "react-icons/fi";
 
 import type {
@@ -54,6 +55,21 @@ export const staffNavigation: StaffNavigationItem[] = [
 
     subtitle:
       "Assigned clients"
+
+  },
+
+    {
+
+    id: "workouts",
+
+    label: "Workouts",
+
+    path: "/staff/workouts",
+
+    icon: FiActivity,
+
+    subtitle:
+      "Training plans"
 
   },
 

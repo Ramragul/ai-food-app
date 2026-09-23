@@ -3297,26 +3297,26 @@ export const createWorkoutAssignmentService = async (
     const assignmentResult =
       await client.query(
         `
-        INSERT INTO workout_assignments (
-          organization_id,
-          workout_template_id,
-          trainer_member_id,
-          client_member_id,
-          start_date,
-          end_date,
-          scheduled_days,
-          status
-        )
-        VALUES (
-          $1,
-          $2,
-          $3,
-          $4,
-          $5,
-          $6,
-          $7::text[],
-          'ACTIVE'
-        )
+      INSERT INTO workout_assignments (
+        organization_id,
+        workout_template_id,
+        trainer_member_id,
+        client_member_id,
+        start_date,
+        end_date,
+        scheduled_days,
+        status
+      )
+      VALUES (
+        $1,
+        $2,
+        $3,
+        $4,
+        $5,
+        $6,
+        $7::jsonb,
+        'ACTIVE'
+      )
         RETURNING *
         `,
         [
@@ -3326,7 +3326,7 @@ export const createWorkoutAssignmentService = async (
           normalizedClientMemberId,
           startDate,
           endDate || null,
-          normalizedScheduledDays
+          JSON.stringify(normalizedScheduledDays)
         ]
       );
 

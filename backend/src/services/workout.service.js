@@ -3446,3 +3446,184 @@ export const getMyWorkoutAssignmentsService = async (
 
   return result.rows;
 };
+
+
+/* ======================================================
+   WORKOUT ASSIGNMENT DETAIL
+====================================================== */
+
+export const getWorkoutAssignmentByIdService = async (
+  userId,
+  organizationId,
+  assignmentId
+) => {
+
+  const membership = await getWorkoutMembership(
+    userId,
+    Number(organizationId),
+    "VIEW_WORKOUT"
+  );
+
+  const normalizedAssignmentId = Number(assignmentId);
+
+  if (
+    !Number.isInteger(normalizedAssignmentId) ||
+    normalizedAssignmentId <= 0
+  ) {
+    throw new Error("Invalid workout assignment id.");
+  }
+
+  const client = await pool.connect();
+
+  try {
+
+    /*
+      --------------------------------------------------
+      ASSIGNMENT + CLIENT + TRAINER + TEMPLATE
+      --------------------------------------------------
+    */
+
+    const assignmentResult = await client.query(
+      `
+      SELECT
+        wa.id,
+        wa.organization_id,
+        wa.workout_template_id,
+        wa.trainer_member_id,
+        wa.client_member_id,
+        wa.start_date,
+        wa.end_date,
+        wa.scheduled_days,
+        wa.status,
+        wa.created_at,
+
+        /* TEMPLATE */
+        wt.name AS template_name,
+        wt.description AS template_description,
+        wt.goal_type,
+        wt.training_goal_id,
+        tg.name AS training_goal_name,
+        wt.primary_muscle_group_id,
+        pmg.name AS primary_muscle_group,
+        wt.environment,
+        wt.estimated_duration_minutes,
+
+        /* CLIENT */
+        client_user.id AS client_user_id,
+        client_user.name AS client_name,
+        client_user.nickname AS client_nickname,
+
+        /* TRAINER */
+        trainer_user.id AS trainer_user_id,
+        trainer_user.name AS trainer_name,
+        trainer_user.nickname AS trainer_nickname
+
+      FROM workout_assignments wa
+
+      INNER JOIN workout_templates wt
+        ON wt.id = wa.workout_template_id
+
+      LEFT JOIN workout_training_goals tg
+        ON tg.id = wt.training_goal_id
+
+      LEFT JOIN workout_muscle_groups pmg
+        ON pmg.id = wt.primary_muscle_group_id
+
+      INNER JOIN organization_members client_member
+        ON client_member.id = wa.client_member_id
+
+      INNER JOIN users client_user
+        ON client_user.id = client_member.user_id
+
+      INNER JOIN organization_members trainer_member
+        ON trainer_member.id = wa.trainer_member_id
+
+      INNER JOIN users trainer_user
+        ON trainer_user.id = trainer_member.user_id
+
+      WHERE
+        wa.id = $1
+        AND wa.organization_id = $2
+        AND wa.trainer_member_id = $3
+
+      LIMIT 1
+      `,
+      [
+        normalizedAssignmentId,
+        organizationId,
+        membership.member_id
+      ]
+    );
+
+    if (!assignmentResult.rows.length) {
+      throw new Error("Workout assignment not found.");
+    }
+
+    const assignment = assignmentResult.rows[0];
+
+    /*
+      --------------------------------------------------
+      ASSIGNMENT EXERCISES
+      --------------------------------------------------
+    */
+
+    const exerciseResult = await client.query(
+      `
+      SELECT
+        wae.id,
+        wae.workout_assignment_id,
+        wae.template_exercise_id,
+        wae.exercise_id,
+        wae.display_order,
+
+        wae.target_sets,
+        wae.target_reps,
+        wae.target_weight,
+        wae.target_duration_seconds,
+        wae.target_distance,
+        wae.rest_seconds,
+        wae.notes,
+
+        /* EXERCISE */
+        e.name AS exercise_name,
+        e.description AS exercise_description,
+        e.tracking_type,
+        e.environment AS exercise_environment,
+        e.difficulty,
+        e.instructions,
+        e.image_url,
+        e.video_url,
+        e.primary_muscle_group_id,
+
+        mg.name AS primary_muscle_group
+
+      FROM workout_assignment_exercises wae
+
+      INNER JOIN exercises e
+        ON e.id = wae.exercise_id
+
+      LEFT JOIN workout_muscle_groups mg
+        ON mg.id = e.primary_muscle_group_id
+
+      WHERE
+        wae.workout_assignment_id = $1
+
+      ORDER BY
+        wae.display_order ASC,
+        wae.id ASC
+      `,
+      [normalizedAssignmentId]
+    );
+
+    return {
+      ...assignment,
+      exercises: exerciseResult.rows
+    };
+
+  } finally {
+
+    client.release();
+
+  }
+
+};

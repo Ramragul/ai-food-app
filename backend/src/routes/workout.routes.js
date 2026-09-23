@@ -89,7 +89,9 @@ import {
   addWorkoutTemplateExercise,
   updateWorkoutTemplateExercise,
   deleteWorkoutTemplateExercise,
-  reorderWorkoutTemplateExercises
+  reorderWorkoutTemplateExercises,
+  getMyWorkoutAssignments,
+  createWorkoutAssignment
 } from "../controllers/workout.controller.js";
 
 
@@ -146,6 +148,22 @@ router.put(
   "/templates/:id/reorder",
   authMiddleware,
   reorderWorkoutTemplateExercises
+);
+
+/* ======================================================
+   WORKOUT ASSIGNMENTS
+====================================================== */
+
+router.get(
+  "/assignments",
+  authMiddleware,
+  getMyWorkoutAssignments
+);
+
+router.post(
+  "/assignments",
+  authMiddleware,
+  createWorkoutAssignment
 );
 
 

@@ -256,7 +256,9 @@ import {
   addWorkoutTemplateExerciseService,
   updateWorkoutTemplateExerciseService,
   deleteWorkoutTemplateExerciseService,
-  reorderWorkoutTemplateExercisesService
+  reorderWorkoutTemplateExercisesService,
+  createWorkoutAssignmentService,
+  getMyWorkoutAssignmentsService
 } from "../services/workout.service.js";
 
 
@@ -614,6 +616,134 @@ export const reorderWorkoutTemplateExercises = async (req, res) => {
     console.error(err);
     return res.status(400).json({ success: false, error: err.message });
   }
+};
+
+
+/* ======================================================
+   WORKOUT ASSIGNMENTS
+====================================================== */
+
+export const createWorkoutAssignment = async (
+  req,
+  res
+) => {
+
+  try {
+
+    const organizationId =
+      Number(req.body.organizationId);
+
+
+    if (
+      !Number.isInteger(organizationId) ||
+      organizationId <= 0
+    ) {
+
+      return res.status(400).json({
+        success: false,
+        error: "organizationId is required."
+      });
+
+    }
+
+
+    const data =
+      await createWorkoutAssignmentService(
+        req.user.id,
+        organizationId,
+        req.body
+      );
+
+
+    return res.status(201).json({
+
+      success: true,
+
+      message:
+        "Workout assigned successfully.",
+
+      data
+
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    return res.status(400).json({
+
+      success: false,
+
+      error: err.message
+
+    });
+
+  }
+
+};
+
+
+/* ======================================================
+   GET MY WORKOUT ASSIGNMENTS
+====================================================== */
+
+export const getMyWorkoutAssignments = async (
+  req,
+  res
+) => {
+
+  try {
+
+    const organizationId =
+      Number(req.query.organizationId);
+
+
+    if (
+      !Number.isInteger(organizationId) ||
+      organizationId <= 0
+    ) {
+
+      return res.status(400).json({
+
+        success: false,
+
+        error:
+          "organizationId is required."
+
+      });
+
+    }
+
+
+    const data =
+      await getMyWorkoutAssignmentsService(
+        req.user.id,
+        organizationId
+      );
+
+
+    return res.json({
+
+      success: true,
+
+      data
+
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    return res.status(400).json({
+
+      success: false,
+
+      error: err.message
+
+    });
+
+  }
+
 };
 
 

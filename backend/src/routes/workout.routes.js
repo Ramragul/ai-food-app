@@ -91,7 +91,8 @@ import {
   deleteWorkoutTemplateExercise,
   reorderWorkoutTemplateExercises,
   getMyWorkoutAssignments,
-  createWorkoutAssignment
+  createWorkoutAssignment,
+  getWorkoutAssignmentById
 } from "../controllers/workout.controller.js";
 
 
@@ -164,6 +165,12 @@ router.post(
   "/assignments",
   authMiddleware,
   createWorkoutAssignment
+);
+
+router.get(
+  "/assignments/:id",
+  authMiddleware,
+  getWorkoutAssignmentById
 );
 
 

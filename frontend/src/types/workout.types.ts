@@ -339,3 +339,63 @@ export interface PaginatedResponse<T> {
   limit?: number;
   totalPages?: number;
 }
+
+
+
+export type WorkoutAssignmentStatus =
+  | "ACTIVE"
+  | "PAUSED"
+  | "COMPLETED"
+  | "CANCELLED";
+
+export interface WorkoutAssignment {
+  id: number;
+
+  organization_id: number;
+
+  workout_template_id: number;
+
+  trainer_member_id: number;
+
+  client_member_id: number;
+
+  start_date: string;
+
+  end_date: string | null;
+
+  scheduled_days: string[];
+
+  status: WorkoutAssignmentStatus;
+
+  created_at: string;
+
+  workout_name?: string;
+
+  workout_description?: string;
+
+  training_goal_id?: number | null;
+
+  training_goal_name?: string | null;
+
+  client_name?: string;
+
+  client_nickname?: string | null;
+
+  template_name?: string;
+
+  client_member_name?: string;
+}
+
+export interface CreateWorkoutAssignmentPayload {
+  organizationId: number;
+
+  templateId: number;
+
+  clientMemberId: number;
+
+  startDate: string;
+
+  endDate?: string | null;
+
+  scheduledDays: string[];
+}

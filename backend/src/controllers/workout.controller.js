@@ -258,7 +258,10 @@ import {
   deleteWorkoutTemplateExerciseService,
   reorderWorkoutTemplateExercisesService,
   createWorkoutAssignmentService,
-  getMyWorkoutAssignmentsService
+  getMyWorkoutAssignmentsService,
+  getWorkoutAssignmentByIdService
+// getMyWorkoutAssignmentsService,
+// createWorkoutAssignmentService
 } from "../services/workout.service.js";
 
 
@@ -746,4 +749,48 @@ export const getMyWorkoutAssignments = async (
 
 };
 
+
+/* ======================================================
+   WORKOUT ASSIGNMENTS
+====================================================== */
+
+export const getWorkoutAssignmentById = async (req, res) => {
+  try {
+    const organizationId = Number(req.query.organizationId);
+    const assignmentId = Number(req.params.id);
+
+    if (!Number.isInteger(organizationId) || organizationId <= 0) {
+      return res.status(400).json({
+        success: false,
+        error: "organizationId is required."
+      });
+    }
+
+    if (!Number.isInteger(assignmentId) || assignmentId <= 0) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid workout assignment id."
+      });
+    }
+
+    const data = await getWorkoutAssignmentByIdService(
+      req.user.id,
+      organizationId,
+      assignmentId
+    );
+
+    return res.json({
+      success: true,
+      data
+    });
+
+  } catch (err) {
+    console.error(err);
+
+    return res.status(404).json({
+      success: false,
+      error: err.message
+    });
+  }
+};
 

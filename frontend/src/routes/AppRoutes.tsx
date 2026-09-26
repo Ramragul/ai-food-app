@@ -169,6 +169,14 @@ import ScanMeal from "../pages/ScanMeal";
 import StaffWorkoutsPage from "../pages/Staff/StaffWorkoutsPage";
 import WorkoutTemplateBuilderPage from "../pages/Staff/WorkoutTemplateBuilderPage";
 
+import StaffWorkoutAssignmentsPage from "../pages/Staff/StaffWorkoutAssignmentsPage";
+import StaffWorkoutExercisesPage from "../pages/Staff/StaffWorkoutExercisesPage";
+import StaffWorkoutExerciseFormPage from "../pages/Staff/StaffWorkoutExerciseFormPage";
+
+
+
+
+
 
 
 
@@ -425,10 +433,32 @@ const AppRoutes: React.FC = () => {
     element={<WorkoutTemplateBuilderPage />}
 />
 
+   <Route
+     path="workouts/assignments"
+     element={<StaffWorkoutAssignmentsPage />}
+   />
+
+
+   <Route
+  path="/staff/workouts/exercises"
+  element={<StaffWorkoutExercisesPage />}
+/>
+
+<Route
+  path="/staff/workouts/exercises/new"
+  element={<StaffWorkoutExerciseFormPage />}
+/>
+
+<Route
+  path="/staff/workouts/exercises/:exerciseId/edit"
+  element={<StaffWorkoutExerciseFormPage />}
+/>
+
     <Route
         path="profile"
         element={<ProfilePage />}
     />
+
 
 
 

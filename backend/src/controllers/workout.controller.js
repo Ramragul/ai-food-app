@@ -565,6 +565,7 @@ import {
   getExerciseByIdService,
   createExerciseService,
   updateExerciseService,
+  deleteExerciseService,
   getWorkoutTemplatesService,
   getWorkoutTemplateByIdService,
   createWorkoutTemplateService,
@@ -703,6 +704,36 @@ export const updateExercise = async (req, res) => {
     console.error(err);
     return res.status(400).json({ success: false, error: err.message });
   }
+};
+
+
+/* ======================================================
+   DELETE EXERCISE
+====================================================== */
+export const deleteExercise = async (req, res) => {
+  try {
+    const exerciseId = Number(req.params.id);
+    if (!Number.isInteger(exerciseId) || exerciseId <= 0) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid exercise id."
+      });
+    }
+    const data = await deleteExerciseService(exerciseId);
+    return res.json({
+      success: true,
+      message: "Exercise deleted successfully.",
+      data
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(400).json({
+      success: false,
+      error: err.message
+    });
+  }
+  }
+};
 };
 
 

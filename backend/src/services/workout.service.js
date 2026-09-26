@@ -1,4 +1,4 @@
-//  Version 1
+// Version 1
 
 // import pool from "../db/connection.js";
 
@@ -2372,6 +2372,334 @@
 
 
 // /* ======================================================
+//    UPDATE WORKOUT ASSIGNMENT
+// ====================================================== */
+
+// export const updateWorkoutAssignmentService = async (
+//   userId,
+//   organizationId,
+//   assignmentId,
+//   data = {}
+// ) => {
+//   const normalizedOrganizationId = Number(organizationId);
+//   const normalizedAssignmentId = Number(assignmentId);
+
+//   if (!Number.isInteger(normalizedOrganizationId) || normalizedOrganizationId <= 0) {
+//     throw new Error("Valid organizationId is required.");
+//   }
+
+//   if (!Number.isInteger(normalizedAssignmentId) || normalizedAssignmentId <= 0) {
+//     throw new Error("Invalid workout assignment id.");
+//   }
+
+//   const membership = await getWorkoutMembership(
+//     userId,
+//     normalizedOrganizationId,
+//     "ASSIGN_WORKOUT"
+//   );
+
+//   const {
+//     startDate,
+//     endDate = null,
+//     scheduledDays = []
+//   } = data;
+
+//   if (!startDate) {
+//     throw new Error("startDate is required.");
+//   }
+
+//   const allowedDays = [
+//     "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"
+//   ];
+
+//   if (!Array.isArray(scheduledDays)) {
+//     throw new Error("scheduledDays must be an array.");
+//   }
+
+//   const normalizedScheduledDays = scheduledDays
+//     .map((day) => String(day).trim().toUpperCase())
+//     .filter(Boolean);
+
+//   const invalidDays = normalizedScheduledDays.filter(
+//     (day) => !allowedDays.includes(day)
+//   );
+
+//   if (invalidDays.length) {
+//     throw new Error(
+//       `Invalid scheduled day(s): ${invalidDays.join(", ")}.`
+//     );
+//   }
+
+//   if (
+//     new Set(normalizedScheduledDays).size !==
+//     normalizedScheduledDays.length
+//   ) {
+//     throw new Error("Duplicate scheduled days are not allowed.");
+//   }
+
+//   if (endDate && endDate < startDate) {
+//     throw new Error("endDate cannot be before startDate.");
+//   }
+
+//   const client = await pool.connect();
+
+//   try {
+//     await client.query("BEGIN");
+
+//     const assignmentResult = await client.query(
+//       `
+//       SELECT
+//         wa.id,
+//         wa.organization_id,
+//         wa.workout_template_id,
+//         wa.trainer_member_id,
+//         wa.client_member_id,
+//         wa.status
+//       FROM workout_assignments wa
+//       WHERE
+//         wa.id = $1
+//         AND wa.organization_id = $2
+//         AND wa.trainer_member_id = $3
+//         AND wa.status = 'ACTIVE'
+//       LIMIT 1
+//       `,
+//       [
+//         normalizedAssignmentId,
+//         normalizedOrganizationId,
+//         membership.member_id
+//       ]
+//     );
+
+//     if (!assignmentResult.rows.length) {
+//       throw new Error("Active workout assignment not found.");
+//     }
+
+//     const updateResult = await client.query(
+//       `
+//       UPDATE workout_assignments
+//       SET
+//         start_date = $1,
+//         end_date = $2,
+//         scheduled_days = $3::jsonb
+//       WHERE
+//         id = $4
+//         AND organization_id = $5
+//         AND trainer_member_id = $6
+//         AND status = 'ACTIVE'
+//       RETURNING *
+//       `,
+//       [
+//         startDate,
+//         endDate || null,
+//         JSON.stringify(normalizedScheduledDays),
+//         normalizedAssignmentId,
+//         normalizedOrganizationId,
+//         membership.member_id
+//       ]
+//     );
+
+//     await client.query("COMMIT");
+
+//     return updateResult.rows[0];
+//   } catch (err) {
+//     await client.query("ROLLBACK");
+//     throw err;
+//   } finally {
+//     client.release();
+//   }
+// };
+
+
+// /* ======================================================
+//    DELETE ONE WORKOUT ASSIGNMENT
+// ====================================================== */
+
+// export const deleteWorkoutAssignmentService = async (
+//   userId,
+//   organizationId,
+//   assignmentId
+// ) => {
+//   const normalizedOrganizationId = Number(organizationId);
+//   const normalizedAssignmentId = Number(assignmentId);
+
+//   if (!Number.isInteger(normalizedOrganizationId) || normalizedOrganizationId <= 0) {
+//     throw new Error("Valid organizationId is required.");
+//   }
+
+//   if (!Number.isInteger(normalizedAssignmentId) || normalizedAssignmentId <= 0) {
+//     throw new Error("Invalid workout assignment id.");
+//   }
+
+//   const membership = await getWorkoutMembership(
+//     userId,
+//     normalizedOrganizationId,
+//     "ASSIGN_WORKOUT"
+//   );
+
+//   const client = await pool.connect();
+
+//   try {
+//     await client.query("BEGIN");
+
+//     const assignmentResult = await client.query(
+//       `
+//       SELECT
+//         id,
+//         client_member_id,
+//         workout_template_id
+//       FROM workout_assignments
+//       WHERE
+//         id = $1
+//         AND organization_id = $2
+//         AND trainer_member_id = $3
+//         AND status = 'ACTIVE'
+//       LIMIT 1
+//       `,
+//       [
+//         normalizedAssignmentId,
+//         normalizedOrganizationId,
+//         membership.member_id
+//       ]
+//     );
+
+//     if (!assignmentResult.rows.length) {
+//       throw new Error("Active workout assignment not found.");
+//     }
+
+//     await client.query(
+//       `
+//       DELETE FROM workout_assignment_exercises
+//       WHERE workout_assignment_id = $1
+//       `,
+//       [normalizedAssignmentId]
+//     );
+
+//     const deleteResult = await client.query(
+//       `
+//       DELETE FROM workout_assignments
+//       WHERE
+//         id = $1
+//         AND organization_id = $2
+//         AND trainer_member_id = $3
+//         AND status = 'ACTIVE'
+//       RETURNING *
+//       `,
+//       [
+//         normalizedAssignmentId,
+//         normalizedOrganizationId,
+//         membership.member_id
+//       ]
+//     );
+
+//     await client.query("COMMIT");
+
+//     return deleteResult.rows[0];
+//   } catch (err) {
+//     await client.query("ROLLBACK");
+//     throw err;
+//   } finally {
+//     client.release();
+//   }
+// };
+
+
+// /* ======================================================
+//    DELETE ALL ACTIVE WORKOUT ASSIGNMENTS FOR ONE CLIENT
+// ====================================================== */
+
+// export const deleteClientWorkoutAssignmentsService = async (
+//   userId,
+//   organizationId,
+//   clientMemberId
+// ) => {
+//   const normalizedOrganizationId = Number(organizationId);
+//   const normalizedClientMemberId = Number(clientMemberId);
+
+//   if (!Number.isInteger(normalizedOrganizationId) || normalizedOrganizationId <= 0) {
+//     throw new Error("Valid organizationId is required.");
+//   }
+
+//   if (!Number.isInteger(normalizedClientMemberId) || normalizedClientMemberId <= 0) {
+//     throw new Error("Invalid client member id.");
+//   }
+
+//   const membership = await getWorkoutMembership(
+//     userId,
+//     normalizedOrganizationId,
+//     "ASSIGN_WORKOUT"
+//   );
+
+//   const client = await pool.connect();
+
+//   try {
+//     await client.query("BEGIN");
+
+//     const assignmentResult = await client.query(
+//       `
+//       SELECT id
+//       FROM workout_assignments
+//       WHERE
+//         organization_id = $1
+//         AND trainer_member_id = $2
+//         AND client_member_id = $3
+//         AND status = 'ACTIVE'
+//       ORDER BY id ASC
+//       `,
+//       [
+//         normalizedOrganizationId,
+//         membership.member_id,
+//         normalizedClientMemberId
+//       ]
+//     );
+
+//     const assignmentIds = assignmentResult.rows.map((row) => Number(row.id));
+
+//     if (!assignmentIds.length) {
+//       await client.query("COMMIT");
+//       return { removedCount: 0 };
+//     }
+
+//     await client.query(
+//       `
+//       DELETE FROM workout_assignment_exercises
+//       WHERE workout_assignment_id = ANY($1::int[])
+//       `,
+//       [assignmentIds]
+//     );
+
+//     const deleteResult = await client.query(
+//       `
+//       DELETE FROM workout_assignments
+//       WHERE
+//         organization_id = $1
+//         AND trainer_member_id = $2
+//         AND client_member_id = $3
+//         AND status = 'ACTIVE'
+//       RETURNING id
+//       `,
+//       [
+//         normalizedOrganizationId,
+//         membership.member_id,
+//         normalizedClientMemberId
+//       ]
+//     );
+
+//     await client.query("COMMIT");
+
+//     return {
+//       removedCount: deleteResult.rows.length,
+//       assignmentIds: deleteResult.rows.map((row) => Number(row.id))
+//     };
+//   } catch (err) {
+//     await client.query("ROLLBACK");
+//     throw err;
+//   } finally {
+//     client.release();
+//   }
+// };
+
+
+// /* ======================================================
 //    GET MY WORKOUT ASSIGNMENTS
 // ====================================================== */
 
@@ -3361,6 +3689,37 @@ export const createExerciseService = async (
 /* ======================================================
    UPDATE EXERCISE
 ====================================================== */
+
+export const deleteExerciseService = async (
+  exerciseId
+) => {
+
+  const result = await pool.query(
+    `
+    UPDATE exercises
+    SET
+      is_active = false,
+      updated_at = NOW()
+    WHERE
+      id = $1
+      AND is_active = true
+    RETURNING id, name
+    `,
+    [exerciseId]
+  );
+
+
+  if (!result.rows.length) {
+    throw new Error("Exercise not found or already inactive.");
+  }
+
+
+  return {
+    exercise_id: result.rows[0].id,
+    name: result.rows[0].name
+  };
+};
+
 
 export const updateExerciseService = async (
   exerciseId,

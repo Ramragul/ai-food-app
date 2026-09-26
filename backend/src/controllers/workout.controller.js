@@ -732,9 +732,9 @@ export const deleteExercise = async (req, res) => {
       error: err.message
     });
   }
-  }
+
 };
-};
+
 
 
 /* ======================================================

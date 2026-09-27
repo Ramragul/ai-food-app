@@ -919,12 +919,44 @@ export const updateWorkoutTemplateExercise = async (req, res) => {
 };
 
 
+// export const deleteWorkoutTemplateExercise = async (req, res) => {
+//   try {
+//     const organizationId = Number(req.body.organizationId ?? req.query.organizationId);
+
+//     if (!Number.isInteger(organizationId) || organizationId <= 0) {
+//       return res.status(400).json({ success: false, error: "organizationId is required." });
+//     }
+
+//     const data = await deleteWorkoutTemplateExerciseService(
+//       req.user.id,
+//       organizationId,
+//       Number(req.params.id),
+//       Number(req.params.exerciseId)
+//     );
+
+//     return res.json({
+//       success: true,
+//       message: "Exercise removed from workout template.",
+//       data
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(400).json({ success: false, error: err.message });
+//   }
+// };
+
+
 export const deleteWorkoutTemplateExercise = async (req, res) => {
   try {
-    const organizationId = Number(req.body.organizationId ?? req.query.organizationId);
+    const organizationId = Number(
+      req.body?.organizationId ?? req.query.organizationId
+    );
 
     if (!Number.isInteger(organizationId) || organizationId <= 0) {
-      return res.status(400).json({ success: false, error: "organizationId is required." });
+      return res.status(400).json({
+        success: false,
+        error: "organizationId is required."
+      });
     }
 
     const data = await deleteWorkoutTemplateExerciseService(
@@ -939,9 +971,14 @@ export const deleteWorkoutTemplateExercise = async (req, res) => {
       message: "Exercise removed from workout template.",
       data
     });
+
   } catch (err) {
     console.error(err);
-    return res.status(400).json({ success: false, error: err.message });
+
+    return res.status(400).json({
+      success: false,
+      error: err.message
+    });
   }
 };
 

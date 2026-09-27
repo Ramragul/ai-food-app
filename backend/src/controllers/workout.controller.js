@@ -836,7 +836,7 @@ export const updateWorkoutTemplate = async (req, res) => {
 
 export const deleteWorkoutTemplate = async (req, res) => {
   try {
-    const organizationId = Number(req.body.organizationId ?? req.query.organizationId);
+    const organizationId = Number(req.body?.organizationId ?? req.query.organizationId);
 
     if (!Number.isInteger(organizationId) || organizationId <= 0) {
       return res.status(400).json({ success: false, error: "organizationId is required." });

@@ -3690,180 +3690,239 @@ export const createExerciseService = async (
    UPDATE EXERCISE
 ====================================================== */
 
-export const deleteExerciseService = async (
-  exerciseId
-) => {
+// export const deleteExerciseService = async (
+//   exerciseId
+// ) => {
 
-  const result = await pool.query(
-    `
-    UPDATE exercises
-    SET
-      is_active = false,
-      updated_at = NOW()
-    WHERE
-      id = $1
-      AND is_active = true
-    RETURNING id, name
-    `,
-    [exerciseId]
-  );
-
-
-  if (!result.rows.length) {
-    throw new Error("Exercise not found or already inactive.");
-  }
+//   const result = await pool.query(
+//     `
+//     UPDATE exercises
+//     SET
+//       is_active = false,
+//       updated_at = NOW()
+//     WHERE
+//       id = $1
+//       AND is_active = true
+//     RETURNING id, name
+//     `,
+//     [exerciseId]
+//   );
 
 
-  return {
-    exercise_id: result.rows[0].id,
-    name: result.rows[0].name
-  };
-};
+//   if (!result.rows.length) {
+//     throw new Error("Exercise not found or already inactive.");
+//   }
 
 
-export const updateExerciseService = async (
-  exerciseId,
-  data
-) => {
+//   return {
+//     exercise_id: result.rows[0].id,
+//     name: result.rows[0].name
+//   };
+// };
 
-  const client =
-    await pool.connect();
 
+// export const updateExerciseService = async (
+//   exerciseId,
+//   data
+// ) => {
+
+//   const client =
+//     await pool.connect();
+
+
+//   try {
+
+//     await client.query("BEGIN");
+
+
+//     const {
+//       name,
+//       description,
+//       primaryMuscleGroupId,
+//       secondaryMuscleGroupIds,
+//       equipmentIds,
+//       movementPattern,
+//       trackingType,
+//       difficulty,
+//       instructions,
+//       imageUrl,
+//       videoUrl,
+//       environment
+//     } = data;
+
+
+//     const existing =
+//       await client.query(
+//         `
+//         SELECT id
+//         FROM exercises
+//         WHERE id = $1
+//         LIMIT 1
+//         `,
+//         [exerciseId]
+//       );
+
+
+//     if (!existing.rows.length) {
+
+//       throw new Error(
+//         "Exercise not found."
+//       );
+
+//     }
+
+
+//     const allowedTrackingTypes = [
+//       "REPS_WEIGHT",
+//       "REPS_ONLY",
+//       "DURATION",
+//       "DISTANCE",
+//       "REPS_DURATION"
+//     ];
+
+
+//     if (
+//       trackingType &&
+//       !allowedTrackingTypes.includes(
+//         trackingType
+//       )
+//     ) {
+
+//       throw new Error(
+//         "Invalid tracking type."
+//       );
+
+//     }
+
+
+//     if (
+//       environment &&
+//       !["HOME", "GYM", "BOTH"].includes(
+//         environment
+//       )
+//     ) {
+
+//       throw new Error(
+//         "Invalid environment."
+//       );
+
+//     }
+
+
+//     await client.query(
+//       `
+//       UPDATE exercises
+
+//       SET
+
+//         name =
+//           COALESCE($1, name),
+
+//         description =
+//           COALESCE($2, description),
+
+//         primary_muscle_group_id =
+//           COALESCE($3, primary_muscle_group_id),
+
+//         movement_pattern =
+//           COALESCE($4, movement_pattern),
+
+//         tracking_type =
+//           COALESCE($5, tracking_type),
+
+//         difficulty =
+//           COALESCE($6, difficulty),
+
+//         instructions =
+//           COALESCE($7, instructions),
+
+//         image_url =
+//           COALESCE($8, image_url),
+
+//         video_url =
+//           COALESCE($9, video_url),
+
+//         environment =
+//           COALESCE($10, environment),
+
+//         updated_at = NOW()
+
+//       WHERE
+//         id = $11
+//       `,
+//       [
+//         name,
+//         description,
+//         primaryMuscleGroupId,
+//         movementPattern,
+//         trackingType,
+//         difficulty,
+//         instructions,
+//         imageUrl,
+//         videoUrl,
+//         environment,
+//         exerciseId
+//       ]
+//     );
+
+
+// Enhancement Version
+
+export const deleteExerciseService = async (exerciseId) => {
+  const client = await pool.connect();
 
   try {
-
     await client.query("BEGIN");
 
-
-    const {
-      name,
-      description,
-      primaryMuscleGroupId,
-      secondaryMuscleGroupIds,
-      equipmentIds,
-      movementPattern,
-      trackingType,
-      difficulty,
-      instructions,
-      imageUrl,
-      videoUrl,
-      environment
-    } = data;
-
-
-    const existing =
-      await client.query(
-        `
-        SELECT id
-        FROM exercises
-        WHERE id = $1
-        LIMIT 1
-        `,
-        [exerciseId]
-      );
-
-
-    if (!existing.rows.length) {
-
-      throw new Error(
-        "Exercise not found."
-      );
-
-    }
-
-
-    const allowedTrackingTypes = [
-      "REPS_WEIGHT",
-      "REPS_ONLY",
-      "DURATION",
-      "DISTANCE",
-      "REPS_DURATION"
-    ];
-
-
-    if (
-      trackingType &&
-      !allowedTrackingTypes.includes(
-        trackingType
-      )
-    ) {
-
-      throw new Error(
-        "Invalid tracking type."
-      );
-
-    }
-
-
-    if (
-      environment &&
-      !["HOME", "GYM", "BOTH"].includes(
-        environment
-      )
-    ) {
-
-      throw new Error(
-        "Invalid environment."
-      );
-
-    }
-
-
-    await client.query(
+    // 1. Check and soft-delete the exercise
+    const exerciseResult = await client.query(
       `
       UPDATE exercises
-
       SET
-
-        name =
-          COALESCE($1, name),
-
-        description =
-          COALESCE($2, description),
-
-        primary_muscle_group_id =
-          COALESCE($3, primary_muscle_group_id),
-
-        movement_pattern =
-          COALESCE($4, movement_pattern),
-
-        tracking_type =
-          COALESCE($5, tracking_type),
-
-        difficulty =
-          COALESCE($6, difficulty),
-
-        instructions =
-          COALESCE($7, instructions),
-
-        image_url =
-          COALESCE($8, image_url),
-
-        video_url =
-          COALESCE($9, video_url),
-
-        environment =
-          COALESCE($10, environment),
-
+        is_active = false,
         updated_at = NOW()
-
       WHERE
-        id = $11
+        id = $1
+        AND is_active = true
+      RETURNING id, name
       `,
-      [
-        name,
-        description,
-        primaryMuscleGroupId,
-        movementPattern,
-        trackingType,
-        difficulty,
-        instructions,
-        imageUrl,
-        videoUrl,
-        environment,
-        exerciseId
-      ]
+      [exerciseId]
     );
+
+    if (!exerciseResult.rows.length) {
+      throw new Error(
+        "Exercise not found or already inactive."
+      );
+    }
+
+    const exercise = exerciseResult.rows[0];
+
+    // 2. Remove this exercise from all workout templates
+    const templateResult = await client.query(
+      `
+      DELETE FROM workout_template_exercises
+      WHERE exercise_id = $1
+      RETURNING id, workout_template_id
+      `,
+      [exerciseId]
+    );
+
+    // 3. Commit both operations together
+    await client.query("COMMIT");
+
+    return {
+      exercise_id: exercise.id,
+      name: exercise.name,
+      removed_from_templates: templateResult.rowCount
+    };
+
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+};
 
 
     /* ---------------------------------------------

@@ -3687,7 +3687,7 @@ export const createExerciseService = async (
 
 
 /* ======================================================
-   UPDATE EXERCISE
+   DELETE EXERCISE
 ====================================================== */
 
 // export const deleteExerciseService = async (
@@ -3721,152 +3721,8 @@ export const createExerciseService = async (
 // };
 
 
-// export const updateExerciseService = async (
-//   exerciseId,
-//   data
-// ) => {
-
-//   const client =
-//     await pool.connect();
 
 
-//   try {
-
-//     await client.query("BEGIN");
-
-
-//     const {
-//       name,
-//       description,
-//       primaryMuscleGroupId,
-//       secondaryMuscleGroupIds,
-//       equipmentIds,
-//       movementPattern,
-//       trackingType,
-//       difficulty,
-//       instructions,
-//       imageUrl,
-//       videoUrl,
-//       environment
-//     } = data;
-
-
-//     const existing =
-//       await client.query(
-//         `
-//         SELECT id
-//         FROM exercises
-//         WHERE id = $1
-//         LIMIT 1
-//         `,
-//         [exerciseId]
-//       );
-
-
-//     if (!existing.rows.length) {
-
-//       throw new Error(
-//         "Exercise not found."
-//       );
-
-//     }
-
-
-//     const allowedTrackingTypes = [
-//       "REPS_WEIGHT",
-//       "REPS_ONLY",
-//       "DURATION",
-//       "DISTANCE",
-//       "REPS_DURATION"
-//     ];
-
-
-//     if (
-//       trackingType &&
-//       !allowedTrackingTypes.includes(
-//         trackingType
-//       )
-//     ) {
-
-//       throw new Error(
-//         "Invalid tracking type."
-//       );
-
-//     }
-
-
-//     if (
-//       environment &&
-//       !["HOME", "GYM", "BOTH"].includes(
-//         environment
-//       )
-//     ) {
-
-//       throw new Error(
-//         "Invalid environment."
-//       );
-
-//     }
-
-
-//     await client.query(
-//       `
-//       UPDATE exercises
-
-//       SET
-
-//         name =
-//           COALESCE($1, name),
-
-//         description =
-//           COALESCE($2, description),
-
-//         primary_muscle_group_id =
-//           COALESCE($3, primary_muscle_group_id),
-
-//         movement_pattern =
-//           COALESCE($4, movement_pattern),
-
-//         tracking_type =
-//           COALESCE($5, tracking_type),
-
-//         difficulty =
-//           COALESCE($6, difficulty),
-
-//         instructions =
-//           COALESCE($7, instructions),
-
-//         image_url =
-//           COALESCE($8, image_url),
-
-//         video_url =
-//           COALESCE($9, video_url),
-
-//         environment =
-//           COALESCE($10, environment),
-
-//         updated_at = NOW()
-
-//       WHERE
-//         id = $11
-//       `,
-//       [
-//         name,
-//         description,
-//         primaryMuscleGroupId,
-//         movementPattern,
-//         trackingType,
-//         difficulty,
-//         instructions,
-//         imageUrl,
-//         videoUrl,
-//         environment,
-//         exerciseId
-//       ]
-//     );
-
-
-// Enhancement Version
 
 export const deleteExerciseService = async (exerciseId) => {
   const client = await pool.connect();
@@ -3923,6 +3779,160 @@ export const deleteExerciseService = async (exerciseId) => {
     client.release();
   }
 };
+
+
+/* ======================================================
+   UPDATE EXERCISE
+====================================================== */
+
+export const updateExerciseService = async (
+  exerciseId,
+  data
+) => {
+
+  const client =
+    await pool.connect();
+
+
+  try {
+
+    await client.query("BEGIN");
+
+
+    const {
+      name,
+      description,
+      primaryMuscleGroupId,
+      secondaryMuscleGroupIds,
+      equipmentIds,
+      movementPattern,
+      trackingType,
+      difficulty,
+      instructions,
+      imageUrl,
+      videoUrl,
+      environment
+    } = data;
+
+
+    const existing =
+      await client.query(
+        `
+        SELECT id
+        FROM exercises
+        WHERE id = $1
+        LIMIT 1
+        `,
+        [exerciseId]
+      );
+
+
+    if (!existing.rows.length) {
+
+      throw new Error(
+        "Exercise not found."
+      );
+
+    }
+
+
+    const allowedTrackingTypes = [
+      "REPS_WEIGHT",
+      "REPS_ONLY",
+      "DURATION",
+      "DISTANCE",
+      "REPS_DURATION"
+    ];
+
+
+    if (
+      trackingType &&
+      !allowedTrackingTypes.includes(
+        trackingType
+      )
+    ) {
+
+      throw new Error(
+        "Invalid tracking type."
+      );
+
+    }
+
+
+    if (
+      environment &&
+      !["HOME", "GYM", "BOTH"].includes(
+        environment
+      )
+    ) {
+
+      throw new Error(
+        "Invalid environment."
+      );
+
+    }
+
+
+    await client.query(
+      `
+      UPDATE exercises
+
+      SET
+
+        name =
+          COALESCE($1, name),
+
+        description =
+          COALESCE($2, description),
+
+        primary_muscle_group_id =
+          COALESCE($3, primary_muscle_group_id),
+
+        movement_pattern =
+          COALESCE($4, movement_pattern),
+
+        tracking_type =
+          COALESCE($5, tracking_type),
+
+        difficulty =
+          COALESCE($6, difficulty),
+
+        instructions =
+          COALESCE($7, instructions),
+
+        image_url =
+          COALESCE($8, image_url),
+
+        video_url =
+          COALESCE($9, video_url),
+
+        environment =
+          COALESCE($10, environment),
+
+        updated_at = NOW()
+
+      WHERE
+        id = $11
+      `,
+      [
+        name,
+        description,
+        primaryMuscleGroupId,
+        movementPattern,
+        trackingType,
+        difficulty,
+        instructions,
+        imageUrl,
+        videoUrl,
+        environment,
+        exerciseId
+      ]
+    );
+
+
+
+
+
 
 
     /* ---------------------------------------------

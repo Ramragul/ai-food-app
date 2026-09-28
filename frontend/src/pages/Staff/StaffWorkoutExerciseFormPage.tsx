@@ -562,6 +562,7 @@ import {
   type WorkoutExerciseDetail,
   type WorkoutMuscleGroup,
 } from "../../services/workoutExercise.service";
+import { STAFF_LAYOUT } from "../../config/layout/staff.layout";
 
 const TRACKING_OPTIONS = [
   { value: "REPS_WEIGHT", label: "Reps + Weight" },
@@ -830,7 +831,22 @@ const StaffWorkoutExerciseFormPage = () => {
 
   return (
     <>
-    <Box maxW="1100px" mx="auto" px={{ base: 4, md: 6, xl: 8 }} py={{ base: 5, md: 8 }}>
+    {/* <Box maxW="1100px" mx="auto" px={{ base: 4, md: 6, xl: 8 }} py={{ base: 5, md: 8 }}> */}
+
+      <Box
+  maxW="1600px"
+  mx="auto"
+  px={{
+    base: 4,
+    md: 6,
+    xl: 8,
+  }}
+  pt={STAFF_LAYOUT.topbar.height}
+  pb={{
+    base: 5,
+    md: 8,
+  }}
+>
       <HStack mb={6}>
         <Button
           variant="ghost"

@@ -174,6 +174,14 @@ import StaffWorkoutExercisesPage from "../pages/Staff/StaffWorkoutExercisesPage"
 import StaffWorkoutExerciseFormPage from "../pages/Staff/StaffWorkoutExerciseFormPage";
 
 
+import MyWorkoutsPage from "../pages/Workout/MyWorkoutsPage";
+import WorkoutDetailPage from "../pages/Workout/WorkoutDetailPage";
+import WorkoutSessionPage from "../pages/Workout/WorkoutSessionPage";
+import WorkoutCompletePage from "../pages/Workout/WorkoutCompletePage";
+import WorkoutHistoryPage from "../pages/Workout/WorkoutHistoryPage";
+import WorkoutLibraryPage from "../pages/Workout/WorkoutLibraryPage";
+
+
 
 
 
@@ -259,6 +267,16 @@ const AppRoutes: React.FC = () => {
         <Route path="/fitness" element={<FitnessPage />} />
         <Route path="/fitness/:category" element={ <FitnessCategoryPage />}/>
         <Route path="/fitness/guide/:id" element={<FitnessGuideDetailPage />}/>
+
+{/* Workouts Session related routes */}
+
+
+        <Route path="/workouts" element={<MyWorkoutsPage />} />
+        <Route path="/workouts/library" element={<WorkoutLibraryPage />} />
+        <Route path="/workouts/history" element={<WorkoutHistoryPage />} />
+        <Route path="/workouts/:assignmentId" element={<WorkoutDetailPage />} />
+        <Route path="/workouts/:assignmentId/session" element={<WorkoutSessionPage />} />
+        <Route path="/workouts/complete/:sessionId" element={<WorkoutCompletePage />} />
 
         {/* <Route path="/nutrition" element={<NutritonSearch />} /> */}
             <Route

@@ -5420,6 +5420,68 @@ export const createWorkoutAssignmentService = async (
       );
 
 
+
+      // New logics to workout assignments to clients
+
+      await client.query(
+    `
+    INSERT INTO workout_assignment_exercises (
+      workout_assignment_id,
+      template_exercise_id,
+      exercise_id,
+      display_order,
+      target_sets,
+      target_reps,
+      target_weight,
+      target_duration_seconds,
+      target_distance,
+      rest_seconds,
+      notes,
+      exercise_name_snapshot,
+      exercise_description_snapshot,
+      tracking_type_snapshot,
+      exercise_environment_snapshot,
+      difficulty_snapshot,
+      instructions_snapshot,
+      image_url_snapshot,
+      video_url_snapshot,
+      primary_muscle_group_snapshot,
+      met_value_snapshot
+    )
+    SELECT
+      $1,
+      wte.id,
+      wte.exercise_id,
+      wte.display_order,
+      wte.target_sets,
+      wte.target_reps,
+      wte.target_weight,
+      wte.target_duration_seconds,
+      wte.target_distance,
+      wte.rest_seconds,
+      wte.notes,
+      e.name,
+      e.description,
+      e.tracking_type,
+      e.environment,
+      e.difficulty,
+      e.instructions,
+      e.image_url,
+      e.video_url,
+      mg.name,
+      e.met_value
+    FROM workout_template_exercises wte
+    INNER JOIN exercises e
+      ON e.id = wte.exercise_id
+    LEFT JOIN workout_muscle_groups mg
+      ON mg.id = e.primary_muscle_group_id
+    WHERE wte.workout_template_id = $2
+    ORDER BY wte.display_order ASC, wte.id ASC
+    `,
+    [assignmentResult.rows[0].id, normalizedTemplateId]
+  );
+
+
     await client.query("COMMIT");
 
 

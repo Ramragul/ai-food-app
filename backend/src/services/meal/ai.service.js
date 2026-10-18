@@ -2549,6 +2549,61 @@ Return ONLY JSON.
     // }
 
 
+for (const rec of parsed.recommendations) {
+  for (const item of rec.items || []) {
+    // Core functionality: ingredients
+    if (!item.ingredients || item.ingredients.length === 0) {
+      console.log("⚠️ Extracting ingredients from steps");
+
+      item.ingredients = extractIngredientsFromSteps(
+        item.steps,
+        dbMap
+      );
+    }
+
+    item.ingredients = sanitizeIngredients(
+      item.ingredients,
+      dbMap
+    );
+
+    // Core functionality: nutrition
+    item.nutrition = calculateNutrition(
+      item.ingredients,
+      dbMap
+    );
+  }
+
+  // Optional enhancement: food image
+  rec.imageUrl = null;
+
+  const mainItem = rec.items?.[0];
+
+  if (mainItem?.name) {
+    try {
+      rec.imageUrl = await Promise.race([
+        fetchFoodImage(mainItem.name),
+        new Promise((_, reject) =>
+          setTimeout(
+            () => reject(new Error("Unsplash timeout")),
+            2500
+          )
+        ),
+      ]);
+
+      console.log("Image URL:", rec.imageUrl);
+    } catch (error) {
+      console.warn(
+        "⚠️ Food image unavailable; continuing without image:",
+        error.message
+      );
+
+      rec.imageUrl = null;
+    }
+  }
+}
+
+
+
 
 for (const rec of parsed.recommendations) {
   for (const item of rec.items || []) {
@@ -2597,6 +2652,7 @@ for (const rec of parsed.recommendations) {
   }
 }
 
+//to be
     return parsed;
 
   } catch (error) {
